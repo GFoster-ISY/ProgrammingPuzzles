@@ -36,4 +36,8 @@ public class Execute {
 		}
 		return false;
 	}
+	
+	public String getErrorMsg() {
+		return term.errorMsg();
+	}
 }

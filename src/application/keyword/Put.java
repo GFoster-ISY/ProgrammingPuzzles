@@ -43,7 +43,7 @@ public class Put extends CommandTerm {
 			return false;
 		}
 		int selectedCup = Integer.parseInt(args.get(0))-1; // Subtract one to convert to array indices
-		if (selectedCup < 0 || selectedCup > cups.length) {
+		if (selectedCup < 0 || selectedCup >= cups.length) {
 			errorMessage = "There is no cup at position " + (selectedCup+1);
 			return false;
 		}

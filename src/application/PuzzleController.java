@@ -37,7 +37,7 @@ public class PuzzleController {
     @FXML private Canvas cvsCups;
     @FXML private Canvas cvsHand;
     @FXML private Canvas cvsContainer;
-    @FXML private TextField txtInstruction;
+    @FXML private TextField txtErrorMsg;
     @FXML private ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
     @FXML private Button btnPrev;
@@ -225,6 +225,11 @@ public class PuzzleController {
 		}
     	container.display(cvsContainer.getGraphicsContext2D(),cvsContainer.getWidth(), cvsContainer.getHeight());
     	hand.display(cvsHand.getGraphicsContext2D(),cvsHand.getWidth(), cvsHand.getHeight());
+    	if (exec != null && exec.getErrorMsg()!=null) {
+    		txtErrorMsg.setText(exec.getErrorMsg());
+    	} else {
+    		txtErrorMsg.setText("");
+    	}
     	lstListing.refresh();
     }
     

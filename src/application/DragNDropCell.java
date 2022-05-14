@@ -10,8 +10,9 @@ import javafx.scene.input.TransferMode;
 public class DragNDropCell extends ListCell<CommandTerm> {
 
 	private static final String DEFAULT_BACKGROUND = "derive(-fx-base,80%)";
-    private static final String HIGHLIGHTED_BACKGROUND = "derive(OrangeRed, 50%)";
-
+    private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
+    private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
+    
 	public DragNDropCell () {
 		ListCell<CommandTerm> thisCell = this;
 		
@@ -77,8 +78,10 @@ public class DragNDropCell extends ListCell<CommandTerm> {
             setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
         } else {
             setText(item.toString());
-            if (item.isRunning()) {
-            	setStyle("-fx-control-inner-background: " + HIGHLIGHTED_BACKGROUND + ";");
+            if (item.isInError()) {
+            	setStyle("-fx-control-inner-background: " + ERROR_BACKGROUND + ";");
+            } else if (item.isRunning()) {
+            	setStyle("-fx-control-inner-background: " + RUNNING_BACKGROUND + ";");
             } else {
                 setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
             }

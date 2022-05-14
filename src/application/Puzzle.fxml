@@ -11,13 +11,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.PuzzleController">
+<AnchorPane prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.PuzzleController">
    <children>
       <HBox fx:id="hboxRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0">
          <children>
             <VBox fx:id="vboxRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
                <children>
-                  <TextArea fx:id="txtProblem" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" prefHeight="80.0" prefWidth="400.0" text="This will contain the problem statement. It will be loaded in from the current problem definition JSON file. The current problem is contained in the JSON file of that name." wrapText="true">
+                  <TextArea fx:id="txtProblem" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" prefHeight="73.0" prefWidth="400.0" text="This will contain the problem statement. It will be loaded in from the current problem definition JSON file. The current problem is contained in the JSON file of that name." wrapText="true">
                      <font>
                         <Font name="Bookman Old Style" size="14.0" />
                      </font>
@@ -25,7 +25,10 @@
                   <Canvas fx:id="cvsCups" height="166.0" width="400.0" />
                   <Canvas fx:id="cvsHand" height="166.0" width="400.0" />
                   <Canvas fx:id="cvsContainer" height="166.0" width="400.0" />
-                  <TextField fx:id="txtInstruction" editable="false" />
+                  <TextField fx:id="txtErrorMsg" editable="false" promptText="No Errors Exist" style="-fx-background-color: derive(OrangeRed, 50%);">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font></TextField>
                </children>
             </VBox>
             <VBox prefWidth="300.0">

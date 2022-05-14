@@ -23,7 +23,7 @@ public abstract class CommandTerm {
 	protected boolean runningState;
 	
 	CommandTerm(Container container, Hand hand, Cup[] cups){
-		errorMessage = "";
+		errorMessage = null;
 		bag = container;
 		this.hand = hand;
 		this.cups = cups;
@@ -39,6 +39,7 @@ public abstract class CommandTerm {
 	}
 	
 	public String errorMsg() { return errorMessage;}
+	public void clearError() { errorMessage = null;}
 	
 	public void display(Pane fxmlEmbed, KeyTermController controller) {
 		FXMLLoader load = new FXMLLoader(getClass().getResource(FXMLFileName));
@@ -54,6 +55,7 @@ public abstract class CommandTerm {
 	
 	public void showRunning(boolean state) {runningState = state;}
 	public boolean isRunning() {return runningState;}
+	public boolean isInError() {return errorMessage != null;}
 	
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();
