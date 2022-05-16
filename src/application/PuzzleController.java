@@ -61,7 +61,8 @@ public class PuzzleController {
     private int ballCount;
     private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
-    private JSONObject jsonObject;
+    private JSONObject generalJSONObject;
+    private JSONObject problemJSONObject;
     private Map solution;
     private Execute exec;
     
@@ -155,6 +156,7 @@ public class PuzzleController {
 		} else {
 			passed = gradeSolution();
 		}
+		storeResultInJSON(passed);
 		resetPuzzle(passed);
     }
     
@@ -204,8 +206,8 @@ public class PuzzleController {
        	JSONParser parser = new JSONParser();
         try {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
-           JSONObject jsonObject = (JSONObject)obj;
-           name = (String)jsonObject.get("CurrentProblem");
+           generalJSONObject = (JSONObject)obj;
+           name = (String)generalJSONObject.get("CurrentProblem");
         } catch(Exception e) {
         	name = "Problem1";
         	JSONObject obj = new JSONObject();
@@ -224,12 +226,12 @@ public class PuzzleController {
     	JSONParser parser = new JSONParser();
         try {
            Object obj = parser.parse(new FileReader("resources/"+problem+".json"));
-           jsonObject = (JSONObject)obj;
-           task = (String)jsonObject.get("ObjectiveStatement");
+           problemJSONObject = (JSONObject)obj;
+           task = (String)problemJSONObject.get("ObjectiveStatement");
            txtProblem.setText(task);
-           cupCount = ((Long)jsonObject.get("PotCount")).intValue();
-           ballCount = ((Long)jsonObject.get("BallCount")).intValue();
-           JSONArray keyTerms = (JSONArray)jsonObject.get("KeyTerms");
+           cupCount = ((Long)problemJSONObject.get("PotCount")).intValue();
+           ballCount = ((Long)problemJSONObject.get("BallCount")).intValue();
+           JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
            allKeyTerms = FXCollections.observableArrayList(); 
            allKeyTerms.addAll(keyTerms);
            lstLexicon.setItems(allKeyTerms);
@@ -241,7 +243,7 @@ public class PuzzleController {
            for (int i = 0; i < cupCount; i++) {
                cups[i] = new Cup(i);
            }
-           solution = ((Map)jsonObject.get("Solution"));
+           solution = ((Map)problemJSONObject.get("Solution"));
         } catch(Exception e) {
                 e.printStackTrace();
         }    	
@@ -295,11 +297,8 @@ public class PuzzleController {
             e.printStackTrace();
             return null;
         }
-        // Create the stage
         Stage inputStage = new Stage();
-        // Sets the owner to being this window NOTE primaryStage is set up in StockManagement
         inputStage.initOwner(Main.primaryStage);
-        // Add the Scene to the stage
         inputStage.setScene(newScene);
         
         return inputStage;
@@ -317,11 +316,10 @@ public class PuzzleController {
     }
     
     private boolean gradeSolution() {
-    	JSONObject s = (JSONObject) jsonObject.get("Solution");
     	Cup.gradingCups(true);
     	boolean testPassed = true;
     	if (solution.containsKey("PotCount")) {
-    		JSONArray objs = (JSONArray) s.get("PotCount");
+    		JSONArray objs = (JSONArray) solution.get("PotCount");
     		for (int i = 0; i<cupCount; i++) {
     			int requiredBallsInCup = ((Long)objs.get(i)).intValue();
     			if (!cups[i].correctBallCount(requiredBallsInCup)) {
@@ -354,7 +352,7 @@ public class PuzzleController {
     	exec.stopExec();
 		exec = null;
 		if (passed) {
-			problem = (String)jsonObject.get("NextProblem");
+			problem = (String)problemJSONObject.get("NextProblem");
 			fullListing.clear();
 		}
 		if (problem == null) {
@@ -374,5 +372,52 @@ public class PuzzleController {
         lstListing.getSelectionModel().clearSelection();
 		lstListing.refresh();
         showRunTimeButtons(fullListing.size() > 0);
+    }
+    
+    private void storeResultInJSON(boolean passed) {	
+    	Map results = (Map)generalJSONObject.get("Result");
+    	if (results == null) {
+    		results = new JSONObject();
+    		generalJSONObject.put("Results", results);
+    	}
+    	Map problemStats = (Map)generalJSONObject.get(problem);
+    	if (problemStats == null) {
+    		problemStats = new JSONObject();
+    		results.put(problem, problemStats);
+    	}
+    	long attempts = 1;
+    	if (problemStats.containsKey("Attempts")) {
+    		attempts = ((Long)problemStats.get("Attempts")).longValue();
+    		attempts++;
+    	}
+    	problemStats.put("Attempts", attempts);
+    	if (exec.inError()) {
+        	long errorCount = 1;
+        	if (problemStats.containsKey("ErrorCount")) {
+        		errorCount = ((Long)problemStats.get("ErrorCount")).longValue();
+        		errorCount++;
+        	}
+        	problemStats.put("ErrorCount", errorCount);
+    		problemStats.put("LastRun", "ERROR");
+    	} else if (!passed) {
+        	long failCount = 1;
+        	if (problemStats.containsKey("FailCount")) {
+        		failCount = ((Long)problemStats.get("FailCount")).longValue();
+        		failCount++;
+        	}
+        	problemStats.put("FailCount", failCount);
+    		problemStats.put("LastRun", "FAILED");
+    	} else {
+    		generalJSONObject.put("CurrentProblem",(String)problemJSONObject.get("NextProblem"));
+    		problemStats.put("LastRun", "SUCCESS");
+    	}
+    	//Write JSON file
+        try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
+            file.write(generalJSONObject.toJSONString()); 
+            file.flush();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
