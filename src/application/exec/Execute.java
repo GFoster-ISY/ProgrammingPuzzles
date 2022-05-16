@@ -27,6 +27,7 @@ public class Execute {
 		}
 		if (currentLine < instructions.size()) {
 			term = instructions.get(currentLine);
+			term.clearError();
 			if (term.exec()) {
 				currentLine++;
 				completed.push(term);
@@ -50,6 +51,6 @@ public class Execute {
 	}
 	
 	public boolean finished() {
-		return (currentLine == instructions.size() || term.errorMsg() != null);
+		return (currentLine == instructions.size() || inError());
 	}
 }

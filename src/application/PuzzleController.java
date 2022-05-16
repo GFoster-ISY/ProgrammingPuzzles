@@ -375,12 +375,12 @@ public class PuzzleController {
     }
     
     private void storeResultInJSON(boolean passed) {	
-    	Map results = (Map)generalJSONObject.get("Result");
+    	Map results = (Map)generalJSONObject.get("Results");
     	if (results == null) {
     		results = new JSONObject();
     		generalJSONObject.put("Results", results);
     	}
-    	Map problemStats = (Map)generalJSONObject.get(problem);
+    	Map problemStats = (Map)results.get(problem);
     	if (problemStats == null) {
     		problemStats = new JSONObject();
     		results.put(problem, problemStats);
@@ -408,7 +408,9 @@ public class PuzzleController {
         	problemStats.put("FailCount", failCount);
     		problemStats.put("LastRun", "FAILED");
     	} else {
-    		generalJSONObject.put("CurrentProblem",(String)problemJSONObject.get("NextProblem"));
+    		if (problemJSONObject.containsKey("NextProblem")) {
+    			generalJSONObject.put("CurrentProblem",(String)problemJSONObject.get("NextProblem"));
+    		}
     		problemStats.put("LastRun", "SUCCESS");
     	}
     	//Write JSON file
