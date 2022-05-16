@@ -2,5 +2,6 @@
 "PotCount": 3,
 "BallCount": 8,
 "KeyTerms":["pick()","put(n)"],
-"Solution":{"PotCount":[1,1,1]}
+"Solution":{"PotCount":[1,1,1]},
+"NextProblem": "Problem2"
 }

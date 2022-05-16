@@ -139,25 +139,32 @@ public class PuzzleController {
         lstListing.getSelectionModel().clearSelection();
     }
     
-    @FXML private void execByStep() {
+    private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
     		fullListing.forEach(line -> code.add(line));
     		exec = new Execute(code);
     	}
-    	exec.step();
+    	exec.step();    	
+    }
+    
+    private void codeCompleted() {
+    	boolean passed = false;
+		if (exec.inError()) {
+			displayError();
+		} else {
+			passed = gradeSolution();
+		}
+		resetPuzzle(passed);
+    }
+    
+    @FXML private void execByStep() {
+    	runOneLineOfCode();
     	manageButtons(!exec.finished());
 		display();    		
 		
     	if (exec.finished()) {
-    		boolean passed = false;
-    		if (exec.inError()) {
-    			displayError();
-    		} else {
-    			passed = gradeSolution();
-    		}
-    		resetPuzzle(passed);
-    	} else {
+    		codeCompleted();
     	}
     }
     @FXML private void execByAuto() {
@@ -167,7 +174,10 @@ public class PuzzleController {
     	
     }
     @FXML private void exec() {
-    	
+    	while (exec == null || !exec.finished()) {
+    		runOneLineOfCode();
+    	}
+		codeCompleted();
     }
     
     protected void resizeWidth(Number newWidth) {
@@ -344,9 +354,19 @@ public class PuzzleController {
     	exec.stopExec();
 		exec = null;
 		if (passed) {
-			// reset problem to the next available problem
+			problem = (String)jsonObject.get("NextProblem");
+			fullListing.clear();
 		}
-		loadProblem();
+		if (problem == null) {
+			String message = "You have completed all the problems";
+			Alert a = new Alert(AlertType.INFORMATION);
+			a.setHeaderText("Congratulations");
+			a.setContentText(message);
+			a.initModality(Modality.APPLICATION_MODAL); 
+			a.showAndWait();
+		} else {
+			loadProblem();
+		}
 		
 		if (passed) {
 			display();
