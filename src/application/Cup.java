@@ -1,8 +1,11 @@
 package application;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Cup {
@@ -12,6 +15,8 @@ public class Cup {
 	private int ballCount;
 	private static int cupWidth;
 	private static int cupHeight;
+	private static boolean grading;
+	private boolean cupCorrect;
 	
 	public Cup(int i){
 		id = i;
@@ -33,10 +38,16 @@ public class Cup {
 		ballCount++;
 	}
 	
+	public boolean correctBallCount (int expected) {return expected == ballCount;}
+	public static void gradingCups (boolean grading) {Cup.grading = grading;}
+	public void gradeCup(boolean good) {cupCorrect = good;}
+	
 	void display(GraphicsContext gc, double width, double height) {
+        int x = 10+id*5*cupWidth;
+        gc.setFill(Color.WHITE);
+        gc.fillRect(x+cupWidth, 5+cupHeight/6, 2*cupWidth, cupHeight/3);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
-        int x = 10+id*5*cupWidth;
         gc.strokeRect(x+cupWidth, 5+cupHeight/6, 2*cupWidth, cupHeight/3);
         gc.strokeLine(x, 5, x+cupWidth, 5+cupHeight);
         gc.strokeLine(x+cupWidth, 5+cupHeight, x+3*cupWidth, 5+cupHeight);
@@ -54,6 +65,20 @@ public class Cup {
 				}
 
 			}
+        }
+        // Add grading ticks or crosses
+        if (grading) {
+        	Image grade;
+        	try {
+        		if (cupCorrect) {
+        			grade = new Image(new FileInputStream("resources/green-checkmark.jpg"));
+        		} else {
+        			grade = new Image(new FileInputStream("resources/red-cross.jpg"));
+        		}
+        		gc.drawImage(grade, x+cupWidth*3/2, 10+cupHeight/6, cupWidth, cupWidth);
+    		} catch (FileNotFoundException e) {
+    			e.printStackTrace();
+    		}
         }
 	}	
 }

@@ -1,5 +1,6 @@
 {"ObjectiveStatement": "Put one ball in each pot",
 "PotCount": 3,
 "BallCount": 8,
-"KeyTerms":["pick()","put(n)"]
+"KeyTerms":["pick()","put(n)"],
+"Solution":{"PotCount":[1,1,1]}
 }

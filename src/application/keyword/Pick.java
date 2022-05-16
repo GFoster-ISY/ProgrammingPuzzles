@@ -3,15 +3,13 @@ package application.keyword;
 import java.util.ArrayList;
 
 import application.Ball;
-import application.Container;
-import application.Cup;
-import application.Hand;
+import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
 public class Pick extends CommandTerm {
 	
-	public Pick(Container container, Hand hand, Cup[] cups) {
-		super(container, hand, cups);
+	public Pick(PuzzleController pc) {
+		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		term = "pick";
 	}
@@ -28,13 +26,13 @@ public class Pick extends CommandTerm {
 	}
 
 	@Override public boolean exec() {
-		if (!hand.isEmpty()) {
+		if (!puzzleController.getHand().isEmpty()) {
 			errorMessage = "The hand is already holding a ball";
 			return false;
 		}
-		Ball ball = bag.getBall();
+		Ball ball = puzzleController.getContainer().getBall();
 		if (ball != null) {
-			hand.put(ball);
+			puzzleController.getHand().put(ball);
 			return true;
 		} else {
 			errorMessage = "No ball is available to pick up";

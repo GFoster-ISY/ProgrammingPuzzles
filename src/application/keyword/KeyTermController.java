@@ -1,9 +1,6 @@
 package application.keyword;
 
-
-import application.Container;
-import application.Cup;
-import application.Hand;
+import application.PuzzleController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -49,11 +46,11 @@ public class KeyTermController {
     	Stage stage = (Stage) fxmlEmbed.getScene().getWindow();
         stage.close();    	
     }
-    public void setKeyTerm(String term, Container container, Hand hand, Cup[] cups) {
+    public void setKeyTerm(String term, PuzzleController pc) {
     	if (term.equals("put(n)")){
-    		keyword = new Put(container, hand, cups);
+    		keyword = new Put(pc);
     	} else if(term.equals("pick()")){
-    		keyword = new Pick(container, hand, cups);
+    		keyword = new Pick(pc);
     	} else {
     		keyword = null;
     		nc = null;

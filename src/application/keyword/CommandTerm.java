@@ -3,9 +3,7 @@ package application.keyword;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import application.Container;
-import application.Cup;
-import application.Hand;
+import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -16,17 +14,13 @@ public abstract class CommandTerm {
 	protected ArrayList<String> args;
 	protected NestedController controller;
 	protected String FXMLFileName;
-	protected Container bag;
-	protected Hand hand;
-	protected Cup[] cups;
+	protected PuzzleController puzzleController;
 	protected String errorMessage;
 	protected boolean runningState;
 	
-	CommandTerm(Container container, Hand hand, Cup[] cups){
+	CommandTerm(PuzzleController pc){
 		errorMessage = null;
-		bag = container;
-		this.hand = hand;
-		this.cups = cups;
+		puzzleController = pc;
 		runningState = false;
 	}
 	

@@ -3,15 +3,13 @@ package application.keyword;
 import java.util.ArrayList;
 
 import application.Ball;
-import application.Container;
-import application.Cup;
-import application.Hand;
+import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
 public class Put extends CommandTerm {
 	
-	public Put(Container container, Hand hand, Cup[] cups) {
-		super(container, hand, cups);
+	public Put(PuzzleController pc) {
+		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
 		term = "put";
 	}
@@ -34,7 +32,7 @@ public class Put extends CommandTerm {
 	}
 	
 	@Override public boolean exec() {
-		if (hand.isEmpty()) {
+		if (puzzleController.getHand().isEmpty()) {
 			errorMessage = "There is no ball to place in a cup";
 			return false;
 		}
@@ -43,12 +41,12 @@ public class Put extends CommandTerm {
 			return false;
 		}
 		int selectedCup = Integer.parseInt(args.get(0))-1; // Subtract one to convert to array indices
-		if (selectedCup < 0 || selectedCup >= cups.length) {
+		if (selectedCup < 0 || selectedCup >= puzzleController.getCups().length) {
 			errorMessage = "There is no cup at position " + (selectedCup+1);
 			return false;
 		}
-		Ball ball = hand.getBall();
-		cups[selectedCup].put(ball);
+		Ball ball = puzzleController.getHand().getBall();
+		puzzleController.getCups()[selectedCup].put(ball);
 		return true;
 	}
 }

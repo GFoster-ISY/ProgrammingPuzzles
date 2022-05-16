@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -21,6 +23,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -58,7 +61,13 @@ public class PuzzleController {
     private int ballCount;
     private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
+    private JSONObject jsonObject;
+    private Map solution;
     private Execute exec;
+    
+    public Container getContainer() {return container;}
+    public Cup[] getCups() { return cups;}
+    public Hand getHand() {return hand;}
     
     @FXML void initialize() {
     	fullListing = FXCollections.observableArrayList();
@@ -67,7 +76,6 @@ public class PuzzleController {
     	
     	problem = getCurrentProblem();
     	loadProblem();
-        hand = new Hand();
     	
         exec = null;
 
@@ -87,7 +95,7 @@ public class PuzzleController {
         // Get the dialog controller so that a public method can be run to send data to the dialog
         KeyTermController ktc = loader.<KeyTermController>getController();
 
-        ktc.setKeyTerm(keyTerm, container, hand, cups);
+        ktc.setKeyTerm(keyTerm, this);
         // Only display the dialog box if we have some arguments to fill.
         if (ktc.getArgCount()>0) {
             // Show the dialog (and wait for the user to close it)
@@ -135,11 +143,22 @@ public class PuzzleController {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
     		fullListing.forEach(line -> code.add(line));
-    		exec = new Execute( code);
+    		exec = new Execute(code);
     	}
-    	boolean result = exec.step();
-    	manageButtons(result); 
-		display();
+    	exec.step();
+    	manageButtons(!exec.finished());
+		display();    		
+		
+    	if (exec.finished()) {
+    		boolean passed = false;
+    		if (exec.inError()) {
+    			displayError();
+    		} else {
+    			passed = gradeSolution();
+    		}
+    		resetPuzzle(passed);
+    	} else {
+    	}
     }
     @FXML private void execByAuto() {
     	
@@ -195,7 +214,7 @@ public class PuzzleController {
     	JSONParser parser = new JSONParser();
         try {
            Object obj = parser.parse(new FileReader("resources/"+problem+".json"));
-           JSONObject jsonObject = (JSONObject)obj;
+           jsonObject = (JSONObject)obj;
            task = (String)jsonObject.get("ObjectiveStatement");
            txtProblem.setText(task);
            cupCount = ((Long)jsonObject.get("PotCount")).intValue();
@@ -206,11 +225,13 @@ public class PuzzleController {
            lstLexicon.setItems(allKeyTerms);
            
            container = new Tray(ballCount);
+           hand = new Hand();
            cups = new Cup[cupCount];
-
+           Cup.gradingCups(false);
            for (int i = 0; i < cupCount; i++) {
                cups[i] = new Cup(i);
            }
+           solution = ((Map)jsonObject.get("Solution"));
         } catch(Exception e) {
                 e.printStackTrace();
         }    	
@@ -228,7 +249,9 @@ public class PuzzleController {
     	if (exec != null && exec.getErrorMsg()!=null) {
     		txtErrorMsg.setText(exec.getErrorMsg());
     	} else {
-    		txtErrorMsg.setText("");
+    		if (exec != null && !exec.finished()) {
+    			txtErrorMsg.setText("");
+    		}
     	}
     	lstListing.refresh();
     }
@@ -270,5 +293,66 @@ public class PuzzleController {
         inputStage.setScene(newScene);
         
         return inputStage;
+    }
+    
+    private void displayError() {
+    	Alert a = new Alert(AlertType.NONE);
+		String message = exec.getErrorMsg();
+		txtErrorMsg.setText(message);
+		a.setAlertType(AlertType.ERROR);
+		a.setHeaderText("You code needs fixing");
+		a.setContentText(message);
+		a.initModality(Modality.APPLICATION_MODAL); 
+		a.showAndWait();	
+    }
+    
+    private boolean gradeSolution() {
+    	JSONObject s = (JSONObject) jsonObject.get("Solution");
+    	Cup.gradingCups(true);
+    	boolean testPassed = true;
+    	if (solution.containsKey("PotCount")) {
+    		JSONArray objs = (JSONArray) s.get("PotCount");
+    		for (int i = 0; i<cupCount; i++) {
+    			int requiredBallsInCup = ((Long)objs.get(i)).intValue();
+    			if (!cups[i].correctBallCount(requiredBallsInCup)) {
+    				testPassed = false;
+    				cups[i].gradeCup(false);
+    			}
+    			else {
+    				cups[i].gradeCup(true);
+    			}
+    		}
+    	}
+		Alert a = new Alert(AlertType.NONE);
+		String message = "";
+    	if (!testPassed) {
+    		message = "You didn't find the right solution. Please try again.";
+    	} else {
+    		message = "Congratulations you solved the puzzle.";
+    	}
+		txtErrorMsg.setText(message);
+		display();
+		a.setAlertType(AlertType.ERROR);
+		a.setHeaderText("You code has finished running");
+		a.setContentText(message);
+		a.initModality(Modality.APPLICATION_MODAL); 
+		a.showAndWait();
+		return testPassed;
+    }
+    
+    private void resetPuzzle(boolean passed) {
+    	exec.stopExec();
+		exec = null;
+		if (passed) {
+			// reset problem to the next available problem
+		}
+		loadProblem();
+		
+		if (passed) {
+			display();
+		}
+        lstListing.getSelectionModel().clearSelection();
+		lstListing.refresh();
+        showRunTimeButtons(fullListing.size() > 0);
     }
 }

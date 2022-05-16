@@ -37,7 +37,19 @@ public class Execute {
 		return false;
 	}
 	
+	public void stopExec() {
+		term.showRunning(false);
+	}
+	
 	public String getErrorMsg() {
 		return term.errorMsg();
+	}
+	
+	public boolean inError() { 
+		return term.errorMsg() != null;
+	}
+	
+	public boolean finished() {
+		return (currentLine == instructions.size() || term.errorMsg() != null);
 	}
 }
