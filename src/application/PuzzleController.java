@@ -189,7 +189,7 @@ public class PuzzleController {
     }
     
     @FXML private void execUndo() {
-    	
+    	// TODO Not yet implemented
     }
     
     @FXML private void exec() {
@@ -368,20 +368,21 @@ public class PuzzleController {
     private void resetPuzzle(boolean passed) {
     	exec.stopExec();
 		exec = null;
+		String oldProblem = problem;
 		if (passed) {
 			problem = (String)problemJSONObject.get("NextProblem");
 			fullListing.clear();
 		}
 		if (problem == null) {
+			problem = oldProblem;
 			String message = "You have completed all the problems";
 			Alert a = new Alert(AlertType.INFORMATION);
 			a.setHeaderText("Congratulations");
 			a.setContentText(message);
 			a.initModality(Modality.APPLICATION_MODAL); 
 			a.showAndWait();
-		} else {
-			loadProblem();
 		}
+		loadProblem();
 		
 		if (passed) {
 			display();

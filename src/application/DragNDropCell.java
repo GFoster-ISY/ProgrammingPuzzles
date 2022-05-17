@@ -63,6 +63,7 @@ public class DragNDropCell extends ListCell<CommandTerm> {
 				items.remove(draggedId);
 				items.add(thisId, draggedObject);
 				
+				getListView().getSelectionModel().clearSelection();
 			}
 			event.setDropCompleted(success);
 			event.consume();
