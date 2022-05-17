@@ -1,5 +1,6 @@
 package application;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -170,11 +171,27 @@ public class PuzzleController {
     	}
     }
     @FXML private void execByAuto() {
-    	
+    	Thread t = new Thread(() -> {
+	    	while (exec == null || !exec.finished()) {
+	        	runOneLineOfCode();
+	        	manageButtons(!exec.finished());
+	        	Platform.runLater(() -> display());
+	    		try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+	    		
+	    	}
+	    	Platform.runLater(() -> codeCompleted());
+    	});
+    	t.start();
     }
+    
     @FXML private void execUndo() {
     	
     }
+    
     @FXML private void exec() {
     	while (exec == null || !exec.finished()) {
     		runOneLineOfCode();
@@ -422,4 +439,5 @@ public class PuzzleController {
             e.printStackTrace();
         }
     }
+    
 }

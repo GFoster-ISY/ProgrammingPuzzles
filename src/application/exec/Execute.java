@@ -42,6 +42,7 @@ public class Execute {
 		term.showRunning(false);
 	}
 	
+	public CommandTerm getTerm() {return term;}
 	public String getErrorMsg() {
 		return term.errorMsg();
 	}
