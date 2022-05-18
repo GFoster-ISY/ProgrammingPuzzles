@@ -7,13 +7,13 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 
-public class DragNDropCell extends ListCell<CommandTerm> {
+public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 
 	private static final String DEFAULT_BACKGROUND = "derive(-fx-base,80%)";
     private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
     private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
     
-	public DragNDropCell () {
+	public DragNDropCommandTermCell () {
 		ListCell<CommandTerm> thisCell = this;
 		
 		setOnDragDetected (event -> {

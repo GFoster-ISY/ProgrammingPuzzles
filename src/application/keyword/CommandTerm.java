@@ -60,9 +60,11 @@ public abstract class CommandTerm {
 		}
 	}
 	
-	public void showRunning(boolean state) {runningState = state;}
+	public void setRunningState(boolean state) {runningState = state;}
 	public boolean isRunning() {return runningState;}
 	public boolean isInError() {return errorMessage != null;}
+	public CommandTerm nextCommand() {return null;}
+	public void reset() {runningState = false;}
 	
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();

@@ -23,15 +23,20 @@ public class Execute {
 
 	public boolean step() {
 		if (term != null) {
-			term.showRunning(false);
+			term.setRunningState(false);
 		}
 		if (currentLine < instructions.size()) {
 			term = instructions.get(currentLine);
 			term.clearError();
 			if (term.exec()) {
-				currentLine++;
+				CommandTerm nc = term.nextCommand(); 
+				if (nc == null) {
+					currentLine++;
+				} else {
+					currentLine = instructions.indexOf(nc);
+				}
 				completed.push(term);
-				term.showRunning(true);
+				term.setRunningState(true);
 				return true;
 			}
 		}
@@ -39,7 +44,7 @@ public class Execute {
 	}
 	
 	public void stopExec() {
-		term.showRunning(false);
+		term.setRunningState(false);
 	}
 	
 	public CommandTerm getTerm() {return term;}

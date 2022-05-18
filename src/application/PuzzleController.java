@@ -74,7 +74,7 @@ public class PuzzleController {
     @FXML void initialize() {
     	fullListing = FXCollections.observableArrayList();
     	lstListing.setItems(fullListing);
-    	lstListing.setCellFactory(param -> new DragNDropCell());
+    	lstListing.setCellFactory(param -> new DragNDropCommandTermCell());
     	
     	problem = getCurrentProblem();
     	loadProblem();
@@ -89,6 +89,7 @@ public class PuzzleController {
     @FXML private void selectKeyTerm(MouseEvent event) {
         event.consume();
         String keyTerm = lstLexicon.getSelectionModel().getSelectedItem();
+        if (keyTerm == null) return;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("keyword/KeyTerm.fxml"));
         Stage stage = getStage(loader);
@@ -375,6 +376,10 @@ public class PuzzleController {
 		if (passed) {
 			problem = (String)problemJSONObject.get("NextProblem");
 			fullListing.clear();
+		} else {
+			fullListing.forEach(term -> {
+				term.reset();
+			});
 		}
 		if (problem == null) {
 			problem = oldProblem;
