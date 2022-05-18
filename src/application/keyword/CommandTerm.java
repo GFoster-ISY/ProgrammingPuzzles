@@ -12,6 +12,9 @@ public abstract class CommandTerm {
 
 	protected String term;
 	protected ArrayList<String> args;
+	protected boolean closure;
+	protected boolean closesIndent;
+	protected int indentLevel;
 	protected NestedController controller;
 	protected String FXMLFileName;
 	protected PuzzleController puzzleController;
@@ -21,17 +24,27 @@ public abstract class CommandTerm {
 	CommandTerm(PuzzleController pc){
 		errorMessage = null;
 		puzzleController = pc;
+		closure = false;
+		closesIndent = false;
+		indentLevel = 0;
 		runningState = false;
 	}
 	
+	public boolean hasClosure() { return closure;}
+	public boolean getClosesIndent() { return closesIndent;}
+	public int getIndentLevel() {return indentLevel;}
+	public void setIndentLevel(int level) {indentLevel = level;}
+	
+	protected String indent() {return "   ".repeat(indentLevel);}
 	public String toString() {
 		if (args == null) {
 			setArgs();
 		}
 		String argList = String.join(",", args);
-		return term + "(" + argList + ")";
+		return indent() + term + "(" + argList + ")";
 	}
 	
+	public abstract CommandTerm getClosure();
 	public String errorMsg() { return errorMessage;}
 	public void clearError() { errorMessage = null;}
 	

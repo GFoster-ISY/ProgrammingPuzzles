@@ -59,6 +59,30 @@ public class DragNDropCell extends ListCell<CommandTerm> {
 				int draggedId = Integer.parseInt(dragboard.getString());
 				CommandTerm draggedObject = items.get(draggedId);
 				int thisId = items.indexOf(getItem());
+				if (thisId > draggedId) {
+					CommandTerm aboveObject = items.get(thisId);
+					if (aboveObject != null) {
+						if (aboveObject.hasClosure()) {
+							draggedObject.setIndentLevel(aboveObject.getIndentLevel()+1);
+						} else {
+							draggedObject.setIndentLevel(aboveObject.getIndentLevel());
+						}
+					} else {
+						draggedObject.setIndentLevel(0);
+					}
+				} else {
+					CommandTerm belowObject = items.get(thisId);
+					if (belowObject != null) {
+						if (belowObject.getClosesIndent()) {
+							draggedObject.setIndentLevel(belowObject.getIndentLevel()+1);
+						} else {
+							draggedObject.setIndentLevel(belowObject.getIndentLevel());
+						}
+					} else {
+						draggedObject.setIndentLevel(0);
+					}
+					
+				}
 				
 				items.remove(draggedId);
 				items.add(thisId, draggedObject);

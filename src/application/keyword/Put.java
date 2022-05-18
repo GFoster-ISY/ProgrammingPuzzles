@@ -49,4 +49,6 @@ public class Put extends CommandTerm {
 		puzzleController.getCups()[selectedCup].put(ball);
 		return true;
 	}
+
+	@Override public CommandTerm getClosure() {return null;}
 }

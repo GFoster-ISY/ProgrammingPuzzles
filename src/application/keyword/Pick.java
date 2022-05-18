@@ -40,4 +40,5 @@ public class Pick extends CommandTerm {
 		}
 	}
 
+	@Override public CommandTerm getClosure() {return null;}
 }

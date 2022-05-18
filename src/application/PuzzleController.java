@@ -107,6 +107,9 @@ public class PuzzleController {
         
         if (ktc.okayPressed() || ktc.getArgCount()==0) {
         	fullListing.add(ktc.getInstruction());
+        	if (ktc.getInstruction().hasClosure()) {
+        		fullListing.add(ktc.getInstruction().getClosure());
+        	}
         }
         showRunTimeButtons(fullListing.size() > 0);
         lstLexicon.getSelectionModel().clearSelection();

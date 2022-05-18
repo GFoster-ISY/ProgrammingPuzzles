@@ -1,7 +1,6 @@
 {"ObjectiveStatement": "Put one ball in the first pot, two balls in the second pot and three balls in the third pot",
 "PotCount": 3,
 "BallCount": 8,
-"KeyTerms":["pick()","put(n)"],
-"Solution":{"PotCount":[1,2,3]},
-"NextProblem": "Problem3"
+"KeyTerms":["pick()","put(n)","loop"],
+"Solution":{"PotCount":[1,2,3]}
 }
