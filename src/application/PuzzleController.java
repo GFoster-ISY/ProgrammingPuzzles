@@ -251,13 +251,19 @@ public class PuzzleController {
            task = (String)problemJSONObject.get("ObjectiveStatement");
            txtProblem.setText(task);
            cupCount = ((Long)problemJSONObject.get("PotCount")).intValue();
-           ballCount = ((Long)problemJSONObject.get("BallCount")).intValue();
+           if (problemJSONObject.containsKey("BallCount")) {
+        	   ballCount = ((Long)problemJSONObject.get("BallCount")).intValue();
+        	   container = new Tray(ballCount);
+           } else if (problemJSONObject.containsKey("BallColour")) {
+        	   Map<String, Long> ballColourMap = (Map)problemJSONObject.get("BallColour");
+        	   container = new Tray(ballColourMap);
+           }
            JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
            allKeyTerms = FXCollections.observableArrayList(); 
            allKeyTerms.addAll(keyTerms);
            lstLexicon.setItems(allKeyTerms);
            
-           container = new Tray(ballCount);
+           
            hand = new Hand();
            cups = new Cup[cupCount];
            Cup.gradingCups(false);
@@ -345,23 +351,28 @@ public class PuzzleController {
     			int requiredBallsInCup = ((Long)objs.get(i)).intValue();
     			if (!cups[i].correctBallCount(requiredBallsInCup)) {
     				testPassed = false;
-    				cups[i].gradeCup(false);
     			}
-    			else {
-    				cups[i].gradeCup(true);
-    			}
+    		}
+    	} else if (solution.containsKey("PotColour")){
+    		JSONArray objs = (JSONArray) solution.get("PotColour");
+    		for(int i = 0; i<cupCount; i++) {
+    			 Map<String, Long> ballColourMap = (Map)objs.get(i);
+    			 if (!cups[i].correctBallCount(ballColourMap)) {
+    				 testPassed = false;
+    			 }
     		}
     	}
 		Alert a = new Alert(AlertType.NONE);
 		String message = "";
     	if (!testPassed) {
+    		a.setAlertType(AlertType.ERROR);
     		message = "You didn't find the right solution. Please try again.";
     	} else {
+    		a.setAlertType(AlertType.INFORMATION);
     		message = "Congratulations you solved the puzzle.";
     	}
 		txtErrorMsg.setText(message);
 		display();
-		a.setAlertType(AlertType.ERROR);
 		a.setHeaderText("You code has finished running");
 		a.setContentText(message);
 		a.initModality(Modality.APPLICATION_MODAL); 

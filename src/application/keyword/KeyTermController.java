@@ -51,6 +51,8 @@ public class KeyTermController {
     		keyword = new Put(pc);
     	} else if(term.equals("pick()")){
     		keyword = new Pick(pc);
+    	} else if(term.equals("pick(colour)")){
+    		keyword = new PickColour(pc);
     	} else if(term.equals("loop")){
     		keyword = new Loop(pc);
     	} else {

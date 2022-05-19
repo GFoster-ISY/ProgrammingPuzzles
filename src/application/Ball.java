@@ -14,6 +14,9 @@ public class Ball {
 		colour = c;
 	}
 
+	public Colour getColour() {
+		return colour;
+	}
 	public void display(GraphicsContext gc, int x, int y, int scale) {
 		int diameter = scale/2-2;
 		gc.setFill(Color.valueOf(colour.getCode()));

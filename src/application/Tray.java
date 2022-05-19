@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Map;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -9,6 +11,9 @@ public class Tray extends Container {
 		super(ballCount);
 	}
 
+	public Tray(Map<String, Long> ballColour) {
+		super(ballColour);
+	}
 	@Override
 	void display(GraphicsContext gc, double width, double height) {
 		gc.clearRect(0, 0, width, height);

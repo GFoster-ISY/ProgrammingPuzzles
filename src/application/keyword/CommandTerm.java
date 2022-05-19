@@ -44,7 +44,7 @@ public abstract class CommandTerm {
 		return indent() + term + "(" + argList + ")";
 	}
 	
-	public abstract CommandTerm getClosure();
+	public CommandTerm getClosure() {return null;}
 	public String errorMsg() { return errorMessage;}
 	public void clearError() { errorMessage = null;}
 	

@@ -25,12 +25,15 @@ public class Pick extends CommandTerm {
 		args = new ArrayList<>();
 	}
 
+	protected Ball getBall() {
+		return puzzleController.getContainer().getBall();
+	}
 	@Override public boolean exec() {
 		if (!puzzleController.getHand().isEmpty()) {
 			errorMessage = "The hand is already holding a ball";
 			return false;
 		}
-		Ball ball = puzzleController.getContainer().getBall();
+		Ball ball = getBall();
 		if (ball != null) {
 			puzzleController.getHand().put(ball);
 			return true;
@@ -40,5 +43,4 @@ public class Pick extends CommandTerm {
 		}
 	}
 
-	@Override public CommandTerm getClosure() {return null;}
 }

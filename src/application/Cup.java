@@ -3,6 +3,7 @@ package application;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -38,7 +39,31 @@ public class Cup {
 		ballCount++;
 	}
 	
-	public boolean correctBallCount (int expected) {return expected == ballCount;}
+	public boolean correctBallCount (int expected) {
+		cupCorrect = (expected == ballCount);
+		return cupCorrect;
+	}
+	public boolean correctBallCount (Map<String, Long> required) {
+		
+		for (String key: required.keySet()) {
+			Colour currectColour = new Colour(key);
+			int expected = required.get(key).intValue();
+			var wrapper = new Object() {int ballColourCount = 0; };
+			
+			// Loop through each ball in the cup looking for those of the current colour
+			contents.forEach(ball -> {
+				if (ball.getColour().equals(currectColour)) {
+					wrapper.ballColourCount++;
+				}
+			});
+			if (wrapper.ballColourCount != expected) {
+				cupCorrect = false;
+				return cupCorrect;
+			}
+		}
+		cupCorrect = true;
+		return cupCorrect;
+	}
 	public static void gradingCups (boolean grading) {Cup.grading = grading;}
 	public void gradeCup(boolean good) {cupCorrect = good;}
 	

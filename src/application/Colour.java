@@ -26,6 +26,10 @@ public class Colour {
 		code = colourCode.get(colourName);
 	}
 	
+	public boolean equals(Colour c) {
+		return (name.equals(c.name));
+	}
+	
 	public Colour(ColourName colourName){
 		setColour(colourName);
 	}
@@ -47,5 +51,34 @@ public class Colour {
 				break;
 		}
 	}
+	public Colour(String name) {
+		switch (name) {
+		case "Red":
+			setColour(ColourName.RED);
+			break;
+		case "Green":
+			setColour(ColourName.GREEN);
+			break;
+		case "Blue":
+			setColour(ColourName.BLUE);
+			break;
+		case "Yellow":
+			setColour(ColourName.YELLOW);
+			break;
+		default:
+			setColour(ColourName.BLUE);
+		}
+	}
 	String getCode() {return code;}
+	public static boolean validColourName(String name) {
+		switch (name) {
+		case "Red":
+		case "Green":
+		case "Blue":
+		case "Yellow":
+			return true;
+		default:
+			return false;
+		}
+	}
 }

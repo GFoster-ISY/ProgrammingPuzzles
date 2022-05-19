@@ -50,5 +50,4 @@ public class Put extends CommandTerm {
 		return true;
 	}
 
-	@Override public CommandTerm getClosure() {return null;}
 }
