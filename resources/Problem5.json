@@ -2,5 +2,6 @@
 "PotCount": 3,
 "BallColour":{"Red":5,"Blue":4,"Green":3},
 "KeyTerms":["pick(colour)","put(n)","loop"],
-"Solution":{"PotColour":[{"Red":5},{"Blue":4},{"Green":3}]}
+"Solution":{"PotColour":[{"Red":5},{"Blue":4},{"Green":3}]},
+"NextProblem": "Problem6"
 }

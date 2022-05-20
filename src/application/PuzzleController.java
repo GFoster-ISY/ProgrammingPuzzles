@@ -137,6 +137,9 @@ public class PuzzleController {
         if (ktc.okayPressed()) { 
         	instruction.setArgs();
         } else if (ktc.deleteInstruction()) {
+        	if (instruction.hasClosure() || instruction.getClosesIndent()) {
+        		fullListing.remove(instruction.getRelatedTerm());
+        	}
         	fullListing.remove(instruction);
         }
 

@@ -19,6 +19,8 @@ public class EndLoop extends CommandTerm {
 	
 	@Override public CommandTerm getClosure() {return null;}
 
+	public CommandTerm getRelatedTerm() {return openLoop;}
+	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedZeroArgsController)load.getController();
 	}

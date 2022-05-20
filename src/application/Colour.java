@@ -52,17 +52,18 @@ public class Colour {
 		}
 	}
 	public Colour(String name) {
+		name = name.toUpperCase();
 		switch (name) {
-		case "Red":
+		case "RED":
 			setColour(ColourName.RED);
 			break;
-		case "Green":
+		case "GREEN":
 			setColour(ColourName.GREEN);
 			break;
-		case "Blue":
+		case "BLUE":
 			setColour(ColourName.BLUE);
 			break;
-		case "Yellow":
+		case "YELLOW":
 			setColour(ColourName.YELLOW);
 			break;
 		default:
@@ -70,12 +71,14 @@ public class Colour {
 		}
 	}
 	String getCode() {return code;}
+	
 	public static boolean validColourName(String name) {
+		name = name.toUpperCase();
 		switch (name) {
-		case "Red":
-		case "Green":
-		case "Blue":
-		case "Yellow":
+		case "RED":
+		case "GREEN":
+		case "BLUE":
+		case "YELLOW":
 			return true;
 		default:
 			return false;

@@ -12,7 +12,7 @@ public abstract class CommandTerm {
 
 	protected String term;
 	protected ArrayList<String> args;
-	protected boolean closure;
+	protected boolean needsClosure;
 	protected boolean closesIndent;
 	protected int indentLevel;
 	protected NestedController controller;
@@ -24,14 +24,15 @@ public abstract class CommandTerm {
 	CommandTerm(PuzzleController pc){
 		errorMessage = null;
 		puzzleController = pc;
-		closure = false;
+		needsClosure = false;
 		closesIndent = false;
 		indentLevel = 0;
 		runningState = false;
 	}
 	
-	public boolean hasClosure() { return closure;}
+	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
+	public CommandTerm getRelatedTerm() {return null;}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
 	

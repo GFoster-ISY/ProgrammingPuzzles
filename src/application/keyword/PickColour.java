@@ -20,7 +20,13 @@ public class PickColour extends Pick {
 		controller = (NestedOneArgController)load.getController();
 	}
 	
-	@Override protected void populateFXML () {}
+	@Override protected void populateFXML () {
+		controller.setName("Ball Colour");
+		controller.setArgValue(args);
+		ArrayList<Boolean> req = new ArrayList<>();
+		req.add(true);
+		controller.setArgRequired(req);
+	}
 
 	@Override public void setArgs() {
 		args = new ArrayList<>();
