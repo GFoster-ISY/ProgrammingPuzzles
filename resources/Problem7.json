@@ -2,7 +2,7 @@
 "PotCount": 4,
 "Container":"Bag",
 "BallColour":{"Red":6,"Blue":3,"Green":3,"Yellow":4},
-"KeyTerms":["pick()","put(n)","loop","if","look()"],
+"KeyTerms":["pick()","put(n)","loop","if"],
 "Solution":{"PotColour":[{"Red":6},{"Blue":3},{"Green":3},{"Yellow":4}]},
 "NextProblem": "Problem8"
 }

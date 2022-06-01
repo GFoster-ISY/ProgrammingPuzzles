@@ -4,16 +4,18 @@ import application.PuzzleController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class KeyTermController {
-
+	
     @FXML private Label lblCommand;
+    @FXML private GridPane gridPane;
     @FXML private Pane fxmlEmbed;
     @FXML private Button btnDefault;
     @FXML private Button btnDelete;
-    
+        
     NestedController nc;
     CommandTerm keyword;
     protected boolean okay = false;
@@ -46,7 +48,7 @@ public class KeyTermController {
     	Stage stage = (Stage) fxmlEmbed.getScene().getWindow();
         stage.close();    	
     }
-    public void setKeyTerm(String term, PuzzleController pc) {
+    public void setKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
     	if (term.equals("put(n)")){
     		keyword = new Put(pc);
     	} else if(term.equals("pick()")){
@@ -55,18 +57,20 @@ public class KeyTermController {
     		keyword = new PickColour(pc);
     	} else if(term.equals("loop")){
     		keyword = new Loop(pc);
+    	} else if(term.equals("if")){
+    		keyword = new If(pc);
     	} else {
-    		keyword = null;
-    		nc = null;
-    		return;
+    		throw new UnknownKeywordException (term);
     	}// end if on keyword
     	lblCommand.setText(keyword.term);
     	keyword.display(fxmlEmbed, this);
+    	fxmlEmbed.setMinHeight(getArgCount()*30);
+    	gridPane.setMinHeight(getArgCount()*30+60);
     	enableDefaultButton();
     }
     
     public void enableDefaultButton() {
-    	btnDefault.setDisable(!nc.complete());
+    	btnDefault.setDisable(nc==null || !nc.complete());
     }
     
     public void setKeyTerm(CommandTerm term) {

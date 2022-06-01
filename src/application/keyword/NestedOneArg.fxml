@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -16,7 +17,10 @@
       <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <Label fx:id="arg0Name" text="Argument" />
-      <TextField fx:id="arg0Value" promptText="Value" onTextChange="#onChange" GridPane.columnIndex="1" />
+      <Label fx:id="arg0Name" text="Argument">
+         <padding>
+            <Insets left="2.0" />
+         </padding></Label>
+      <TextField fx:id="arg0Value" onTextChange="#onChange" promptText="Value" GridPane.columnIndex="1" />
    </children>
 </GridPane>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane prefHeight="90.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.keyword.NestedIfController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <Label fx:id="arg0Name" text="Variable">
+         <padding>
+            <Insets left="2.0" />
+         </padding></Label>
+      <Label fx:id="arg1Name" text="Condition" GridPane.rowIndex="1">
+         <padding>
+            <Insets left="2.0" />
+         </padding>
+      </Label>
+      <Label fx:id="arg2Name" text="Value" GridPane.rowIndex="2">
+         <padding>
+            <Insets left="2.0" />
+         </padding>
+      </Label>
+      <ChoiceBox fx:id="arg0Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" />
+      <ChoiceBox fx:id="arg1Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ChoiceBox fx:id="arg2Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+   </children>
+</GridPane>

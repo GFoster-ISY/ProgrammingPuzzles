@@ -44,5 +44,11 @@ public class Hand {
 		this.ball = null;
 		return ball;
 	}
-	
+
+	public Colour getBallColour() {
+		if (this.ball == null)
+			return null;
+		return this.ball.getColour();
+	}
+
 } // end of class Hand

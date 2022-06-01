@@ -32,6 +32,7 @@ import org.json.simple.parser.*;
 import application.exec.Execute;
 import application.keyword.CommandTerm;
 import application.keyword.KeyTermController;
+import application.keyword.UnknownKeywordException;
 
 public class PuzzleController {
 
@@ -98,19 +99,22 @@ public class PuzzleController {
         // Get the dialog controller so that a public method can be run to send data to the dialog
         KeyTermController ktc = loader.<KeyTermController>getController();
 
-        ktc.setKeyTerm(keyTerm, this);
+        try {
+        	ktc.setKeyTerm(keyTerm, this);
+        } catch (UnknownKeywordException ex) {
+        	System.err.println("UnknownKeywordException: " + ex.getMessage());
+        	ex.printStackTrace();
+        	return;
+        }
         // Only display the dialog box if we have some arguments to fill.
         if (ktc.getArgCount()>0) {
             // Show the dialog (and wait for the user to close it)
-            stage.initModality(Modality.APPLICATION_MODAL); 
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         }
         
         if (ktc.okayPressed() || ktc.getArgCount()==0) {
-        	fullListing.add(ktc.getInstruction());
-        	if (ktc.getInstruction().hasClosure()) {
-        		fullListing.add(ktc.getInstruction().getClosure());
-        	}
+        	addInstruction(ktc.getInstruction());
         }
         showRunTimeButtons(fullListing.size() > 0);
         lstLexicon.getSelectionModel().clearSelection();
@@ -137,10 +141,7 @@ public class PuzzleController {
         if (ktc.okayPressed()) { 
         	instruction.setArgs();
         } else if (ktc.deleteInstruction()) {
-        	if (instruction.hasClosure() || instruction.getClosesIndent()) {
-        		fullListing.remove(instruction.getRelatedTerm());
-        	}
-        	fullListing.remove(instruction);
+        	removeInstruction(instruction);
         }
 
     	lstListing.refresh();
@@ -148,6 +149,22 @@ public class PuzzleController {
         lstListing.getSelectionModel().clearSelection();
     }
     
+    private void addInstruction(CommandTerm instruction) {
+    	fullListing.add(instruction);
+    	if (instruction.hasClosure()) {
+    		addInstruction(instruction.getClosure());
+    	}
+    }
+    
+    private void removeInstruction(CommandTerm instruction) {
+    	fullListing.add(instruction);
+    	if (instruction.hasClosure() || instruction.getClosesIndent()) {
+    		removeInstruction(instruction.getRelatedTerm());
+    	}
+    	fullListing.remove(instruction);
+    }
+    
+
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
