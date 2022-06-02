@@ -32,7 +32,8 @@ public abstract class CommandTerm {
 	
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
-	public CommandTerm getRelatedTerm() {return null;}
+	public CommandTerm getParentTerm() {return null;}
+	public CommandTerm getChildTerm() {return null;}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
 	
@@ -65,7 +66,10 @@ public abstract class CommandTerm {
 	public boolean isRunning() {return runningState;}
 	public boolean isInError() {return errorMessage != null;}
 	public CommandTerm nextCommand() {return null;}
-	public void reset() {runningState = false;}
+	public void reset() {
+		clearError();
+		runningState = false;
+	}
 	
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();

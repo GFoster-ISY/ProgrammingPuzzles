@@ -20,7 +20,8 @@ public class Else extends CommandTerm {
 		endIf = new EndIf(puzzleController, this);
 	}
 
-	public CommandTerm getRelatedTerm() {return endIf;}
+	public CommandTerm getParentTerm() {return ifCondition;}
+	public CommandTerm getChildTerm() {return endIf;}
 	@Override public CommandTerm getClosure() {return endIf;}
 	
 	@Override

@@ -20,7 +20,7 @@ public class Loop extends CommandTerm {
 	}
 
 	public int getLoopCounter() {return loopCounter;}
-	public CommandTerm getRelatedTerm() {return endLoop;}
+	public CommandTerm getChildTerm() {return endLoop;}
 	@Override public CommandTerm getClosure() {return endLoop;}
 	public void incrementLoopCounter() {loopCounter++;}
 	

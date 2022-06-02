@@ -25,7 +25,7 @@ public class If extends CommandTerm {
 	}
 	
 
-	public CommandTerm getRelatedTerm() {return theElse;}
+	public CommandTerm getChildTerm() {return theElse;}
 	@Override public CommandTerm getClosure() {return theElse;}
 	
 	@Override

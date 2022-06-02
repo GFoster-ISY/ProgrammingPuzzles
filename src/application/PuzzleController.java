@@ -77,7 +77,7 @@ public class PuzzleController {
     @FXML void initialize() {
     	fullListing = FXCollections.observableArrayList();
     	lstListing.setItems(fullListing);
-    	lstListing.setCellFactory(param -> new DragNDropCommandTermCell());
+    	lstListing.setCellFactory(param -> new DragNDropCommandTermCell(this));
     	
     	problem = getCurrentProblem();
     	loadProblem();
@@ -156,17 +156,37 @@ public class PuzzleController {
     	if (instruction.hasClosure()) {
     		addInstruction(instruction.getClosure());
     	}
+    	indentCode();
     }
     
     private void removeInstruction(CommandTerm instruction) {
-    	fullListing.add(instruction);
-    	if (instruction.hasClosure() || instruction.getClosesIndent()) {
-    		removeInstruction(instruction.getRelatedTerm());
+    	// Move to the start of any closure group and then delete each term
+    	if(instruction.getClosesIndent() && fullListing.contains(instruction.getParentTerm())) {
+    		removeInstruction(instruction.getParentTerm());
     	}
-    	fullListing.remove(instruction);
+    	if (fullListing.contains(instruction)) {
+    		fullListing.remove(instruction);
+        	if (instruction.hasClosure()) {
+        		removeInstruction(instruction.getChildTerm());
+        	}
+    	}
+    	indentCode();
     }
     
-
+    public void indentCode() {
+    	CommandTerm prev = fullListing.get(0);
+    	int indentLevel = 0;
+		prev.setIndentLevel(indentLevel);
+    	for ( int i = 1; i < fullListing.size(); i++){
+    		CommandTerm line = fullListing.get(i);
+    		if (prev.hasClosure())   {indentLevel++;}
+    		if (line.getClosesIndent()) {indentLevel--;}
+    		line.setIndentLevel(indentLevel);
+    		prev = line;
+    	};
+    	lstListing.refresh();
+    }
+    
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();

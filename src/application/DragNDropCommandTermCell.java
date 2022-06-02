@@ -12,8 +12,10 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 	private static final String DEFAULT_BACKGROUND = "derive(-fx-base,80%)";
     private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
     private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
+    private PuzzleController controller;;
     
-	public DragNDropCommandTermCell () {
+	public DragNDropCommandTermCell (PuzzleController pc) {
+		controller = pc;
 		ListCell<CommandTerm> thisCell = this;
 		
 		setOnDragDetected (event -> {
@@ -59,34 +61,11 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 				int draggedId = Integer.parseInt(dragboard.getString());
 				CommandTerm draggedObject = items.get(draggedId);
 				int thisId = items.indexOf(getItem());
-				if (thisId > draggedId) {
-					CommandTerm aboveObject = items.get(thisId);
-					if (aboveObject != null) {
-						if (aboveObject.hasClosure()) {
-							draggedObject.setIndentLevel(aboveObject.getIndentLevel()+1);
-						} else {
-							draggedObject.setIndentLevel(aboveObject.getIndentLevel());
-						}
-					} else {
-						draggedObject.setIndentLevel(0);
-					}
-				} else {
-					CommandTerm belowObject = items.get(thisId);
-					if (belowObject != null) {
-						if (belowObject.getClosesIndent()) {
-							draggedObject.setIndentLevel(belowObject.getIndentLevel()+1);
-						} else {
-							draggedObject.setIndentLevel(belowObject.getIndentLevel());
-						}
-					} else {
-						draggedObject.setIndentLevel(0);
-					}
-					
-				}
 				
 				items.remove(draggedId);
 				items.add(thisId, draggedObject);
-				
+
+				pc.indentCode();
 				getListView().getSelectionModel().clearSelection();
 			}
 			event.setDropCompleted(success);
