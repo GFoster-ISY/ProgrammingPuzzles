@@ -67,6 +67,8 @@ public class PuzzleController {
     private JSONObject problemJSONObject;
     private Map solution;
     private Execute exec;
+    Thread execThread;
+    private boolean execThreadRunning = false;
     
     public Container getContainer() {return container;}
     public Cup[] getCups() { return cups;}
@@ -175,6 +177,7 @@ public class PuzzleController {
     }
     
     private void codeCompleted() {
+    	execThreadRunning = false;
     	boolean passed = false;
 		if (exec.inError()) {
 			displayError();
@@ -195,7 +198,12 @@ public class PuzzleController {
     	}
     }
     @FXML private void execByAuto() {
-    	Thread t = new Thread(() -> {
+    	if (execThreadRunning) {
+    		exec();
+    		return;
+    	}
+    	execThread = new Thread(() -> {
+    		execThreadRunning = true;
 	    	while (exec == null || !exec.finished()) {
 	        	runOneLineOfCode();
 	        	manageButtons(!exec.finished());
@@ -203,13 +211,14 @@ public class PuzzleController {
 	    		try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					return;
+					//e.printStackTrace();
 				}
 	    		
 	    	}
 	    	Platform.runLater(() -> codeCompleted());
     	});
-    	t.start();
+    	execThread.start();
     }
     
     @FXML private void execUndo() {
@@ -217,6 +226,9 @@ public class PuzzleController {
     }
     
     @FXML private void exec() {
+    	if (execThreadRunning) {
+    		execThread.interrupt();
+    	}
     	while (exec == null || !exec.finished()) {
     		runOneLineOfCode();
     	}
@@ -356,7 +368,7 @@ public class PuzzleController {
 		String message = exec.getErrorMsg();
 		txtErrorMsg.setText(message);
 		a.setAlertType(AlertType.ERROR);
-		a.setHeaderText("You code needs fixing");
+		a.setHeaderText("Your code needs fixing");
 		a.setContentText(message);
 		a.initModality(Modality.APPLICATION_MODAL); 
 		a.showAndWait();	
@@ -428,6 +440,7 @@ public class PuzzleController {
 		}
         lstListing.getSelectionModel().clearSelection();
 		lstListing.refresh();
+        manageButtons(false);
         showRunTimeButtons(fullListing.size() > 0);
     }
     

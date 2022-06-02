@@ -32,8 +32,8 @@
             <Insets left="2.0" />
          </padding>
       </Label>
+      <ChoiceBox fx:id="arg2Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <ChoiceBox fx:id="arg0Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" />
       <ChoiceBox fx:id="arg1Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <ChoiceBox fx:id="arg2Value" onAction="#onChange" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
    </children>
 </GridPane>
