@@ -43,18 +43,10 @@ public class If extends CommandTerm {
 		controller.setArgRequired(req);
 	}
 
-	@Override
-	public void setArgs() {
-		args = new ArrayList<>();
-		args.add(controller.getArgValue(0));
-		args.add(controller.getArgValue(1));
-		args.add(controller.getArgValue(2));
-	}
+
+	public int argCount() {return 3;}
 
 	@Override public String toString() {
-		if (args == null) {
-			setArgs();
-		}
 		return  indent() + "if " + args.get(0) + " " + args.get(1) + " " + args.get(2) + " then";
 	}
 	

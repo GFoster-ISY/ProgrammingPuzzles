@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
-public class EndLoop extends CommandTerm {
+public class EndLoopUntil extends CommandTerm {
 
-	protected Loop openLoop;
+	protected LoopUntil openLoop;
 	
-	public EndLoop(PuzzleController pc, CommandTerm loop) {
+	public EndLoopUntil(PuzzleController pc, CommandTerm loop) {
 		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		term = "endloop";
+		term = "endloopuntil";
 		closesIndent = true;
-		openLoop = (Loop)loop;
+		openLoop = (LoopUntil)loop;
 	}
 	
 	@Override public CommandTerm getClosure() {return null;}
@@ -28,17 +28,14 @@ public class EndLoop extends CommandTerm {
 	@Override protected void populateFXML() { }
 
 	@Override public String toString() {
-		return  indent() + "end loop";
+		return  indent() + "until counter equals " + openLoop.args.get(0) ;
 	}
 	@Override public boolean exec() {
-		openLoop.incrementLoopCounter();
 		return true;
 	}
 
 	@Override public CommandTerm nextCommand() {
-		int limit = Integer.parseInt(openLoop.args.get(0));
-		int count = openLoop.getLoopCounter();
-		if (count <= limit) {
+		if (!openLoop.hasLoopFinished()) {
 			return openLoop;
 		}
 		return null;

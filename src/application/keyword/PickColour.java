@@ -28,10 +28,8 @@ public class PickColour extends Pick {
 		controller.setArgRequired(req);
 	}
 
-	@Override public void setArgs() {
-		args = new ArrayList<>();
-		args.add(controller.getArgValue(0));
-	}
+
+	public int argCount() {return 1;}
 
 	@Override protected Ball getBall() {
 		String colourName = args.get(0);

@@ -37,13 +37,7 @@ public class NestedIfController extends NestedController {
     }
     
 	@Override
-	public int argCount() {return 3;}
-
-	@Override
-	public void setName(String name) {
-		// TODO Auto-generated method stub
-
-	}
+	public void setName(String name, int count) {}
 
 	@Override
 	public void setArgValue(ArrayList<String> args) {

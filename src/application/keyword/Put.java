@@ -26,10 +26,8 @@ public class Put extends CommandTerm {
 		controller = (NestedOneArgController)load.getController();
 	}
 	
-	@Override public void setArgs() {
-		args = new ArrayList<>();
-		args.add(controller.getArgValue(0));
-	}
+
+	public int argCount() {return 1;}
 	
 	@Override public boolean exec() {
 		if (puzzleController.getHand().isEmpty()) {

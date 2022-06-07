@@ -5,20 +5,28 @@ import java.util.ArrayList;
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
-public class Loop extends CommandTerm {
+public class LoopUntil extends CommandTerm {
 
 	protected CommandTerm endLoop;
+	protected Variable counter;
 
 	int loopCounter = 1;
 	
-	public Loop(PuzzleController pc) {
+	public LoopUntil(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
-		term = "loop";
+		term = "loop until";
 		needsClosure = true;
-		endLoop = new EndLoop(puzzleController, this);
+		counter = new Variable(puzzleController, "counter", 0);
+		puzzleController.addVariable(counter);
+		endLoop = new EndLoopUntil(puzzleController, this);
 	}
 
+	public boolean hasLoopFinished() {
+		int limit = Integer.parseInt(args.get(0));
+		return (loopCounter > limit);
+	}
+	
 	public int getLoopCounter() {return loopCounter;}
 	public CommandTerm getChildTerm() {return endLoop;}
 	@Override public CommandTerm getClosure() {return endLoop;}
@@ -29,7 +37,7 @@ public class Loop extends CommandTerm {
 	}
 
 	@Override protected void populateFXML() {
-		controller.setName("Times");
+		controller.setName("Counter");
 		controller.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
@@ -38,9 +46,9 @@ public class Loop extends CommandTerm {
 
 
 	public int argCount() {return 1;}
-
+	
 	@Override public String toString() {
-		return  indent() + "loop from 1 to " + args.get(0);
+		return  indent() + "loop";
 	}
 	
 	@Override public void reset() {

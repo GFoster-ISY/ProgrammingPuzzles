@@ -57,30 +57,38 @@ public class KeyTermController {
     		keyword = new PickColour(pc);
     	} else if(term.equals("loop")){
     		keyword = new Loop(pc);
+    	} else if(term.equals("loop until")){
+    		keyword = new LoopUntil(pc);
     	} else if(term.equals("if")){
     		keyword = new If(pc);
+    	} else if(term.equals("replace()")){
+    		keyword = new Replace(pc);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
-    	lblCommand.setText(keyword.term);
-    	keyword.display(fxmlEmbed, this);
-    	fxmlEmbed.setMinHeight(getArgCount()*30);
-    	gridPane.setMinHeight(getArgCount()*30+60);
-    	enableDefaultButton();
-    }
-    
-    public void enableDefaultButton() {
-    	btnDefault.setDisable(nc==null || !nc.complete());
+    	displayNestedFXML();
     }
     
     public void setKeyTerm(CommandTerm term) {
     	keyword = term;
     	btnDefault.setText("Edit");
-    	lblCommand.setText(keyword.term);
-    	keyword.display(fxmlEmbed, this);
+    	displayNestedFXML();
     }
     
-    public int getArgCount() {return nc.argCount();}
+    public int argCount() {return keyword.argCount();}
+    protected void displayNestedFXML() {
+    	lblCommand.setText(keyword.term);
+    	keyword.display(fxmlEmbed, this);
+    	fxmlEmbed.setMinHeight(getArgCount()*30);
+    	gridPane.setMinHeight(getArgCount()*30+60);
+    	enableDefaultButton();    	
+    }
+
+    public void enableDefaultButton() {
+    	btnDefault.setDisable(nc==null || !nc.complete());
+    }
+    
+    public int getArgCount() {return keyword.argCount();}
     public String getArgValue(int posn) {
     	return nc.getArgValue(posn);
     }

@@ -11,7 +11,7 @@ public class NestedZeroArgsController extends NestedController{
     @FXML private Label arg0Name;
     @FXML private TextField arg0Value;
     
-    public void setName(String name) {
+    public void setName(String name, int count) {
     	arg0Name.setText(name);
     }
     public String getArgValue(int posn) {
@@ -21,5 +21,4 @@ public class NestedZeroArgsController extends NestedController{
 	@Override public void setArgRequired(ArrayList<Boolean> required) {}
 	@Override public boolean complete() {return true;}
 	@Override void onChange() {}
-	@Override public int argCount() {return 0;}
 }

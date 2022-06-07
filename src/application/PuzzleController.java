@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.*;
@@ -33,6 +34,7 @@ import application.exec.Execute;
 import application.keyword.CommandTerm;
 import application.keyword.KeyTermController;
 import application.keyword.UnknownKeywordException;
+import application.keyword.Variable;
 
 public class PuzzleController {
 
@@ -63,6 +65,7 @@ public class PuzzleController {
     private int ballCount;
     private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
+    private Map<String, Variable> variableList;
     private JSONObject generalJSONObject;
     private JSONObject problemJSONObject;
     private Map solution;
@@ -76,6 +79,7 @@ public class PuzzleController {
     
     @FXML void initialize() {
     	fullListing = FXCollections.observableArrayList();
+    	variableList = new HashMap<>();
     	lstListing.setItems(fullListing);
     	lstListing.setCellFactory(param -> new DragNDropCommandTermCell(this));
     	
@@ -116,6 +120,7 @@ public class PuzzleController {
         }
         
         if (ktc.okayPressed() || ktc.getArgCount()==0) {
+        	ktc.getInstruction().updateArgs();
         	addInstruction(ktc.getInstruction());
         }
         showRunTimeButtons(fullListing.size() > 0);
@@ -141,7 +146,7 @@ public class PuzzleController {
         stage.initModality(Modality.APPLICATION_MODAL); 
         stage.showAndWait();
         if (ktc.okayPressed()) { 
-        	instruction.setArgs();
+        	instruction.updateArgs();
         } else if (ktc.deleteInstruction()) {
         	removeInstruction(instruction);
         }
@@ -185,6 +190,20 @@ public class PuzzleController {
     		prev = line;
     	};
     	lstListing.refresh();
+    }
+    
+    public void addVariable(Variable var) {
+    	if (!variableList.containsKey(var.getName())){
+    		variableList.put(var.getName(), var);
+    		addInstruction(var);
+    	}
+    }
+    
+    public Variable getVariable(String name) {
+    	if (variableList.containsKey(name)){
+    		return variableList.get(name);
+    	}
+    	return null;
     }
     
     private void runOneLineOfCode() {

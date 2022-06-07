@@ -21,10 +21,6 @@ public class Pick extends CommandTerm {
 	
 	@Override protected void populateFXML () {}
 
-	@Override public void setArgs() {
-		args = new ArrayList<>();
-	}
-
 	protected Ball getBall() {
 		return puzzleController.getContainer().getBall();
 	}

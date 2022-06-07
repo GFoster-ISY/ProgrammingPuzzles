@@ -12,7 +12,7 @@ public class NestedOneArgController extends NestedController{
     @FXML private TextField arg0Value;
     private boolean required;
     
-    public void setName(String name) {
+    public void setName(String name, int count) {
     	arg0Name.setText(name);
     }
     public void setArgValue(ArrayList<String> args) {
@@ -35,5 +35,4 @@ public class NestedOneArgController extends NestedController{
 		parentController.enableDefaultButton();
 	}
 	
-	@Override public int argCount() {return 1;}
 }

@@ -28,8 +28,19 @@ public abstract class CommandTerm {
 		closesIndent = false;
 		indentLevel = 0;
 		runningState = false;
+		args = new ArrayList<>();
+		for (int i = 0; i < argCount() ; i++) {
+			args.add("");
+		}
 	}
 	
+	public void updateArgs() {
+		for (int i = 0; i < argCount() ; i++) {
+			args.set(i,controller.getArgValue(i));
+		}
+	}
+	
+	public int argCount() {return 0;}
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
 	public CommandTerm getParentTerm() {return null;}
@@ -39,9 +50,6 @@ public abstract class CommandTerm {
 	
 	protected String indent() {return "   ".repeat(indentLevel);}
 	public String toString() {
-		if (args == null) {
-			setArgs();
-		}
 		String argList = String.join(",", args);
 		return indent() + term + "(" + argList + ")";
 	}
@@ -73,6 +81,5 @@ public abstract class CommandTerm {
 	
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();
-	public abstract void setArgs();
 	public abstract boolean exec();
 }

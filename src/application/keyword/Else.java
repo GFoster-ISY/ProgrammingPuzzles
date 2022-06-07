@@ -32,8 +32,6 @@ public class Else extends CommandTerm {
 	@Override
 	protected void populateFXML() { }
 
-	@Override public void setArgs() {args = new ArrayList<>();}
-
 	@Override public String toString() {
 		return  indent() + "else";
 	}

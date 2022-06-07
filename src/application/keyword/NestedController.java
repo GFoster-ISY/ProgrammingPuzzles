@@ -12,8 +12,9 @@ public abstract class NestedController {
     @FXML void initialize() {
     	
     }
-    public abstract int argCount();
-	public abstract void setName(String name);
+    public final int argCount() {return parentController.getArgCount();};
+    public final void setName(String name) {setName(name,0);}
+	public abstract void setName(String name, int argCount);
 	public abstract void setArgValue(ArrayList<String> args);
 	public abstract void setArgRequired(ArrayList<Boolean> required);
 	public abstract boolean complete();

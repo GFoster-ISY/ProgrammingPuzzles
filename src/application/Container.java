@@ -66,6 +66,14 @@ public abstract class Container {
 		return null;
 	}
 	
-	public int getBallCount() { return ballCount;} 
+	public int getBallCount() { return ballCount;}
+	
+	public void replace(Ball ball) {
+		for (int count = ballCount; count>0; count--) {
+			contents[count] = contents[count-1];
+		}
+		contents[0] = ball;
+		ballCount++;
+	}
 	abstract void display(GraphicsContext gc, double width, double height);
 }
