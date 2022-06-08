@@ -42,6 +42,20 @@ public class Variable extends CommandTerm {
 
 
 	public int argCount() {return 2;}
+	
+	public void increment() {
+		int value = Integer.parseInt(args.get(1));
+		value++;
+		setNumber(value);
+	}
+	
+	public int getNumber() {
+		return Integer.parseInt(args.get(1));
+	}
+	
+	public void setNumber(int value) {
+		args.set(1, ""+value);
+	}
 
 	@Override public boolean exec() {
 		return true;

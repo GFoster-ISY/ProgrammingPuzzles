@@ -38,7 +38,23 @@ public class Put extends CommandTerm {
 			errorMessage = "No cup number, for where to put the ball was given.";
 			return false;
 		}
-		int selectedCup = Integer.parseInt(args.get(0))-1; // Subtract one to convert to array indices
+		int cupNumber = 0;
+		try {
+			cupNumber = Integer.parseInt(args.get(0))-1;// Subtract one to convert to array indices
+		} catch (NumberFormatException e) {
+			Variable var = puzzleController.getVariable(args.get(0));
+			if (var == null) {
+				errorMessage = "There is no variable with the name " + args.get(0);
+				return false;
+			}
+			try {
+				cupNumber = var.getNumber();
+			}catch (NumberFormatException ex) {
+				errorMessage = "The variable " + args.get(0) + " doesn't contain a number.";
+				return false;
+			}
+		}
+		int selectedCup =  cupNumber;
 		if (selectedCup < 0 || selectedCup >= puzzleController.getCups().length) {
 			errorMessage = "There is no cup at position " + (selectedCup+1);
 			return false;

@@ -10,7 +10,6 @@ public class LoopUntil extends CommandTerm {
 	protected CommandTerm endLoop;
 	protected Variable counter;
 
-	int loopCounter = 1;
 	
 	public LoopUntil(PuzzleController pc) {
 		super(pc);
@@ -24,13 +23,12 @@ public class LoopUntil extends CommandTerm {
 
 	public boolean hasLoopFinished() {
 		int limit = Integer.parseInt(args.get(0));
-		return (loopCounter > limit);
+		return (counter.getNumber() >= limit);
 	}
 	
-	public int getLoopCounter() {return loopCounter;}
+	public int getLoopCounter() {return counter.getNumber();}
 	public CommandTerm getChildTerm() {return endLoop;}
 	@Override public CommandTerm getClosure() {return endLoop;}
-	public void incrementLoopCounter() {loopCounter++;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedOneArgController)load.getController();
@@ -53,7 +51,7 @@ public class LoopUntil extends CommandTerm {
 	
 	@Override public void reset() {
 		super.reset();
-		loopCounter=1;
+		counter.setNumber(0);
 	}
 	
 	@Override public boolean exec() {

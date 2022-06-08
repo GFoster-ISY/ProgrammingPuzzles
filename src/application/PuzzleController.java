@@ -458,6 +458,7 @@ public class PuzzleController {
 		if (passed) {
 			problem = (String)problemJSONObject.get("NextProblem");
 			fullListing.clear();
+			variableList.clear();
 		} else {
 			fullListing.forEach(term -> {
 				term.reset();
