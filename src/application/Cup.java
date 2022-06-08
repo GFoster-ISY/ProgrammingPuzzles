@@ -16,7 +16,7 @@ public class Cup {
 	private int ballCount;
 	private static int cupWidth;
 	private static int cupHeight;
-	private static int rows;
+	private static int rows = 1;
 	private static boolean grading;
 	private boolean cupCorrect;
 	
@@ -27,12 +27,15 @@ public class Cup {
 	}
 	
 	public static void setCupSize(int cupCount, int canvasWidth, int canvasHeight) {
-    	int initialWidth =(canvasHeight-20)/(5*cupCount);
-    	int initialHeight = (int) ((6*initialWidth)/Math.sqrt(2));
-    	rows = (int)Math.sqrt(canvasHeight/initialHeight);
-    	
-    	int width = (canvasHeight-20)/(5*cupCount/ rows);
-    	int height = (int) ((6*width)/Math.sqrt(2));
+    	int initialWidth =(canvasWidth-20)/(5*cupCount);
+    	int initialHeight = (int) ((6*initialWidth)/Math.sqrt(2))+5;
+    	if (cupCount > 4) {
+    		rows = (int)Math.sqrt(canvasHeight/initialHeight);
+    	} else {
+    		rows = 1;
+    	}
+    	int width = initialWidth * rows;
+    	int height = initialHeight * rows;
 
 		cupWidth = width;
 		cupHeight = height;
@@ -72,8 +75,8 @@ public class Cup {
 	public void gradeCup(boolean good) {cupCorrect = good;}
 	
 	void display(GraphicsContext gc, double width, double height) {
-        int x = 10+(id%rows)*5*cupWidth;
-        int y = id/rows*(cupHeight+5);
+        int x = 10+(id/rows)*5*cupWidth;
+        int y = id%rows*(cupHeight+5);
         gc.setFill(Color.WHITE);
         gc.fillRect(x+cupWidth, y+5+cupHeight/6, 2*cupWidth, cupHeight/3);
         gc.setStroke(Color.BLACK);
