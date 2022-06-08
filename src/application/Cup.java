@@ -16,6 +16,7 @@ public class Cup {
 	private int ballCount;
 	private static int cupWidth;
 	private static int cupHeight;
+	private static int rows;
 	private static boolean grading;
 	private boolean cupCorrect;
 	
@@ -26,8 +27,11 @@ public class Cup {
 	}
 	
 	public static void setCupSize(int cupCount, int canvasWidth, int canvasHeight) {
-		int displayWidth = (int)(Math.min(canvasWidth, canvasHeight*2));
-    	int width =(displayWidth-20)/(5*cupCount);
+    	int initialWidth =(canvasHeight-20)/(5*cupCount);
+    	int initialHeight = (int) ((6*initialWidth)/Math.sqrt(2));
+    	rows = (int)Math.sqrt(canvasHeight/initialHeight);
+    	
+    	int width = (canvasHeight-20)/(5*cupCount/ rows);
     	int height = (int) ((6*width)/Math.sqrt(2));
 
 		cupWidth = width;
@@ -68,25 +72,26 @@ public class Cup {
 	public void gradeCup(boolean good) {cupCorrect = good;}
 	
 	void display(GraphicsContext gc, double width, double height) {
-        int x = 10+id*5*cupWidth;
+        int x = 10+(id%rows)*5*cupWidth;
+        int y = id/rows*(cupHeight+5);
         gc.setFill(Color.WHITE);
-        gc.fillRect(x+cupWidth, 5+cupHeight/6, 2*cupWidth, cupHeight/3);
+        gc.fillRect(x+cupWidth, y+5+cupHeight/6, 2*cupWidth, cupHeight/3);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
-        gc.strokeRect(x+cupWidth, 5+cupHeight/6, 2*cupWidth, cupHeight/3);
-        gc.strokeLine(x, 5, x+cupWidth, 5+cupHeight);
-        gc.strokeLine(x+cupWidth, 5+cupHeight, x+3*cupWidth, 5+cupHeight);
-        gc.strokeLine(x+3*cupWidth, 5+cupHeight, x+4*cupWidth, 5);
+        gc.strokeRect(x+cupWidth, y+5+cupHeight/6, 2*cupWidth, cupHeight/3);
+        gc.strokeLine(x, y+5, x+cupWidth, y+5+cupHeight);
+        gc.strokeLine(x+cupWidth, y+5+cupHeight, x+3*cupWidth, y+5+cupHeight);
+        gc.strokeLine(x+3*cupWidth, y+5+cupHeight, x+4*cupWidth, y+5);
         if (ballCount > 0) {
         	int d = cupWidth /2;
         	int scale = 4+2*d;
 			for (int i = 0; i < ballCount; i++) {
 				if (i < 4) {
-					contents.get(i).display(gc, x+cupWidth+ d*i, cupHeight-d, scale);
+					contents.get(i).display(gc, x+cupWidth+ d*i, y+cupHeight-d, scale);
 				} else if (i < 9) {
-					contents.get(i).display(gc, x+cupWidth+ (int)(d*(i-4.3)), cupHeight-2*d, scale);
+					contents.get(i).display(gc, x+cupWidth+ (int)(d*(i-4.3)), y+cupHeight-2*d, scale);
 				} else if (i < 15) {
-					contents.get(i).display(gc, x+cupWidth+ (int)(d*(i-9.6)), cupHeight-3*d, scale);
+					contents.get(i).display(gc, x+cupWidth+ (int)(d*(i-9.6)), y+cupHeight-3*d, scale);
 				}
 
 			}
@@ -100,7 +105,7 @@ public class Cup {
         		} else {
         			grade = new Image(new FileInputStream("resources/red-cross.jpg"));
         		}
-        		gc.drawImage(grade, x+cupWidth*3/2, 10+cupHeight/6, cupWidth, cupWidth);
+        		gc.drawImage(grade, x+cupWidth*3/2, y+10+cupHeight/6, cupWidth, cupWidth);
     		} catch (FileNotFoundException e) {
     			e.printStackTrace();
     		}
