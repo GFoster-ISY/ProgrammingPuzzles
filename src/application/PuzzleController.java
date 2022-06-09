@@ -47,7 +47,7 @@ public class PuzzleController {
     @FXML private TextField txtErrorMsg;
     @FXML private ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
-    @FXML private Button btnPrev;
+    @FXML private Button btnAbort;
     @FXML private Button btnNext;
     @FXML private Button btnFinish;
     @FXML private HBox hboxStartExecuteButtons;
@@ -71,7 +71,9 @@ public class PuzzleController {
     private Map solution;
     private Execute exec;
     Thread execThread;
+    Thread finishThread;
     private boolean execThreadRunning = false;
+    private boolean finishThreadRunning = false;
     
     public Container getContainer() {return container;}
     public Cup[] getCups() { return cups;}
@@ -260,18 +262,40 @@ public class PuzzleController {
     	execThread.start();
     }
     
-    @FXML private void execUndo() {
-    	// TODO Not yet implemented
+    @FXML private void execAbort() {
+    	exec.abort();
+    	if (execThreadRunning) {
+    		execThread.interrupt();
+    	}
+    	if (finishThreadRunning) {
+    		finishThread.interrupt();
+    	}
+    	codeCompleted();
     }
     
     @FXML private void exec() {
     	if (execThreadRunning) {
     		execThread.interrupt();
     	}
-    	while (exec == null || !exec.finished()) {
-    		runOneLineOfCode();
-    	}
-		codeCompleted();
+    	finishThread = new Thread(() -> {
+    		finishThreadRunning = true;
+    		try {
+		    	while (exec == null || !exec.finished()) {
+		        	runOneLineOfCode();
+		        	manageButtons(!exec.finished());
+		        	Platform.runLater(() -> display());
+		        	Thread.sleep(10);
+				}
+			} catch (InterruptedException e) {
+				return;
+				//e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("OUT OF TIME");
+				e.printStackTrace();
+	    	}
+	    	Platform.runLater(() -> codeCompleted());
+    	});
+    	finishThread.start();
     }
     
     protected void resizeWidth(Number newWidth) {
@@ -392,7 +416,7 @@ public class PuzzleController {
     	btnAuto.setDisable(!show);
     	btnFinal.setDisable(!show);
     	btnNext.setDisable(!show);
-    	btnPrev.setDisable(!show);
+    	btnAbort.setDisable(!show);
     	btnFinish.setDisable(!show);
     }
     

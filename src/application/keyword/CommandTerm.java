@@ -47,7 +47,7 @@ public abstract class CommandTerm {
 	public CommandTerm getChildTerm() {return null;}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
-	
+	public void abort() { errorMessage = "User aborted execution of the code.";}
 	protected String indent() {
 		if (indentLevel > 0) return "   ".repeat(indentLevel);
 		else return "";

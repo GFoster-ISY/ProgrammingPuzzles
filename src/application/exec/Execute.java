@@ -43,6 +43,10 @@ public class Execute {
 		return false;
 	}
 	
+	public void abort() {
+		term.abort();
+	}
+	
 	public void stopExec() {
 		term.setRunningState(false);
 	}
