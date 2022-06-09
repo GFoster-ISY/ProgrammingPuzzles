@@ -48,7 +48,10 @@ public abstract class CommandTerm {
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
 	
-	protected String indent() {return "   ".repeat(indentLevel);}
+	protected String indent() {
+		if (indentLevel > 0) return "   ".repeat(indentLevel);
+		else return "";
+	}
 	public String toString() {
 		String argList = String.join(",", args);
 		return indent() + term + "(" + argList + ")";
