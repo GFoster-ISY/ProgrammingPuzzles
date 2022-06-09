@@ -65,6 +65,8 @@ public class KeyTermController {
     		keyword = new Replace(pc);
     	} else if(term.equals("increment(n)")){
     		keyword = new Increment(pc);
+    	} else if(term.equals("look()")){
+    		keyword = new Look(pc);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword

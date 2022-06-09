@@ -12,12 +12,14 @@ public abstract class Container {
 
 	protected Ball[] contents;
 	protected int ballCount;
+	protected abstract boolean lookedAtBall();
 	
 	public Container(int ballCount) {
 		contents = new Ball[ballCount];
 		this.ballCount = ballCount;
 		for (int i = 0; i < ballCount; i++) {
 			contents[i] = new Ball(i+1, 1, new Colour());
+			if (lookedAtBall()) {contents[i].look();}
 		}
 	}
 	
@@ -35,6 +37,7 @@ public abstract class Container {
 			// Loop through each ball of the current colour
 			for (int i = 0; i < total; i++) {
 				contents[index+i] = new Ball(index+i+1, 1, new Colour(key));
+				if (lookedAtBall()) {contents[index+i].look();}
 			}
 			index += total;
 		}

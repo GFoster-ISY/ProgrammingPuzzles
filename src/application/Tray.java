@@ -27,5 +27,6 @@ public class Tray extends Container {
 			contents[i].display(gc, (i%col)*scale+20, (i/col)*scale+10, scale);
 		}
 	}
-
+	
+	protected boolean lookedAtBall() {return true;}
 }

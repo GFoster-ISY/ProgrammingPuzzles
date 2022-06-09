@@ -19,6 +19,7 @@ public class Colour {
 		colourCode.put(ColourName.YELLOW,"#D3D608");
 	}
 	
+	public static Colour UNKNOWN_COLOUR = new Colour("UNKNOWN","#AAAAAA");
 	private ColourName name;
 	private String code;
 	void setColour(ColourName colourName){
@@ -30,6 +31,9 @@ public class Colour {
 		return (name.equals(c.name));
 	}
 	
+	public Colour(String name, String value) {
+		code = value;
+	}
 	public Colour(ColourName colourName){
 		setColour(colourName);
 	}

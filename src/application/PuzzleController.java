@@ -322,12 +322,24 @@ public class PuzzleController {
            task = (String)problemJSONObject.get("ObjectiveStatement");
            txtProblem.setText(task);
            cupCount = ((Long)problemJSONObject.get("PotCount")).intValue();
+           String containerType = "Tray";
+           if (problemJSONObject.containsKey("Container")) {
+        	   containerType = (String)problemJSONObject.get("Container");
+           }
            if (problemJSONObject.containsKey("BallCount")) {
         	   ballCount = ((Long)problemJSONObject.get("BallCount")).intValue();
-        	   container = new Tray(ballCount);
+        	   if (containerType.equals("Bag")) {
+        		   container = new Bag(ballCount);
+        	   } else {
+        		   container = new Tray(ballCount);
+        	   }
            } else if (problemJSONObject.containsKey("BallColour")) {
         	   Map<String, Long> ballColourMap = (Map)problemJSONObject.get("BallColour");
-        	   container = new Tray(ballColourMap);
+        	   if (containerType.equals("Bag")) {
+            	   container = new Bag(ballColourMap);
+        	   } else {
+            	   container = new Tray(ballColourMap);
+        	   }
            }
            JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
            allKeyTerms = FXCollections.observableArrayList(); 

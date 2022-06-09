@@ -1,6 +1,5 @@
 {"ObjectiveStatement": "Put one ball in each pot.",
 "PotCount": 10,
-"Container":"Bag",
 "BallColour":{"Red":6,"Blue":3,"Green":3,"Yellow":3},
 "KeyTerms":["pick()","put(n)","loop until","increment(n)"],
 "Solution":{"PotCount":[1,1,1,1,1,1,1,1,1,1]},

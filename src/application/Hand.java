@@ -45,6 +45,9 @@ public class Hand {
 		return ball;
 	}
 
+	public void lookAtBall() {
+		ball.look();
+	}
 	public Colour getBallColour() {
 		if (this.ball == null)
 			return null;
