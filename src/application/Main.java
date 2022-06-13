@@ -24,8 +24,8 @@ public class Main extends Application {
 			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.setMinHeight(400);
-			primaryStage.setMinWidth(600);
+			primaryStage.setMinHeight(600);
+			primaryStage.setMinWidth(900);
 			scene.widthProperty().addListener(new ChangeListener<Number>() {
 			    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
 			    	controller.resizeWidth(newSceneWidth);
@@ -37,6 +37,8 @@ public class Main extends Application {
 			    }
 			});
 			primaryStage.show();
+			controller.resizeWidth(1200);
+			controller.resizeHeight(600);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

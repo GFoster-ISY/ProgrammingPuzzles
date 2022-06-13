@@ -8,12 +8,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -39,12 +41,21 @@ import application.keyword.Variable;
 public class PuzzleController {
 
     @FXML private HBox hboxRoot;
-    @FXML private VBox vboxRoot;
+
+    @FXML private Accordion ProblemView;
+	@FXML private TitledPane ProblemListing;
+	@FXML private TitledPane SelectedProblem;
+	@FXML private TitledPane Statistics;
+	
+    @FXML private VBox vboxSelectedProblem;
     @FXML private TextArea txtProblem;
     @FXML private Canvas cvsCups;
     @FXML private Canvas cvsHand;
     @FXML private Canvas cvsContainer;
     @FXML private TextField txtErrorMsg;
+    
+    @FXML private ListView<String> lstProblemListing;
+    
     @FXML private ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
     @FXML private Button btnAbort;
@@ -63,6 +74,7 @@ public class PuzzleController {
     private Hand hand;
     private int cupCount;
     private int ballCount;
+    private ObservableList<String> problemListing;
     private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
     private Map<String, Variable> variableList;
@@ -80,6 +92,11 @@ public class PuzzleController {
     public Hand getHand() {return hand;}
     
     @FXML void initialize() {
+    	ProblemView.setExpandedPane(SelectedProblem);
+    	problemListing = FXCollections.observableArrayList();
+    	getAllProblems();
+    	lstProblemListing.setItems(problemListing);
+    	
     	fullListing = FXCollections.observableArrayList();
     	variableList = new HashMap<>();
     	lstListing.setItems(fullListing);
@@ -288,7 +305,6 @@ public class PuzzleController {
 				}
 			} catch (InterruptedException e) {
 				return;
-				//e.printStackTrace();
 			} catch (Exception e) {
 				System.out.println("OUT OF TIME");
 				e.printStackTrace();
@@ -300,23 +316,42 @@ public class PuzzleController {
     
     protected void resizeWidth(Number newWidth) {
     	hboxRoot.setPrefWidth(newWidth.doubleValue());
-    	double column1Width = Math.max(newWidth.doubleValue() / 3,200);
-    	txtProblem.setPrefWidth(column1Width);
-    	cvsCups.setWidth(column1Width);
-    	cvsHand.setWidth(column1Width);
-    	cvsContainer.setWidth(column1Width);
+    	double columnWidth = Math.max(newWidth.doubleValue() / 3,300);
+    	txtProblem.setPrefWidth(columnWidth);
+    	cvsCups.setWidth(columnWidth);
+    	cvsHand.setWidth(columnWidth);
+    	cvsContainer.setWidth(columnWidth);
+    	ProblemView.setMinWidth(columnWidth);
+    	ProblemView.setMaxWidth(columnWidth);
+    	lstListing.setMinWidth(columnWidth);
+    	lstListing.setMaxWidth(columnWidth);
+    	lstLexicon.setMinWidth(columnWidth);
+    	lstLexicon.setMaxWidth(columnWidth);
     	display();
     }
     protected void resizeHeight(Number newHeight) {
     	hboxRoot.setPrefHeight(newHeight.doubleValue());
-    	vboxRoot.setPrefHeight(newHeight.doubleValue());
-    	double canvasHeight = (newHeight.doubleValue() - 105)/3;
+    	vboxSelectedProblem.setPrefHeight(newHeight.doubleValue());
+    	double canvasHeight = (newHeight.doubleValue() - 180)/3;
     	cvsCups.setHeight(canvasHeight);
     	cvsHand.setHeight(canvasHeight);
     	cvsContainer.setHeight(canvasHeight);
     	display();
     }
 
+    private void getAllProblems() {
+    	JSONParser parser = new JSONParser();
+        try {
+           Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
+           generalJSONObject = (JSONObject)obj;
+           Map problems = ((Map)generalJSONObject.get("Results"));
+           for(Object name: problems.keySet()) {
+        	   problemListing.add((String)name);
+           }
+        } catch(Exception e) {
+        	problemListing.add("Problem1");
+        }
+    }
     private String getCurrentProblem() {
     	String name;
        	JSONParser parser = new JSONParser();
