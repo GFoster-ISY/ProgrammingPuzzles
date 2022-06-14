@@ -22,21 +22,20 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.*;
-import org.json.simple.parser.*;
 
 import application.exec.Execute;
 import application.keyword.CommandTerm;
 import application.keyword.KeyTermController;
 import application.keyword.UnknownKeywordException;
 import application.keyword.Variable;
+import application.problem.Problem;
+import application.problem.ProblemManager;
 
 public class PuzzleController {
 
@@ -54,9 +53,9 @@ public class PuzzleController {
     @FXML private Canvas cvsContainer;
     @FXML private TextField txtErrorMsg;
     
-    @FXML private ListView<String> lstProblemListing;
+    @FXML private ListView<Problem> lstProblemListing;
     
-    @FXML private ListView<CommandTerm> lstListing;
+    @FXML public ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
     @FXML private Button btnAbort;
     @FXML private Button btnNext;
@@ -68,50 +67,67 @@ public class PuzzleController {
     @FXML private ListView<String> lstLexicon;
     
 
-    private String problem;
+    private Problem currentProblem;
     private Container container;
     private Cup[] cups;
     private Hand hand;
     private int cupCount;
-    private int ballCount;
-    private ObservableList<String> problemListing;
-    private ObservableList<CommandTerm> fullListing;
+    private ProblemManager pm;
+    public ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
-    private Map<String, Variable> variableList;
-    private JSONObject generalJSONObject;
-    private JSONObject problemJSONObject;
-    private Map solution;
-    private Execute exec;
+    public Map<String, Variable> variableList;
+    public Execute exec;
     Thread execThread;
     Thread finishThread;
     private boolean execThreadRunning = false;
     private boolean finishThreadRunning = false;
     
-    public Container getContainer() {return container;}
-    public Cup[] getCups() { return cups;}
-    public Hand getHand() {return hand;}
     
     @FXML void initialize() {
+    	pm = new ProblemManager(this);
     	ProblemView.setExpandedPane(SelectedProblem);
-    	problemListing = FXCollections.observableArrayList();
-    	getAllProblems();
-    	lstProblemListing.setItems(problemListing);
+    	lstProblemListing.setItems(pm.getAllProblems());
     	
     	fullListing = FXCollections.observableArrayList();
-    	variableList = new HashMap<>();
     	lstListing.setItems(fullListing);
     	lstListing.setCellFactory(param -> new DragNDropCommandTermCell(this));
+
+    	allKeyTerms = FXCollections.observableArrayList();
+        lstLexicon.setItems(allKeyTerms);
     	
-    	problem = getCurrentProblem();
-    	loadProblem();
+        variableList = new HashMap<>();
+    	
+    	currentProblem = pm.getCurrentProblem();
+    	currentProblem.loadProblem();
     	
         exec = null;
 
         hboxRunningButtons.setManaged(false);
 		display();
-    	
     }
     
+    public Container getContainer() {return container;}
+    public Cup[] getCups() { return cups;}
+    public Hand getHand() {return hand;}
+    public void setProblemText (String text) {txtProblem.setText(text);}
+    public int getCupCount () {return cupCount;}
+    public void setCupCount (int number) {cupCount = number;}
+    public void setContainer(Container container) {this.container = container;}
+    @SuppressWarnings("unchecked")
+	public void setAllKeyTerms(JSONArray keyTerms) {
+    	allKeyTerms = FXCollections.observableArrayList();
+    	allKeyTerms.addAll(keyTerms);
+    	lstLexicon.setItems(allKeyTerms);
+    }
+    public void initilaliseControls() {
+        hand = new Hand();
+        cups = new Cup[cupCount];
+        Cup.gradingCups(false);
+        for (int i = 0; i < cupCount; i++) {
+            cups[i] = new Cup(i);
+        }
+    }
+    public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
     @FXML private void selectKeyTerm(MouseEvent event) {
         event.consume();
         String keyTerm = lstLexicon.getSelectionModel().getSelectedItem();
@@ -236,14 +252,11 @@ public class PuzzleController {
     
     private void codeCompleted() {
     	execThreadRunning = false;
-    	boolean passed = false;
 		if (exec.inError()) {
 			displayError();
 		} else {
-			passed = gradeSolution();
+			pm.gradeSolution();
 		}
-		storeResultInJSON(passed);
-		resetPuzzle(passed);
     }
     
     @FXML private void execByStep() {
@@ -339,86 +352,10 @@ public class PuzzleController {
     	display();
     }
 
-    private void getAllProblems() {
-    	JSONParser parser = new JSONParser();
-        try {
-           Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
-           generalJSONObject = (JSONObject)obj;
-           Map problems = ((Map)generalJSONObject.get("Results"));
-           for(Object name: problems.keySet()) {
-        	   problemListing.add((String)name);
-           }
-        } catch(Exception e) {
-        	problemListing.add("Problem1");
-        }
-    }
-    private String getCurrentProblem() {
-    	String name;
-       	JSONParser parser = new JSONParser();
-        try {
-           Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
-           generalJSONObject = (JSONObject)obj;
-           name = (String)generalJSONObject.get("CurrentProblem");
-        } catch(Exception e) {
-        	name = "Problem1";
-        	JSONObject obj = new JSONObject();
-            obj.put("CurrentProblem", name);
-        	try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
-                file.write(obj.toJSONString());
-        	} catch(Exception ew) {
-                ew.printStackTrace();
-        	}
-        }
-        return name;
-    }
+
+
     
-    private void loadProblem() {
-    	String task; 
-    	JSONParser parser = new JSONParser();
-        try {
-           Object obj = parser.parse(new FileReader("resources/"+problem+".json"));
-           problemJSONObject = (JSONObject)obj;
-           task = (String)problemJSONObject.get("ObjectiveStatement");
-           txtProblem.setText(task);
-           cupCount = ((Long)problemJSONObject.get("PotCount")).intValue();
-           String containerType = "Tray";
-           if (problemJSONObject.containsKey("Container")) {
-        	   containerType = (String)problemJSONObject.get("Container");
-           }
-           if (problemJSONObject.containsKey("BallCount")) {
-        	   ballCount = ((Long)problemJSONObject.get("BallCount")).intValue();
-        	   if (containerType.equals("Bag")) {
-        		   container = new Bag(ballCount);
-        	   } else {
-        		   container = new Tray(ballCount);
-        	   }
-           } else if (problemJSONObject.containsKey("BallColour")) {
-        	   Map<String, Long> ballColourMap = (Map)problemJSONObject.get("BallColour");
-        	   if (containerType.equals("Bag")) {
-            	   container = new Bag(ballColourMap);
-        	   } else {
-            	   container = new Tray(ballColourMap);
-        	   }
-           }
-           JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
-           allKeyTerms = FXCollections.observableArrayList(); 
-           allKeyTerms.addAll(keyTerms);
-           lstLexicon.setItems(allKeyTerms);
-           
-           
-           hand = new Hand();
-           cups = new Cup[cupCount];
-           Cup.gradingCups(false);
-           for (int i = 0; i < cupCount; i++) {
-               cups[i] = new Cup(i);
-           }
-           solution = ((Map)problemJSONObject.get("Solution"));
-        } catch(Exception e) {
-                e.printStackTrace();
-        }    	
-    }
-    
-    private void display() {
+    public void display() {
     	Cup.setCupSize(cupCount, (int)cvsCups.getWidth(), (int)cvsCups.getHeight());
     	GraphicsContext gc = cvsCups.getGraphicsContext2D();
 		gc.clearRect(0, 0, cvsCups.getWidth(), cvsCups.getHeight());
@@ -437,7 +374,7 @@ public class PuzzleController {
     	lstListing.refresh();
     }
     
-    private void manageButtons(boolean running) {
+    public void manageButtons(boolean running) {
     	showRunTimeButtons(running);
 
     	hboxStartExecuteButtons.setVisible(!running);
@@ -446,7 +383,7 @@ public class PuzzleController {
     	hboxRunningButtons.setManaged(running);
     }
     
-    private void showRunTimeButtons(boolean show) {
+    public void showRunTimeButtons(boolean show) {
     	btnStep.setDisable(!show);
     	btnAuto.setDisable(!show);
     	btnFinal.setDisable(!show);
@@ -483,125 +420,5 @@ public class PuzzleController {
 		a.initModality(Modality.APPLICATION_MODAL); 
 		a.showAndWait();	
     }
-    
-    private boolean gradeSolution() {
-    	Cup.gradingCups(true);
-    	boolean testPassed = true;
-    	if (solution.containsKey("PotCount")) {
-    		JSONArray objs = (JSONArray) solution.get("PotCount");
-    		for (int i = 0; i<cupCount; i++) {
-    			int requiredBallsInCup = ((Long)objs.get(i)).intValue();
-    			if (!cups[i].correctBallCount(requiredBallsInCup)) {
-    				testPassed = false;
-    			}
-    		}
-    	} else if (solution.containsKey("PotColour")){
-    		JSONArray objs = (JSONArray) solution.get("PotColour");
-    		for(int i = 0; i<cupCount; i++) {
-    			 Map<String, Long> ballColourMap = (Map)objs.get(i);
-    			 if (!cups[i].correctBallCount(ballColourMap)) {
-    				 testPassed = false;
-    			 }
-    		}
-    	}
-		Alert a = new Alert(AlertType.NONE);
-		String message = "";
-    	if (!testPassed) {
-    		a.setAlertType(AlertType.ERROR);
-    		message = "You didn't find the right solution. Please try again.";
-    	} else {
-    		a.setAlertType(AlertType.INFORMATION);
-    		message = "Congratulations you solved the puzzle.";
-    	}
-		txtErrorMsg.setText(message);
-		display();
-		a.setHeaderText("You code has finished running");
-		a.setContentText(message);
-		a.initModality(Modality.APPLICATION_MODAL); 
-		a.showAndWait();
-		return testPassed;
-    }
-    
-    private void resetPuzzle(boolean passed) {
-    	exec.stopExec();
-		exec = null;
-		String oldProblem = problem;
-		if (passed) {
-			problem = (String)problemJSONObject.get("NextProblem");
-			fullListing.clear();
-			variableList.clear();
-		} else {
-			fullListing.forEach(term -> {
-				term.reset();
-			});
-		}
-		if (problem == null) {
-			problem = oldProblem;
-			String message = "You have completed all the problems";
-			Alert a = new Alert(AlertType.INFORMATION);
-			a.setHeaderText("Congratulations");
-			a.setContentText(message);
-			a.initModality(Modality.APPLICATION_MODAL); 
-			a.showAndWait();
-		}
-		loadProblem();
-		
-		if (passed) {
-			display();
-		}
-        lstListing.getSelectionModel().clearSelection();
-		lstListing.refresh();
-        manageButtons(false);
-        showRunTimeButtons(fullListing.size() > 0);
-    }
-    
-    private void storeResultInJSON(boolean passed) {	
-    	Map results = (Map)generalJSONObject.get("Results");
-    	if (results == null) {
-    		results = new JSONObject();
-    		generalJSONObject.put("Results", results);
-    	}
-    	Map problemStats = (Map)results.get(problem);
-    	if (problemStats == null) {
-    		problemStats = new JSONObject();
-    		results.put(problem, problemStats);
-    	}
-    	long attempts = 1;
-    	if (problemStats.containsKey("Attempts")) {
-    		attempts = ((Long)problemStats.get("Attempts")).longValue();
-    		attempts++;
-    	}
-    	problemStats.put("Attempts", attempts);
-    	if (exec.inError()) {
-        	long errorCount = 1;
-        	if (problemStats.containsKey("ErrorCount")) {
-        		errorCount = ((Long)problemStats.get("ErrorCount")).longValue();
-        		errorCount++;
-        	}
-        	problemStats.put("ErrorCount", errorCount);
-    		problemStats.put("LastRun", "ERROR");
-    	} else if (!passed) {
-        	long failCount = 1;
-        	if (problemStats.containsKey("FailCount")) {
-        		failCount = ((Long)problemStats.get("FailCount")).longValue();
-        		failCount++;
-        	}
-        	problemStats.put("FailCount", failCount);
-    		problemStats.put("LastRun", "FAILED");
-    	} else {
-    		if (problemJSONObject.containsKey("NextProblem")) {
-    			generalJSONObject.put("CurrentProblem",(String)problemJSONObject.get("NextProblem"));
-    		}
-    		problemStats.put("LastRun", "SUCCESS");
-    	}
-    	//Write JSON file
-        try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
-            file.write(generalJSONObject.toJSONString()); 
-            file.flush();
- 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
+
 }

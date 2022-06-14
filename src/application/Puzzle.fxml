@@ -39,10 +39,10 @@
                                           <Font name="Bookman Old Style" size="14.0" />
                                        </font>
                                     </TextArea>
-                                    <Canvas fx:id="cvsCups" height="166.0" width="400.0" />
-                                    <Canvas fx:id="cvsHand" height="166.0" width="400.0" />
+                                    <Canvas fx:id="cvsCups" height="132.0" width="400.0" />
+                                    <Canvas fx:id="cvsHand" height="116.0" width="400.0" />
                                     <Canvas fx:id="cvsContainer" height="166.0" width="400.0" />
-                                    <TextField fx:id="txtErrorMsg" editable="false" promptText="No Errors Exist" style="-fx-background-color: derive(OrangeRed, 50%);">
+                                    <TextField fx:id="txtErrorMsg" editable="false" promptText="No Errors Exist" style="-fx-background-color: derive(OrangeRed, 25%); -fx-prompt-text-fill: white;">
                                        <font>
                                           <Font name="System Bold" size="14.0" />
                                        </font>
