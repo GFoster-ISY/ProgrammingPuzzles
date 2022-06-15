@@ -55,7 +55,7 @@ public class PuzzleController {
     
     @FXML private ListView<Problem> lstProblemListing;
     
-    @FXML public ListView<CommandTerm> lstListing;
+    @FXML private ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
     @FXML private Button btnAbort;
     @FXML private Button btnNext;
@@ -67,15 +67,14 @@ public class PuzzleController {
     @FXML private ListView<String> lstLexicon;
     
 
-    private Problem currentProblem;
     private Container container;
     private Cup[] cups;
     private Hand hand;
     private int cupCount;
     private ProblemManager pm;
-    public ObservableList<CommandTerm> fullListing;
+    private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
-    public Map<String, Variable> variableList;
+    private Map<String, Variable> variableList;
     public Execute exec;
     Thread execThread;
     Thread finishThread;
@@ -86,7 +85,7 @@ public class PuzzleController {
     @FXML void initialize() {
     	pm = new ProblemManager(this);
     	ProblemView.setExpandedPane(SelectedProblem);
-    	lstProblemListing.setItems(pm.getAllProblems());
+    	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
     	
     	fullListing = FXCollections.observableArrayList();
     	lstListing.setItems(fullListing);
@@ -97,9 +96,8 @@ public class PuzzleController {
     	
         variableList = new HashMap<>();
     	
-    	currentProblem = pm.getCurrentProblem();
-    	currentProblem.loadProblem();
-    	
+        pm.loadCurrentProblem();
+        
         exec = null;
 
         hboxRunningButtons.setManaged(false);
@@ -127,7 +125,41 @@ public class PuzzleController {
             cups[i] = new Cup(i);
         }
     }
+    
+    public boolean hasCodeListing() {
+    	return fullListing.size() > 0;
+    }
+    public void clearListingSelection() {
+    	lstListing.getSelectionModel().clearSelection();
+		lstListing.refresh();
+    }
+    
+    public void clear() {
+    	fullListing.clear();
+		variableList.clear();
+    }
+    
+    public void reset() {
+    	clearListingSelection();
+    	fullListing.forEach(term -> {
+			term.reset();
+		});
+    	initilaliseControls();
+    	exec = null;
+    }
+    
+    @FXML private void selectProblem(MouseEvent click) {
+    	if (click.getClickCount() == 2) {
+            Problem selectedProblem = lstProblemListing.getSelectionModel()
+                                                     .getSelectedItem();
+            pm.setCurrentProblem(selectedProblem);
+            display();
+            SelectedProblem.setExpanded(true);
+         }
+    }
+    
     public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
+    
     @FXML private void selectKeyTerm(MouseEvent event) {
         event.consume();
         String keyTerm = lstLexicon.getSelectionModel().getSelectedItem();
@@ -372,6 +404,7 @@ public class PuzzleController {
     		}
     	}
     	lstListing.refresh();
+        SelectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
     }
     
     public void manageButtons(boolean running) {
@@ -418,7 +451,8 @@ public class PuzzleController {
 		a.setHeaderText("Your code needs fixing");
 		a.setContentText(message);
 		a.initModality(Modality.APPLICATION_MODAL); 
-		a.showAndWait();	
+		a.showAndWait();
+		reset();
     }
 
 }

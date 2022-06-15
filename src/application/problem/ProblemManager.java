@@ -36,7 +36,7 @@ public class ProblemManager {
 		return null;
 	}
 	@SuppressWarnings("unchecked")
-	public ObservableList<Problem> getAllProblems(){
+	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
     	JSONParser parser = new JSONParser();
         try {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
@@ -68,7 +68,13 @@ public class ProblemManager {
 		return problemListing;
 	}
 	
-	public Problem getCurrentProblem() {return currentProblem;}
+	public void setCurrentProblem(Problem newProblem) {
+		currentProblem = newProblem;
+		loadCurrentProblem();
+	}
+	public void loadCurrentProblem() {
+		currentProblem.loadProblem();
+	}
 	
 	public void gradeSolution() {
 		boolean testPassed = currentProblem.gradeSolution();
@@ -128,8 +134,8 @@ public class ProblemManager {
         	problemStats.put("FailCount", failCount);
     		problemStats.put("LastRun", "FAILED");
     	} else {
-    		if (currentProblem.problemJSONObject.containsKey("NextProblem")) {
-    			generalJSONObject.put("CurrentProblem",(String)currentProblem.problemJSONObject.get("NextProblem"));
+    		if (currentProblem.getNextProblemName() != null) {
+    			generalJSONObject.put("CurrentProblem",currentProblem.getNextProblemName());
     		}
     		problemStats.put("LastRun", "SUCCESS");
     	}
@@ -148,14 +154,11 @@ public class ProblemManager {
     	controller.exec = null;
 		Problem oldProblem = currentProblem;
 		if (passed) {
-			String newProblemName = (String)(currentProblem.problemJSONObject.get("NextProblem"));
+			String newProblemName = currentProblem.getNextProblemName();
 			currentProblem = findProblem(newProblemName);
-			controller.fullListing.clear();
-			controller.variableList.clear();
+			controller.clear();
 		} else {
-			controller.fullListing.forEach(term -> {
-				term.reset();
-			});
+			controller.reset();
 		}
 		if (currentProblem == null) {
 			currentProblem = oldProblem;
@@ -171,9 +174,12 @@ public class ProblemManager {
 		if (passed) {
 			controller.display();
 		}
-		controller.lstListing.getSelectionModel().clearSelection();
-		controller.lstListing.refresh();
+		controller.clearListingSelection();
 		controller.manageButtons(false);
-		controller.showRunTimeButtons(controller.fullListing.size() > 0);
+		controller.showRunTimeButtons(controller.hasCodeListing());
+    }
+    
+    public String getCurrentProblemName() {
+    	return currentProblem.toString();
     }
 }

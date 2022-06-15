@@ -16,7 +16,7 @@ import application.Tray;
 public class Problem {
 
 	private int id;
-    public JSONObject problemJSONObject;
+	private String nextProblemName;
     private PuzzleController controller;
     private Map<?, ?> solution;
 	
@@ -24,6 +24,7 @@ public class Problem {
     	controller = pc;
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
+		nextProblemName = null;
 	}
  
     public void loadProblem() {
@@ -31,7 +32,7 @@ public class Problem {
     	JSONParser parser = new JSONParser();
         try {
            Object obj = parser.parse(new FileReader(fileName()));
-           problemJSONObject = (JSONObject)obj;
+           JSONObject problemJSONObject = (JSONObject)obj;
            task = (String)problemJSONObject.get("ObjectiveStatement");
            controller.setProblemText(task);
            controller.setCupCount(((Long)problemJSONObject.get("PotCount")).intValue());
@@ -56,6 +57,10 @@ public class Problem {
             	   container = new Tray(ballColourMap);
         	   }
            }
+           if (problemJSONObject.containsKey("NextProblem")) {
+        	   nextProblemName = (String)problemJSONObject.get("NextProblem");
+    	   }
+           
            controller.setContainer(container);
            JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
            controller.setAllKeyTerms(keyTerms);
@@ -107,4 +112,7 @@ public class Problem {
 		return "resources/"+getName()+".json";
 	}
 	
+	public String getNextProblemName() {
+		return nextProblemName;
+	}
 }
