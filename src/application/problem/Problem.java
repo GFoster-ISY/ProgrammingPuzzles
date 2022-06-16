@@ -17,6 +17,7 @@ public class Problem {
 
 	private int id;
 	private String nextProblemName;
+	private ProblemStats ps;
     private PuzzleController controller;
     private Map<?, ?> solution;
 	
@@ -27,6 +28,8 @@ public class Problem {
 		nextProblemName = null;
 	}
  
+	public void setStats (ProblemStats stats) {ps = stats;}
+	public ProblemStats getStats() {return ps;}
     public void loadProblem() {
     	String task; 
     	JSONParser parser = new JSONParser();

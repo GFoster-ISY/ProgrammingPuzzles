@@ -1,5 +1,6 @@
 package application.problem;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import application.PuzzleController;
 import javafx.collections.FXCollections;
@@ -18,12 +20,14 @@ import javafx.stage.Modality;
 public class ProblemManager {
 
 	private ObservableList<Problem> problemListing;
+	private ObservableList<ProblemStats> statsListing;
 	private Problem currentProblem;
     private JSONObject generalJSONObject;
     private PuzzleController controller;
 	
 	public ProblemManager(PuzzleController pc) {
     	problemListing = FXCollections.observableArrayList();
+    	statsListing = FXCollections.observableArrayList();
     	controller = pc;
 	}
 
@@ -42,16 +46,19 @@ public class ProblemManager {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
            generalJSONObject = (JSONObject)obj;
            
-           Map<?, ?> problems = ((Map<?, ?>)generalJSONObject.get("Results"));
+           Map<?, JSONObject> problems = ((Map<?, JSONObject>)generalJSONObject.get("Results"));
            String currentProblemName = (String)generalJSONObject.get("CurrentProblem");
            for(Object name: problems.keySet()) {
         	   Problem newProblem = new Problem(controller, (String)name);
         	   problemListing.add(newProblem);
+        	   ProblemStats stats = new ProblemStats(controller, newProblem, problems.get(name));
+        	   statsListing.add(stats);
+        	   newProblem.setStats(stats);
         	   if (currentProblemName.equals((String)name)) {
         		   currentProblem = newProblem;
         	   }
            }
-        } catch(Exception e) {
+        } catch(IOException | ParseException e) {
         	problemListing.add(new Problem(controller, "Problem1"));
         	// File is missing so create it.
         	JSONObject obj = new JSONObject();
@@ -61,6 +68,7 @@ public class ProblemManager {
         	} catch(Exception ew) {
                 ew.printStackTrace();
         	}
+        	e.printStackTrace();
         }
 
         ProblemComparator pc = new ProblemComparator();
@@ -68,6 +76,13 @@ public class ProblemManager {
 		return problemListing;
 	}
 	
+	public int getCurrentProblemIndex() {
+		if (currentProblem == null) {
+			currentProblem = problemListing.get(0);
+			return 0;
+		}
+		return currentProblem.getID()-1;
+	}
 	public void setCurrentProblem(Problem newProblem) {
 		currentProblem = newProblem;
 		loadCurrentProblem();
@@ -179,6 +194,7 @@ public class ProblemManager {
 		controller.showRunTimeButtons(controller.hasCodeListing());
     }
     
+    public ObservableList<Problem> getProblemListing(){ return problemListing;}
     public String getCurrentProblemName() {
     	return currentProblem.toString();
     }

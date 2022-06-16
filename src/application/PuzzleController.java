@@ -3,6 +3,9 @@ package application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +15,8 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -36,6 +41,7 @@ import application.keyword.UnknownKeywordException;
 import application.keyword.Variable;
 import application.problem.Problem;
 import application.problem.ProblemManager;
+import application.problem.ProblemStats;
 
 public class PuzzleController {
 
@@ -52,6 +58,13 @@ public class PuzzleController {
     @FXML private Canvas cvsHand;
     @FXML private Canvas cvsContainer;
     @FXML private TextField txtErrorMsg;
+    
+    @FXML private ChoiceBox<Problem> cbProblemList;
+    @FXML private Label lblStatsLastRun;
+    @FXML private Label lblStatsAttempts;
+    @FXML private Label lblStatsFailCount;
+    @FXML private Label lblStatsErrorCount;
+    @FXML private Label lblStatsSuccessRate;
     
     @FXML private ListView<Problem> lstProblemListing;
     
@@ -86,6 +99,10 @@ public class PuzzleController {
     	pm = new ProblemManager(this);
     	ProblemView.setExpandedPane(SelectedProblem);
     	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
+    	lstProblemListing.getSelectionModel().select(pm.getCurrentProblemIndex());
+    	
+    	cbProblemList.setItems(pm.getProblemListing());
+    	cbProblemList.getSelectionModel().select(pm.getCurrentProblemIndex());
     	
     	fullListing = FXCollections.observableArrayList();
     	lstListing.setItems(fullListing);
@@ -102,6 +119,16 @@ public class PuzzleController {
 
         hboxRunningButtons.setManaged(false);
 		display();
+    }
+    
+    @FXML private void changeStatsProblem(ActionEvent ev) {
+        Problem selectedItem = cbProblemList.getSelectionModel().getSelectedItem();
+        ProblemStats ps = selectedItem.getStats();
+        lblStatsLastRun.setText(ps.getLastRun());
+        lblStatsAttempts.setText(""+ps.getAttempts());
+        lblStatsFailCount.setText(""+ps.getFailCount());
+        lblStatsErrorCount.setText(""+ps.getErrorCount());
+        lblStatsSuccessRate.setText(ps.getSuccessRate());
     }
     
     public Container getContainer() {return container;}
@@ -405,6 +432,8 @@ public class PuzzleController {
     	}
     	lstListing.refresh();
         SelectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
+    	Main.primaryStage.setTitle("Programming Puzzles - " + pm.getCurrentProblemName() );
+
     }
     
     public void manageButtons(boolean running) {
