@@ -11,7 +11,7 @@ public class Increment extends CommandTerm {
 	public Increment(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
-		term = "increment";
+		commandTermName = "increment";
 	}
 
 	protected void populateFXML () {

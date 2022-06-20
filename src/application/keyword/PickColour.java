@@ -12,7 +12,7 @@ public class PickColour extends Pick {
 	public PickColour(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
-		term = "pick";
+		commandTermName = "pick";
 	}
 	
 	@Override

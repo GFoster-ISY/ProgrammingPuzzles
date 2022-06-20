@@ -11,7 +11,7 @@ public class Look extends CommandTerm {
 	public Look(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		term = "look";
+		commandTermName = "look";
 	}
 	
 	@Override

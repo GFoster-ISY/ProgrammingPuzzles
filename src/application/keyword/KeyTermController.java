@@ -48,7 +48,8 @@ public class KeyTermController {
     	Stage stage = (Stage) fxmlEmbed.getScene().getWindow();
         stage.close();    	
     }
-    public void setKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
+    public static CommandTerm getNewKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
+    	CommandTerm keyword;
     	if (term.equals("put(n)")){
     		keyword = new Put(pc);
     	} else if(term.equals("pick()")){
@@ -70,6 +71,11 @@ public class KeyTermController {
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
+    	return keyword;
+    }
+    
+	public void setKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
+		keyword = getNewKeyTerm(term, pc);
     	displayNestedFXML();
     }
     
@@ -81,7 +87,7 @@ public class KeyTermController {
     
     public int argCount() {return keyword.argCount();}
     protected void displayNestedFXML() {
-    	lblCommand.setText(keyword.term);
+    	lblCommand.setText(keyword.commandTermName);
     	keyword.display(fxmlEmbed, this);
     	fxmlEmbed.setMinHeight(getArgCount()*30);
     	gridPane.setMinHeight(getArgCount()*30+60);

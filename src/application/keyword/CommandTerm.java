@@ -2,6 +2,10 @@ package application.keyword;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
@@ -10,14 +14,16 @@ import javafx.scene.layout.Pane;
 
 public abstract class CommandTerm {
 
-	protected String term;
+	protected String commandTermName;
 	protected ArrayList<String> args;
 	protected boolean needsClosure;
 	protected boolean closesIndent;
 	protected int indentLevel;
+	
 	protected NestedController controller;
-	protected String FXMLFileName;
 	protected PuzzleController puzzleController;
+	protected String FXMLFileName;
+	
 	protected String errorMessage;
 	protected boolean runningState;
 	
@@ -33,7 +39,7 @@ public abstract class CommandTerm {
 			args.add("");
 		}
 	}
-	
+
 	public void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,controller.getArgValue(i));
@@ -54,7 +60,42 @@ public abstract class CommandTerm {
 	}
 	public String toString() {
 		String argList = String.join(",", args);
-		return indent() + term + "(" + argList + ")";
+		return indent() + commandTermName + "(" + argList + ")";
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject object = new JSONObject();
+		object.put("keyword", commandTermName);
+		if (args.size()>0) {
+			JSONArray array = new JSONArray();
+			for(String arg : args){
+				array.add(arg);
+			}
+			object.put("Arguments", array);
+		}
+		return object;
+	}
+	
+	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line) {
+		String term = (String)line.get("keyword");
+		ArrayList<String> args = new ArrayList<String>();
+		if (line.containsKey("Arguments")) {
+			JSONArray jsonArray = (JSONArray) line.get("Arguments");
+			Iterator<String> iterator = jsonArray.iterator();
+	         while(iterator.hasNext()) {
+	           args.add(iterator.next());
+	         }
+		}
+		CommandTerm ct;
+		try {
+			ct = KeyTermController.getNewKeyTerm(term, pc);
+			ct.args = args;
+        } catch (UnknownKeywordException ex) {
+        	System.err.println("UnknownKeywordException: " + ex.getMessage());
+        	ex.printStackTrace();
+        	return null;
+        }
+		return ct;
 	}
 	
 	public CommandTerm getClosure() {return null;}

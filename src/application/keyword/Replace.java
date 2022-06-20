@@ -9,7 +9,7 @@ public class Replace extends CommandTerm {
 	public Replace(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		term = "replace";
+		commandTermName = "replace";
 	}
 
 	@Override

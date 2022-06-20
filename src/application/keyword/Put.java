@@ -11,7 +11,7 @@ public class Put extends CommandTerm {
 	public Put(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
-		term = "put";
+		commandTermName = "put";
 	}
 
 	protected void populateFXML () {

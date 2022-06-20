@@ -156,6 +156,9 @@ public class PuzzleController {
     public boolean hasCodeListing() {
     	return fullListing.size() > 0;
     }
+    public ObservableList<CommandTerm> getListing(){
+    	return fullListing;
+    }
     public void clearListingSelection() {
     	lstListing.getSelectionModel().clearSelection();
 		lstListing.refresh();

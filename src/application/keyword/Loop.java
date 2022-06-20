@@ -14,7 +14,7 @@ public class Loop extends CommandTerm {
 	public Loop(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedOneArg.fxml";
-		term = "loop";
+		commandTermName = "loop";
 		needsClosure = true;
 		endLoop = new EndLoop(puzzleController, this);
 	}

@@ -5,11 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import application.PuzzleController;
+import application.keyword.CommandTerm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -118,12 +120,12 @@ public class ProblemManager {
 
     @SuppressWarnings("unchecked")
 	private void storeResultInJSON(boolean passed) {	
-    	Map<String, Map<String,Object>> results = (Map<String, Map<String,Object>>)generalJSONObject.get("Results");
+    	Map<String, Object> results = (Map<String, Object>)generalJSONObject.get("Results");
     	if (results == null) {
     		results = new JSONObject();
     		generalJSONObject.put("Results", results);
     	}
-    	Map<String, Object> problemStats = results.get(currentProblem.getName());
+    	Map<String, Object> problemStats = (Map<String,Object>)results.get(currentProblem.getName());
     	if (problemStats == null) {
     		problemStats = new JSONObject();
     		results.put(currentProblem.getName(), problemStats);
@@ -134,6 +136,11 @@ public class ProblemManager {
     		attempts++;
     	}
     	problemStats.put("Attempts", attempts);
+    	JSONArray lastListing = new JSONArray();
+    	for (CommandTerm ct : controller.getListing()) {
+    		lastListing.add(ct.toJSON());
+    	}
+    	problemStats.put("LastRunListing",lastListing);
     	if (controller.exec.inError()) {
         	long errorCount = 1;
         	if (problemStats.containsKey("ErrorCount")) {
@@ -155,6 +162,7 @@ public class ProblemManager {
     			generalJSONObject.put("CurrentProblem",currentProblem.getNextProblemName());
     		}
     		problemStats.put("LastRun", "SUCCESS");
+        	problemStats.put("LastSuccessfulListing",lastListing);
     	}
     	//Write JSON file
         try (FileWriter file = new FileWriter("resources/currentProblem.json")) {

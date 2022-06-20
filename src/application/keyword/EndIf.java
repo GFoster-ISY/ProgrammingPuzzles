@@ -11,7 +11,7 @@ public class EndIf extends CommandTerm {
 	public EndIf(PuzzleController pc, CommandTerm theElse) {
 		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		term = "endif";
+		commandTermName = "endif";
 		closesIndent = true;
 		elseCondition = theElse;
 	}

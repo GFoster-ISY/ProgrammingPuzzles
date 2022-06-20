@@ -11,12 +11,12 @@ public class Variable extends CommandTerm {
 	public Variable(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedTwoArgs.fxml";
-		term = "variable";
+		commandTermName = "variable";
 	}
 	public Variable(PuzzleController pc, String name, int value) {
 		super(pc);
 		FXMLFileName = "NestedTwoArgs.fxml";
-		term = "variable";
+		commandTermName = "variable";
 		args.set(0, name);
 		args.set(1, ""+value);
 	}

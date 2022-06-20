@@ -11,7 +11,7 @@ public class Pick extends CommandTerm {
 	public Pick(PuzzleController pc) {
 		super(pc);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		term = "pick";
+		commandTermName = "pick";
 	}
 	
 	@Override
