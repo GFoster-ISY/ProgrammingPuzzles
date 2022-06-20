@@ -22,9 +22,9 @@
    <children>
       <HBox fx:id="hboxRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0">
          <children>
-            <Accordion fx:id="ProblemView">
+            <Accordion fx:id="problemView">
               <panes>
-                <TitledPane fx:id="ProblemListing" animated="false" text="Problem Listing">
+                <TitledPane fx:id="problemListing" animated="false" text="Problem Listing">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -33,7 +33,7 @@
                         </AnchorPane>
                   </content>
                 </TitledPane>
-                <TitledPane fx:id="SelectedProblem" animated="false" text="Selected Problem">
+                <TitledPane fx:id="selectedProblem" animated="false" text="Selected Problem">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="524.0" prefWidth="400.0">
                            <children>
@@ -58,7 +58,7 @@
                         </AnchorPane>
                   </content>
                 </TitledPane>
-                <TitledPane fx:id="Statistics" animated="false" text="Statistics">
+                <TitledPane fx:id="statistics" animated="false" text="Statistics">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>

@@ -4,8 +4,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -40,6 +38,7 @@ import application.keyword.KeyTermController;
 import application.keyword.UnknownKeywordException;
 import application.keyword.Variable;
 import application.problem.Problem;
+import application.problem.ProblemListViewCell;
 import application.problem.ProblemManager;
 import application.problem.ProblemStats;
 
@@ -47,10 +46,10 @@ public class PuzzleController {
 
     @FXML private HBox hboxRoot;
 
-    @FXML private Accordion ProblemView;
-	@FXML private TitledPane ProblemListing;
-	@FXML private TitledPane SelectedProblem;
-	@FXML private TitledPane Statistics;
+    @FXML private Accordion problemView;
+	@FXML private TitledPane problemListing;
+	@FXML private TitledPane selectedProblem;
+	@FXML private TitledPane statistics;
 	
     @FXML private VBox vboxSelectedProblem;
     @FXML private TextArea txtProblem;
@@ -97,9 +96,10 @@ public class PuzzleController {
     
     @FXML void initialize() {
     	pm = new ProblemManager(this);
-    	ProblemView.setExpandedPane(SelectedProblem);
+    	problemView.setExpandedPane(selectedProblem);
     	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
     	lstProblemListing.getSelectionModel().select(pm.getCurrentProblemIndex());
+    	lstProblemListing.setCellFactory(problemCell -> new ProblemListViewCell());
     	
     	cbProblemList.setItems(pm.getProblemListing());
     	cbProblemList.getSelectionModel().select(pm.getCurrentProblemIndex());
@@ -177,11 +177,12 @@ public class PuzzleController {
     
     @FXML private void selectProblem(MouseEvent click) {
     	if (click.getClickCount() == 2) {
-            Problem selectedProblem = lstProblemListing.getSelectionModel()
+            Problem problem = lstProblemListing.getSelectionModel()
                                                      .getSelectedItem();
-            pm.setCurrentProblem(selectedProblem);
+            pm.setCurrentProblem(problem);
             display();
-            SelectedProblem.setExpanded(true);
+            lstProblemListing.refresh();
+            selectedProblem.setExpanded(true);
          }
     }
     
@@ -393,8 +394,8 @@ public class PuzzleController {
     	cvsCups.setWidth(columnWidth);
     	cvsHand.setWidth(columnWidth);
     	cvsContainer.setWidth(columnWidth);
-    	ProblemView.setMinWidth(columnWidth);
-    	ProblemView.setMaxWidth(columnWidth);
+    	problemView.setMinWidth(columnWidth);
+    	problemView.setMaxWidth(columnWidth);
     	lstListing.setMinWidth(columnWidth);
     	lstListing.setMaxWidth(columnWidth);
     	lstLexicon.setMinWidth(columnWidth);
@@ -431,7 +432,7 @@ public class PuzzleController {
     		}
     	}
     	lstListing.refresh();
-        SelectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
+        selectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
     	Main.primaryStage.setTitle("Programming Puzzles - " + pm.getCurrentProblemName() );
 
     }

@@ -1,6 +1,5 @@
 package application.problem;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class ProblemManager {
            Map<?, JSONObject> problems = ((Map<?, JSONObject>)generalJSONObject.get("Results"));
            String currentProblemName = (String)generalJSONObject.get("CurrentProblem");
            for(Object name: problems.keySet()) {
-        	   Problem newProblem = new Problem(controller, (String)name);
+        	   Problem newProblem = new Problem(controller, this, (String)name);
         	   problemListing.add(newProblem);
         	   ProblemStats stats = new ProblemStats(controller, newProblem, problems.get(name));
         	   statsListing.add(stats);
@@ -59,7 +58,7 @@ public class ProblemManager {
         	   }
            }
         } catch(IOException | ParseException e) {
-        	problemListing.add(new Problem(controller, "Problem1"));
+        	problemListing.add(new Problem(controller, this, "Problem1"));
         	// File is missing so create it.
         	JSONObject obj = new JSONObject();
             obj.put("CurrentProblem", "Problem1");
@@ -76,6 +75,9 @@ public class ProblemManager {
 		return problemListing;
 	}
 	
+	public boolean isCurrentProblem(Problem p) {
+		return p.equals(currentProblem);
+	}
 	public int getCurrentProblemIndex() {
 		if (currentProblem == null) {
 			currentProblem = problemListing.get(0);

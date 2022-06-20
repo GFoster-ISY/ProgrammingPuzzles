@@ -19,10 +19,12 @@ public class Problem {
 	private String nextProblemName;
 	private ProblemStats ps;
     private PuzzleController controller;
+    private ProblemManager pm;
     private Map<?, ?> solution;
 	
-	public Problem(PuzzleController pc, String name) {
+	public Problem(PuzzleController pc, ProblemManager manager, String name) {
     	controller = pc;
+    	pm = manager;
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
 		nextProblemName = null;
@@ -117,5 +119,9 @@ public class Problem {
 	
 	public String getNextProblemName() {
 		return nextProblemName;
+	}
+	
+	public boolean isCurrentProblem() {
+		return pm.isCurrentProblem(this);
 	}
 }
