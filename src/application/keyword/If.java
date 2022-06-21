@@ -16,8 +16,8 @@ public class If extends CommandTerm {
     protected CommandTerm theElse;
     public boolean conditionState = false;
 	
-	public If(PuzzleController pc) {
-		super(pc);
+	public If(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedIf.fxml";
 		commandTermName = "if";
 		needsClosure = true;

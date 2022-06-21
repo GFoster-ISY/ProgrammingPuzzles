@@ -11,7 +11,7 @@ public class Else extends CommandTerm {
     protected CommandTerm endIf;
 	CommandTerm ifCondition;
 	public Else(PuzzleController pc, CommandTerm theIf) {
-		super(pc);
+		super(pc, "else");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "else";
 		closesIndent = true;

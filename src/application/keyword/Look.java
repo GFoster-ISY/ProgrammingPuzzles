@@ -8,8 +8,8 @@ import javafx.fxml.FXMLLoader;
 
 public class Look extends CommandTerm {
 	
-	public Look(PuzzleController pc) {
-		super(pc);
+	public Look(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "look";
 	}

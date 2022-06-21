@@ -8,8 +8,8 @@ import javafx.fxml.FXMLLoader;
 
 public class Put extends CommandTerm {
 	
-	public Put(PuzzleController pc) {
-		super(pc);
+	public Put(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "put";
 	}

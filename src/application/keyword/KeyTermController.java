@@ -51,23 +51,25 @@ public class KeyTermController {
     public static CommandTerm getNewKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
     	CommandTerm keyword;
     	if (term.equals("put(n)")){
-    		keyword = new Put(pc);
+    		keyword = new Put(pc, term);
     	} else if(term.equals("pick()")){
-    		keyword = new Pick(pc);
+    		keyword = new Pick(pc, term);
     	} else if(term.equals("pick(colour)")){
-    		keyword = new PickColour(pc);
+    		keyword = new PickColour(pc, term);
     	} else if(term.equals("loop")){
-    		keyword = new Loop(pc);
+    		keyword = new Loop(pc, term);
     	} else if(term.equals("loop until")){
-    		keyword = new LoopUntil(pc);
+    		keyword = new LoopUntil(pc, term);
     	} else if(term.equals("if")){
-    		keyword = new If(pc);
+    		keyword = new If(pc, term);
     	} else if(term.equals("replace()")){
-    		keyword = new Replace(pc);
+    		keyword = new Replace(pc, term);
     	} else if(term.equals("increment(n)")){
-    		keyword = new Increment(pc);
+    		keyword = new Increment(pc, term);
     	} else if(term.equals("look()")){
-    		keyword = new Look(pc);
+    		keyword = new Look(pc, term);
+    	} else if(term.equals("endloop")){
+    		keyword = null;
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword

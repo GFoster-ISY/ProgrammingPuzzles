@@ -64,6 +64,8 @@ public class PuzzleController {
     @FXML private Label lblStatsFailCount;
     @FXML private Label lblStatsErrorCount;
     @FXML private Label lblStatsSuccessRate;
+    @FXML public ListView<CommandTerm> lstPreviousRun; 
+    @FXML public ListView<CommandTerm> lstPreviousSuccessfulRun; 
     
     @FXML private ListView<Problem> lstProblemListing;
     

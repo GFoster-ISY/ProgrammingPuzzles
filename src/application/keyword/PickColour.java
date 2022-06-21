@@ -9,8 +9,8 @@ import javafx.fxml.FXMLLoader;
 
 public class PickColour extends Pick {
 	
-	public PickColour(PuzzleController pc) {
-		super(pc);
+	public PickColour(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "pick";
 	}

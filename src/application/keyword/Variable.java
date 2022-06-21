@@ -8,13 +8,13 @@ import javafx.fxml.FXMLLoader;
 
 public class Variable extends CommandTerm {
 		
-	public Variable(PuzzleController pc) {
-		super(pc);
+	public Variable(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedTwoArgs.fxml";
 		commandTermName = "variable";
 	}
 	public Variable(PuzzleController pc, String name, int value) {
-		super(pc);
+		super(pc, "variable");
 		FXMLFileName = "NestedTwoArgs.fxml";
 		commandTermName = "variable";
 		args.set(0, name);

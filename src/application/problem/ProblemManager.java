@@ -22,6 +22,8 @@ public class ProblemManager {
 
 	private ObservableList<Problem> problemListing;
 	private ObservableList<ProblemStats> statsListing;
+	private ObservableList<CommandTerm> previousRun;
+	private ObservableList<CommandTerm> previousSuccessfulRun;
 	private Problem currentProblem;
     private JSONObject generalJSONObject;
     private PuzzleController controller;
@@ -29,7 +31,11 @@ public class ProblemManager {
 	public ProblemManager(PuzzleController pc) {
     	problemListing = FXCollections.observableArrayList();
     	statsListing = FXCollections.observableArrayList();
+    	previousRun = FXCollections.observableArrayList();
+    	previousSuccessfulRun = FXCollections.observableArrayList();
     	controller = pc;
+    	controller.lstPreviousRun.setItems(previousRun);
+    	controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRun);
 	}
 
 	private Problem findProblem(String name) {
@@ -55,6 +61,15 @@ public class ProblemManager {
         	   ProblemStats stats = new ProblemStats(controller, newProblem, problems.get(name));
         	   statsListing.add(stats);
         	   newProblem.setStats(stats);
+
+        	   //previousRun = FXCollections.observableArrayList();
+        	   JSONArray commands = (JSONArray)problems.get(name).get("LastRunListing");
+        	   if (commands != null) {
+	        	   for (Object line : commands) {
+	        		   previousRun.add(CommandTerm.fromJSON(controller, (JSONObject)line));
+	        	   }
+        	   }
+        	   
         	   if (currentProblemName.equals((String)name)) {
         		   currentProblem = newProblem;
         	   }

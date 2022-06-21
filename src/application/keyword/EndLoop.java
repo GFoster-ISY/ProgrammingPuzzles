@@ -10,7 +10,7 @@ public class EndLoop extends CommandTerm {
 	protected Loop openLoop;
 	
 	public EndLoop(PuzzleController pc, CommandTerm loop) {
-		super(pc);
+		super(pc, "endloop");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "endloop";
 		closesIndent = true;

@@ -8,8 +8,8 @@ import javafx.fxml.FXMLLoader;
 
 public class Pick extends CommandTerm {
 	
-	public Pick(PuzzleController pc) {
-		super(pc);
+	public Pick(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "pick";
 	}

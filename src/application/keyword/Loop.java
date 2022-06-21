@@ -11,8 +11,8 @@ public class Loop extends CommandTerm {
 
 	int loopCounter = 1;
 	
-	public Loop(PuzzleController pc) {
-		super(pc);
+	public Loop(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop";
 		needsClosure = true;

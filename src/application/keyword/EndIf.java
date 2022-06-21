@@ -9,7 +9,7 @@ public class EndIf extends CommandTerm {
 
 	CommandTerm elseCondition;
 	public EndIf(PuzzleController pc, CommandTerm theElse) {
-		super(pc);
+		super(pc, "endif");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "endif";
 		closesIndent = true;

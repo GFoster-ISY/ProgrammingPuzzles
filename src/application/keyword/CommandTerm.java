@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 
 public abstract class CommandTerm {
 
+	private String keyword;
 	protected String commandTermName;
 	protected ArrayList<String> args;
 	protected boolean needsClosure;
@@ -27,9 +28,10 @@ public abstract class CommandTerm {
 	protected String errorMessage;
 	protected boolean runningState;
 	
-	CommandTerm(PuzzleController pc){
+	CommandTerm(PuzzleController pc, String keyword){
 		errorMessage = null;
 		puzzleController = pc;
+		this.keyword = keyword;
 		needsClosure = false;
 		closesIndent = false;
 		indentLevel = 0;
@@ -65,7 +67,7 @@ public abstract class CommandTerm {
 	
 	public JSONObject toJSON() {
 		JSONObject object = new JSONObject();
-		object.put("keyword", commandTermName);
+		object.put("keyword", keyword);
 		if (args.size()>0) {
 			JSONArray array = new JSONArray();
 			for(String arg : args){
@@ -89,7 +91,11 @@ public abstract class CommandTerm {
 		CommandTerm ct;
 		try {
 			ct = KeyTermController.getNewKeyTerm(term, pc);
-			ct.args = args;
+			if (ct != null) {
+				ct.args = args;
+			} else {
+				// TODO it could be a closing keyword such as endloop
+			}
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
         	ex.printStackTrace();

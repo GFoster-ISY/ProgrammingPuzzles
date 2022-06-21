@@ -11,8 +11,8 @@ public class LoopUntil extends CommandTerm {
 	protected Variable counter;
 
 	
-	public LoopUntil(PuzzleController pc) {
-		super(pc);
+	public LoopUntil(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop until";
 		needsClosure = true;

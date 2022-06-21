@@ -8,8 +8,8 @@ import javafx.fxml.FXMLLoader;
 
 public class Increment extends CommandTerm {
 	
-	public Increment(PuzzleController pc) {
-		super(pc);
+	public Increment(PuzzleController pc, String term) {
+		super(pc, term);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "increment";
 	}
