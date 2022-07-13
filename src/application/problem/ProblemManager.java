@@ -3,7 +3,9 @@ package application.problem;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -31,12 +33,8 @@ public class ProblemManager {
 	public ProblemManager(PuzzleController pc) {
     	problemListing = FXCollections.observableArrayList();
     	statsListing = FXCollections.observableArrayList();
-    	previousRun = FXCollections.observableArrayList();
-    	previousSuccessfulRun = FXCollections.observableArrayList();
     	controller = pc;
-    	controller.lstPreviousRun.setItems(previousRun);
-    	controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRun);
-	}
+   	}
 
 	private Problem findProblem(String name) {
 		for(Problem problem : problemListing) {
@@ -49,6 +47,7 @@ public class ProblemManager {
 	@SuppressWarnings("unchecked")
 	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
     	JSONParser parser = new JSONParser();
+    	Stack<CommandTerm> openCommandTerm = new Stack<>();
         try {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
            generalJSONObject = (JSONObject)obj;
@@ -62,16 +61,27 @@ public class ProblemManager {
         	   statsListing.add(stats);
         	   newProblem.setStats(stats);
 
-        	   //previousRun = FXCollections.observableArrayList();
-        	   JSONArray commands = (JSONArray)problems.get(name).get("LastRunListing");
-        	   if (commands != null) {
-	        	   for (Object line : commands) {
-	        		   previousRun.add(CommandTerm.fromJSON(controller, (JSONObject)line));
-	        	   }
-        	   }
-        	   
         	   if (currentProblemName.equals((String)name)) {
         		   currentProblem = newProblem;
+
+        		   previousRun = FXCollections.observableArrayList();
+            	   JSONArray commands = (JSONArray)problems.get(name).get("LastRunListing");
+            	   if (commands != null) {
+    	        	   for (Object line : commands) {
+    	        		   previousRun.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
+    	        	   }
+    	        	   controller.indentCode(controller.lstPreviousRun, previousRun);
+            	   }
+            	   controller.lstPreviousRun.setItems(previousRun);
+            	   previousSuccessfulRun = FXCollections.observableArrayList();
+            	   commands = (JSONArray)problems.get(name).get("LastSuccessfulRunListing");
+            	   if (commands != null) {
+    	        	   for (Object line : commands) {
+    	        		   previousSuccessfulRun.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
+    	        	   }
+    	        	   controller.indentCode(controller.lstPreviousRun, previousSuccessfulRun);
+            	   }
+            	   controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRun);
         	   }
            }
         } catch(IOException | ParseException e) {

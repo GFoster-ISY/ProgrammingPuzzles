@@ -3,6 +3,7 @@ package application.keyword;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -78,7 +79,7 @@ public abstract class CommandTerm {
 		return object;
 	}
 	
-	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line) {
+	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line, Stack<CommandTerm> openCT) {
 		String term = (String)line.get("keyword");
 		ArrayList<String> args = new ArrayList<String>();
 		if (line.containsKey("Arguments")) {
@@ -93,8 +94,12 @@ public abstract class CommandTerm {
 			ct = KeyTermController.getNewKeyTerm(term, pc);
 			if (ct != null) {
 				ct.args = args;
+				if (ct.hasClosure()) {
+					openCT.push(ct);
+				}
 			} else {
 				// TODO it could be a closing keyword such as endloop
+				ct = KeyTermController.getClosingKeyTerm(term, pc, openCT);
 			}
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());

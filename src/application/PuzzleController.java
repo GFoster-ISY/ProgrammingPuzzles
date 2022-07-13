@@ -261,7 +261,7 @@ public class PuzzleController {
     	if (instruction.hasClosure()) {
     		addInstruction(instruction.getClosure());
     	}
-    	indentCode();
+    	indentCode(lstListing, fullListing);
     }
     
     private void removeInstruction(CommandTerm instruction) {
@@ -275,21 +275,21 @@ public class PuzzleController {
         		removeInstruction(instruction.getChildTerm());
         	}
     	}
-    	indentCode();
+    	indentCode(lstListing, fullListing);
     }
     
-    public void indentCode() {
-    	CommandTerm prev = fullListing.get(0);
+    public void indentCode(ListView<CommandTerm> view, ObservableList<CommandTerm> list) {
+    	CommandTerm prev = list.get(0);
     	int indentLevel = 0;
 		prev.setIndentLevel(indentLevel);
-    	for ( int i = 1; i < fullListing.size(); i++){
-    		CommandTerm line = fullListing.get(i);
+    	for ( int i = 1; i < list.size(); i++){
+    		CommandTerm line = list.get(i);
     		if (prev.hasClosure())   {indentLevel++;}
     		if (line.getClosesIndent()) {indentLevel--;}
     		line.setIndentLevel(indentLevel);
     		prev = line;
     	};
-    	lstListing.refresh();
+    	view.refresh();
     }
     
     public void addVariable(Variable var) {

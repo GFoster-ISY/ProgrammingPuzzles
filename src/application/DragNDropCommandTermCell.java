@@ -65,7 +65,7 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 				items.remove(draggedId);
 				items.add(thisId, draggedObject);
 
-				pc.indentCode();
+				pc.indentCode(getListView(), items);
 				getListView().getSelectionModel().clearSelection();
 			}
 			event.setDropCompleted(success);

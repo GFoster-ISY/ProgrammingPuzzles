@@ -1,5 +1,7 @@
 package application.keyword;
 
+import java.util.Stack;
+
 import application.PuzzleController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -70,6 +72,16 @@ public class KeyTermController {
     		keyword = new Look(pc, term);
     	} else if(term.equals("endloop")){
     		keyword = null;
+    	} else {
+    		throw new UnknownKeywordException (term);
+    	}// end if on keyword
+    	return keyword;
+    }
+    
+    public static CommandTerm getClosingKeyTerm(String term, PuzzleController pc, Stack<CommandTerm> openCT)  throws UnknownKeywordException{
+    	CommandTerm keyword;
+    	if (term.equals("endloop")){
+    		keyword = new EndLoop(pc, openCT.pop()); // TODO check that the end match the open (ie you are not paring up an endloop with an if)
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
