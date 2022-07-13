@@ -64,8 +64,10 @@ public class PuzzleController {
     @FXML private Label lblStatsFailCount;
     @FXML private Label lblStatsErrorCount;
     @FXML private Label lblStatsSuccessRate;
-    @FXML public ListView<CommandTerm> lstPreviousRun; 
+    @FXML public ListView<CommandTerm> lstPreviousRun;
+    @FXML private Button btnPrevCopy;
     @FXML public ListView<CommandTerm> lstPreviousSuccessfulRun; 
+    @FXML private Button btnSuccessCopy;
     
     @FXML private ListView<Problem> lstProblemListing;
     
@@ -189,6 +191,13 @@ public class PuzzleController {
             lstProblemListing.refresh();
             selectedProblem.setExpanded(true);
          }
+    }
+    
+    @FXML private void prevCopy() {
+    	fullListing = lstPreviousRun.getItems();
+    	lstListing.setItems(fullListing);
+        selectedProblem.setExpanded(true);
+        showRunTimeButtons(fullListing.size() > 0);
     }
     
     public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
