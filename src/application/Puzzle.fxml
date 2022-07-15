@@ -97,12 +97,12 @@
                                                 <VBox>
                                                    <children>
                                                       <ListView fx:id="lstPreviousRun" prefHeight="180.0" prefWidth="379.0" VBox.vgrow="ALWAYS" />
-                                                      <Button fx:id="btnPrevCopy" mnemonicParsing="false" onAction="#prevCopy" text="Copy" />
+                                                      <Button fx:id="btnPrevCopy" mnemonicParsing="false" onAction="#copyPrevCode" text="Copy" />
                                                    </children>
                                                 </VBox>
                                           </content>
                                         </TitledPane>
-                                        <TitledPane animated="false" text="Last Successful Run">
+                                        <TitledPane animated="false" expanded="false" text="Last Successful Run">
                                           <content>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                    <children>

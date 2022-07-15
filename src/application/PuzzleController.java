@@ -193,7 +193,7 @@ public class PuzzleController {
          }
     }
     
-    @FXML private void prevCopy() {
+    @FXML private void copyPrevCode() {
     	fullListing = lstPreviousRun.getItems();
     	lstListing.setItems(fullListing);
         selectedProblem.setExpanded(true);
@@ -268,7 +268,7 @@ public class PuzzleController {
     private void addInstruction(CommandTerm instruction) {
     	fullListing.add(instruction);
     	if (instruction.hasClosure()) {
-    		addInstruction(instruction.getClosure());
+    		addInstruction(instruction.getChildTerm());
     	}
     	indentCode(lstListing, fullListing);
     }

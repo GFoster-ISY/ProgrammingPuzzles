@@ -3,6 +3,8 @@ package application.problem;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -47,7 +49,7 @@ public class ProblemManager {
 	@SuppressWarnings("unchecked")
 	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
     	JSONParser parser = new JSONParser();
-    	Stack<CommandTerm> openCommandTerm = new Stack<>();
+    	HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
         try {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
            generalJSONObject = (JSONObject)obj;
@@ -65,6 +67,7 @@ public class ProblemManager {
         		   currentProblem = newProblem;
 
         		   previousRun = FXCollections.observableArrayList();
+        		   openCommandTerm = initOpenCommandTerm();
             	   JSONArray commands = (JSONArray)problems.get(name).get("LastRunListing");
             	   if (commands != null) {
     	        	   for (Object line : commands) {
@@ -72,8 +75,11 @@ public class ProblemManager {
     	        	   }
     	        	   controller.indentCode(controller.lstPreviousRun, previousRun);
             	   }
+            	   modifyAllEndCommandTerms(previousRun, openCommandTerm);
             	   controller.lstPreviousRun.setItems(previousRun);
+            	   
             	   previousSuccessfulRun = FXCollections.observableArrayList();
+            	   openCommandTerm = initOpenCommandTerm();
             	   commands = (JSONArray)problems.get(name).get("LastSuccessfulRunListing");
             	   if (commands != null) {
     	        	   for (Object line : commands) {
@@ -81,6 +87,7 @@ public class ProblemManager {
     	        	   }
     	        	   controller.indentCode(controller.lstPreviousRun, previousSuccessfulRun);
             	   }
+            	   modifyAllEndCommandTerms(previousSuccessfulRun, openCommandTerm);
             	   controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRun);
         	   }
            }
@@ -102,6 +109,22 @@ public class ProblemManager {
 		return problemListing;
 	}
 	
+	private HashMap<String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
+		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
+	   openCommandTerm = new HashMap<>();
+	   openCommandTerm.put("loop",new ArrayDeque<>());
+	   openCommandTerm.put("if",new ArrayDeque<>());
+	   openCommandTerm.put("else",new ArrayDeque<>());
+	   return openCommandTerm;
+	}
+	public void modifyAllEndCommandTerms(ObservableList<CommandTerm> commands, HashMap<String, ArrayDeque<CommandTerm>> openCT) {
+		for (CommandTerm ct : commands) {
+			if (ct.getClosesIndent()) {
+				ct.setParent(openCT.get(ct.getParentKeyword()).poll());
+				ct.getParentTerm().setChild(ct);
+			}
+		}
+	}
 	public boolean isCurrentProblem(Problem p) {
 		return p.equals(currentProblem);
 	}

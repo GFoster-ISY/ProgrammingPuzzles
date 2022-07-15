@@ -22,7 +22,8 @@ public class Else extends CommandTerm {
 
 	public CommandTerm getParentTerm() {return ifCondition;}
 	public CommandTerm getChildTerm() {return endIf;}
-	@Override public CommandTerm getClosure() {return endIf;}
+	public String getParentKeyword() {return "if";}
+//	@Override public CommandTerm getClosure() {return endIf;}
 	
 	@Override
 	protected void setController(FXMLLoader load) {

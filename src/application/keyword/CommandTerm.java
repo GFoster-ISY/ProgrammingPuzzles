@@ -1,9 +1,10 @@
 package application.keyword;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,6 +29,8 @@ public abstract class CommandTerm {
 	
 	protected String errorMessage;
 	protected boolean runningState;
+	protected boolean hoverState;
+	protected boolean hoverLinkedState;
 	
 	CommandTerm(PuzzleController pc, String keyword){
 		errorMessage = null;
@@ -37,6 +40,8 @@ public abstract class CommandTerm {
 		closesIndent = false;
 		indentLevel = 0;
 		runningState = false;
+		hoverState = false;
+		hoverLinkedState = false;
 		args = new ArrayList<>();
 		for (int i = 0; i < argCount() ; i++) {
 			args.add("");
@@ -50,10 +55,14 @@ public abstract class CommandTerm {
 	}
 	
 	public int argCount() {return 0;}
+	public String getKeyword() {return keyword;}
+	public String getParentKeyword() {return "";}
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
 	public CommandTerm getParentTerm() {return null;}
+	public void setParent(CommandTerm ct) {}
 	public CommandTerm getChildTerm() {return null;}
+	public void setChild(CommandTerm ct) {}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
 	public void abort() { errorMessage = "User aborted execution of the code.";}
@@ -79,7 +88,7 @@ public abstract class CommandTerm {
 		return object;
 	}
 	
-	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line, Stack<CommandTerm> openCT) {
+	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line, HashMap<String, ArrayDeque<CommandTerm>> openCT) {
 		String term = (String)line.get("keyword");
 		ArrayList<String> args = new ArrayList<String>();
 		if (line.containsKey("Arguments")) {
@@ -95,11 +104,10 @@ public abstract class CommandTerm {
 			if (ct != null) {
 				ct.args = args;
 				if (ct.hasClosure()) {
-					openCT.push(ct);
+					openCT.get(term).push(ct);
 				}
 			} else {
-				// TODO it could be a closing keyword such as endloop
-				ct = KeyTermController.getClosingKeyTerm(term, pc, openCT);
+				ct = KeyTermController.getClosingKeyTerm(term, pc);
 			}
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
@@ -109,7 +117,6 @@ public abstract class CommandTerm {
 		return ct;
 	}
 	
-	public CommandTerm getClosure() {return null;}
 	public String errorMsg() { return errorMessage;}
 	public void clearError() { errorMessage = null;}
 	
@@ -128,6 +135,10 @@ public abstract class CommandTerm {
 	public void setRunningState(boolean state) {runningState = state;}
 	public boolean isRunning() {return runningState;}
 	public boolean isInError() {return errorMessage != null;}
+	public void setHover(boolean state) {hoverState = state;}
+	public boolean isHover() {return hoverState;}
+	public void setHoverLinked(boolean state) {hoverLinkedState = state;}
+	public boolean isHoverLinked() {return hoverLinkedState;}
 	public CommandTerm nextCommand() {return null;}
 	public void reset() {
 		clearError();

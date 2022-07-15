@@ -28,7 +28,6 @@ public class LoopUntil extends CommandTerm {
 	
 	public int getLoopCounter() {return counter.getNumber();}
 	public CommandTerm getChildTerm() {return endLoop;}
-	@Override public CommandTerm getClosure() {return endLoop;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedOneArgController)load.getController();

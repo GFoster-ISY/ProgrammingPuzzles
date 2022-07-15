@@ -17,8 +17,6 @@ public class EndLoopUntil extends CommandTerm {
 		openLoop = (LoopUntil)loop;
 	}
 	
-	@Override public CommandTerm getClosure() {return null;}
-
 	public CommandTerm getParentTerm() {return openLoop;}
 	
 	@Override protected void setController(FXMLLoader load) {

@@ -15,7 +15,9 @@ public class EndIf extends CommandTerm {
 		closesIndent = true;
 		elseCondition = theElse;
 	}
+
 	public CommandTerm getParentTerm() {return elseCondition;}
+	public String getParentKeyword() {return "else";}
 	@Override
 	protected void setController(FXMLLoader load) {
 		controller = (NestedZeroArgsController)load.getController();

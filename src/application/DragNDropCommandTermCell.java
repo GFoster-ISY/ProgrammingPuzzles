@@ -10,14 +10,40 @@ import javafx.scene.input.TransferMode;
 public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 
 	private static final String DEFAULT_BACKGROUND = "derive(-fx-base,80%)";
+    private static final String HOVER_BACKGROUND = "derive(CornflowerBlue, 40%)";
+    private static final String LINKED_BACKGROUND = "derive(CornflowerBlue, 80%)";
     private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
     private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
-    private PuzzleController controller;;
+    private PuzzleController controller;
     
 	public DragNDropCommandTermCell (PuzzleController pc) {
 		controller = pc;
 		ListCell<CommandTerm> thisCell = this;
 		
+		setOnMouseEntered(event -> {
+			if (getItem() == null) { return;}
+	        ObservableList<CommandTerm> items = getListView().getItems();
+			CommandTerm ct = items.get(thisCell.getIndex());
+			// It is important to exit if we have already set the cell to hover is true
+			// Because of the call getListView().refresh() which will cause a feedback loop 
+	        if (ct.isHover()) {return;}
+			ct.setHover(true);
+			updateLinkedItems(ct, true);
+			event.consume();
+			getListView().refresh();
+	    });
+	        
+		setOnMouseExited(event -> {
+			if (getItem() == null) { return;}
+	        ObservableList<CommandTerm> items = getListView().getItems();
+			CommandTerm ct = items.get(thisCell.getIndex());
+	        if (!ct.isHover()) {return;}
+			ct.setHover(false);
+			updateLinkedItems(ct, false);
+			event.consume();
+			getListView().refresh();
+	    });
+	        
 		setOnDragDetected (event -> {
 			if (getItem() == null) { return;}
 
@@ -74,6 +100,23 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 
 	} // end of constructor
 	
+	private void updateLinkedItems(CommandTerm item, boolean highlight) {
+		if (item.hasClosure()
+				&& (highlight && item.getChildTerm().isHoverLinked() == item.getChildTerm().isHover()
+				|| (!highlight && item.getChildTerm().isHoverLinked() != item.getChildTerm().isHover())))
+			{
+				item.getChildTerm().setHoverLinked(highlight);
+				updateLinkedItems(item.getChildTerm(),highlight);
+			}
+		if (item.getClosesIndent() 
+				&& (highlight && item.getParentTerm().isHoverLinked() == item.getParentTerm().isHover()
+				|| (!highlight && item.getParentTerm().isHoverLinked() != item.getParentTerm().isHover())))
+			{
+				item.getParentTerm().setHoverLinked(highlight);
+				updateLinkedItems(item.getParentTerm(),highlight);
+			}
+	}
+	
 	@Override
     protected void updateItem(CommandTerm item, boolean empty) {
         super.updateItem(item, empty);
@@ -82,7 +125,11 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
             setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
         } else {
             setText(item.toString());
-            if (item.isInError()) {
+            if (item.isHover()) {
+            	setStyle("-fx-control-inner-background: " + HOVER_BACKGROUND + ";");
+            } else if (item.isHoverLinked()) {
+            	setStyle("-fx-control-inner-background: " + LINKED_BACKGROUND + ";");
+        	} else if (item.isInError()) {
             	setStyle("-fx-control-inner-background: " + ERROR_BACKGROUND + ";");
             } else if (item.isRunning()) {
             	setStyle("-fx-control-inner-background: " + RUNNING_BACKGROUND + ";");

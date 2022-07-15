@@ -78,10 +78,10 @@ public class KeyTermController {
     	return keyword;
     }
     
-    public static CommandTerm getClosingKeyTerm(String term, PuzzleController pc, Stack<CommandTerm> openCT)  throws UnknownKeywordException{
+    public static CommandTerm getClosingKeyTerm(String term, PuzzleController pc)  throws UnknownKeywordException{
     	CommandTerm keyword;
     	if (term.equals("endloop")){
-    		keyword = new EndLoop(pc, openCT.pop()); // TODO check that the end match the open (ie you are not paring up an endloop with an if)
+    		keyword = new EndLoop(pc, null); // TODO check that the end match the open (ie you are not paring up an endloop with an if)
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword

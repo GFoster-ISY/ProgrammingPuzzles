@@ -21,7 +21,7 @@ public class Loop extends CommandTerm {
 
 	public int getLoopCounter() {return loopCounter;}
 	public CommandTerm getChildTerm() {return endLoop;}
-	@Override public CommandTerm getClosure() {return endLoop;}
+	public void setChild(CommandTerm ct) {endLoop = ct;}
 	public void incrementLoopCounter() {loopCounter++;}
 	
 	@Override protected void setController(FXMLLoader load) {
