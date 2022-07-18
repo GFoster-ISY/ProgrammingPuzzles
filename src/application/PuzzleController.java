@@ -58,12 +58,17 @@ public class PuzzleController {
     @FXML private Canvas cvsContainer;
     @FXML private TextField txtErrorMsg;
     
-    @FXML private ChoiceBox<Problem> cbProblemList;
+    @FXML
+	public ChoiceBox<Problem> cbProblemList;
     @FXML private Label lblStatsLastRun;
     @FXML private Label lblStatsAttempts;
     @FXML private Label lblStatsFailCount;
     @FXML private Label lblStatsErrorCount;
     @FXML private Label lblStatsSuccessRate;
+
+    @FXML private Accordion previousRunView;
+	@FXML private TitledPane previousRun;
+	@FXML private TitledPane previousSuccessfulRun;
     @FXML public ListView<CommandTerm> lstPreviousRun;
     @FXML private Button btnPrevCopy;
     @FXML public ListView<CommandTerm> lstPreviousSuccessfulRun; 
@@ -101,6 +106,7 @@ public class PuzzleController {
     @FXML void initialize() {
     	pm = new ProblemManager(this);
     	problemView.setExpandedPane(selectedProblem);
+    	previousRunView.setExpandedPane(previousRun);
     	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
     	lstProblemListing.getSelectionModel().select(pm.getCurrentProblemIndex());
     	lstProblemListing.setCellFactory(problemCell -> new ProblemListViewCell());
@@ -127,12 +133,18 @@ public class PuzzleController {
     
     @FXML private void changeStatsProblem(ActionEvent ev) {
         Problem selectedItem = cbProblemList.getSelectionModel().getSelectedItem();
-        ProblemStats ps = selectedItem.getStats();
-        lblStatsLastRun.setText(ps.getLastRun());
-        lblStatsAttempts.setText(""+ps.getAttempts());
-        lblStatsFailCount.setText(""+ps.getFailCount());
-        lblStatsErrorCount.setText(""+ps.getErrorCount());
-        lblStatsSuccessRate.setText(ps.getSuccessRate());
+        if (selectedItem != null) {
+	        ProblemStats ps = selectedItem.getStats();
+	        lblStatsLastRun.setText(ps.getLastRun());
+	        lblStatsAttempts.setText(""+ps.getAttempts());
+	        lblStatsFailCount.setText(""+ps.getFailCount());
+	        lblStatsErrorCount.setText(""+ps.getErrorCount());
+	        lblStatsSuccessRate.setText(ps.getSuccessRate());
+	        // TODO set up the previous run listings.
+ 		   lstPreviousRun.setItems(ps.previousRunListing);
+ 		   lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
+
+        }
     }
     
     public Container getContainer() {return container;}

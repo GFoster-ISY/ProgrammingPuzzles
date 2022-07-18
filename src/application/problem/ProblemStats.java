@@ -1,10 +1,17 @@
 package application.problem;
 
+import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import application.PuzzleController;
+import application.keyword.CommandTerm;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 
 public class ProblemStats {
 
@@ -14,6 +21,8 @@ public class ProblemStats {
 	int attempts;
 	int failCount;
 	int errorCount;
+	public ObservableList<CommandTerm> previousRunListing;
+	public ObservableList<CommandTerm> previousSuccessfulRunListing;
     
 	public ProblemStats(PuzzleController pc, Problem problem, JSONObject json) {
 		controller = pc;
@@ -34,6 +43,30 @@ public class ProblemStats {
 		if (json.containsKey("ErrorCount")) {
 			errorCount = ((Long)json.get("ErrorCount")).intValue();
 		}
+
+    	HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
+
+    	previousRunListing = FXCollections.observableArrayList();
+    	openCommandTerm = initOpenCommandTerm();
+ 	   	JSONArray commands = (JSONArray)json.get("LastRunListing");
+ 	   	if (commands != null) {
+ 	   		for (Object line : commands) {
+ 	   			previousRunListing.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
+ 	   		}
+     	   controller.indentCode(controller.lstPreviousRun, previousRunListing);
+ 	   }
+ 	   modifyAllEndCommandTerms(previousRunListing, openCommandTerm);
+ 	   
+ 	   previousSuccessfulRunListing = FXCollections.observableArrayList();
+ 	   openCommandTerm = initOpenCommandTerm();
+ 	   commands = (JSONArray)json.get("LastSuccessfulRunListing");
+ 	   if (commands != null) {
+     	   for (Object line : commands) {
+     		  previousSuccessfulRunListing.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
+     	   }
+     	   controller.indentCode(controller.lstPreviousRun, previousSuccessfulRunListing);
+ 	   }
+ 	   modifyAllEndCommandTerms(previousSuccessfulRunListing, openCommandTerm);
 	}
 
 	public String getLastRun() {return lastRun;}
@@ -41,4 +74,21 @@ public class ProblemStats {
 	public int getFailCount() {return failCount;}
 	public int getErrorCount() {return errorCount;}
 	public String getSuccessRate() {return "" + 100*(attempts-failCount-errorCount)/attempts + "%";}
+	
+	private HashMap<String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
+		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
+		openCommandTerm = new HashMap<>();
+		openCommandTerm.put("loop",new ArrayDeque<>());
+		openCommandTerm.put("if",new ArrayDeque<>());
+		openCommandTerm.put("else",new ArrayDeque<>());
+		return openCommandTerm;
+	}
+	private void modifyAllEndCommandTerms(ObservableList<CommandTerm> commands, HashMap<String, ArrayDeque<CommandTerm>> openCT) {
+		for (CommandTerm ct : commands) {
+			if (ct.getClosesIndent()) {
+				ct.setParent(openCT.get(ct.getParentKeyword()).pollFirst());
+				ct.getParentTerm().setChild(ct);
+			}
+		}
+	}
 }

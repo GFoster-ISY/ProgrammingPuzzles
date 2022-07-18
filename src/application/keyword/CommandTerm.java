@@ -104,7 +104,7 @@ public abstract class CommandTerm {
 			if (ct != null) {
 				ct.args = args;
 				if (ct.hasClosure()) {
-					openCT.get(term).push(ct);
+					openCT.get(term).addLast(ct);
 				}
 			} else {
 				ct = KeyTermController.getClosingKeyTerm(term, pc);

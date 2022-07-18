@@ -90,9 +90,9 @@
                                           <Label fx:id="lblStatsSuccessRate" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                        </children>
                                     </GridPane>
-                                    <Accordion prefHeight="338.0" prefWidth="381.0">
+                                    <Accordion fx:id="previousRunView" prefHeight="338.0" prefWidth="381.0">
                                       <panes>
-                                        <TitledPane animated="false" text="Last Run">
+                                        <TitledPane fx:id="previousRun" animated="false" text="Last Run">
                                           <content>
                                                 <VBox>
                                                    <children>
@@ -102,7 +102,7 @@
                                                 </VBox>
                                           </content>
                                         </TitledPane>
-                                        <TitledPane animated="false" expanded="false" text="Last Successful Run">
+                                        <TitledPane fx:id="previousSuccessfulRun" animated="false" expanded="false" text="Last Successful Run">
                                           <content>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                    <children>

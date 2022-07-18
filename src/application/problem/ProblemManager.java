@@ -48,8 +48,9 @@ public class ProblemManager {
 	}
 	@SuppressWarnings("unchecked")
 	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
+		problemListing.clear();
+		
     	JSONParser parser = new JSONParser();
-    	HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
         try {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
            generalJSONObject = (JSONObject)obj;
@@ -65,30 +66,8 @@ public class ProblemManager {
 
         	   if (currentProblemName.equals((String)name)) {
         		   currentProblem = newProblem;
-
-        		   previousRun = FXCollections.observableArrayList();
-        		   openCommandTerm = initOpenCommandTerm();
-            	   JSONArray commands = (JSONArray)problems.get(name).get("LastRunListing");
-            	   if (commands != null) {
-    	        	   for (Object line : commands) {
-    	        		   previousRun.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
-    	        	   }
-    	        	   controller.indentCode(controller.lstPreviousRun, previousRun);
-            	   }
-            	   modifyAllEndCommandTerms(previousRun, openCommandTerm);
-            	   controller.lstPreviousRun.setItems(previousRun);
-            	   
-            	   previousSuccessfulRun = FXCollections.observableArrayList();
-            	   openCommandTerm = initOpenCommandTerm();
-            	   commands = (JSONArray)problems.get(name).get("LastSuccessfulRunListing");
-            	   if (commands != null) {
-    	        	   for (Object line : commands) {
-    	        		   previousSuccessfulRun.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));
-    	        	   }
-    	        	   controller.indentCode(controller.lstPreviousRun, previousSuccessfulRun);
-            	   }
-            	   modifyAllEndCommandTerms(previousSuccessfulRun, openCommandTerm);
-            	   controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRun);
+        		   controller.lstPreviousRun.setItems(stats.previousRunListing);
+        		   controller.lstPreviousSuccessfulRun.setItems(stats.previousSuccessfulRunListing);
         	   }
            }
         } catch(IOException | ParseException e) {
@@ -106,25 +85,13 @@ public class ProblemManager {
 
         ProblemComparator pc = new ProblemComparator();
         FXCollections.sort(problemListing, pc);
+        controller.cbProblemList.setItems(problemListing);
+        controller.cbProblemList.getSelectionModel().select(getCurrentProblemIndex());
 		return problemListing;
 	}
 	
-	private HashMap<String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
-		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
-	   openCommandTerm = new HashMap<>();
-	   openCommandTerm.put("loop",new ArrayDeque<>());
-	   openCommandTerm.put("if",new ArrayDeque<>());
-	   openCommandTerm.put("else",new ArrayDeque<>());
-	   return openCommandTerm;
-	}
-	public void modifyAllEndCommandTerms(ObservableList<CommandTerm> commands, HashMap<String, ArrayDeque<CommandTerm>> openCT) {
-		for (CommandTerm ct : commands) {
-			if (ct.getClosesIndent()) {
-				ct.setParent(openCT.get(ct.getParentKeyword()).poll());
-				ct.getParentTerm().setChild(ct);
-			}
-		}
-	}
+
+
 	public boolean isCurrentProblem(Problem p) {
 		return p.equals(currentProblem);
 	}
@@ -146,6 +113,7 @@ public class ProblemManager {
 	public void gradeSolution() {
 		boolean testPassed = currentProblem.gradeSolution();
     	storeResultInJSON(testPassed);
+    	loadAllProblemsFromJSONFile(); //TODO just testing this
     	
 		Alert a = new Alert(AlertType.NONE);
 		String message = "";
