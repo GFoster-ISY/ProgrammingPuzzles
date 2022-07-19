@@ -140,9 +140,8 @@ public class PuzzleController {
 	        lblStatsFailCount.setText(""+ps.getFailCount());
 	        lblStatsErrorCount.setText(""+ps.getErrorCount());
 	        lblStatsSuccessRate.setText(ps.getSuccessRate());
-	        // TODO set up the previous run listings.
- 		   lstPreviousRun.setItems(ps.previousRunListing);
- 		   lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
+	        lstPreviousRun.setItems(ps.previousRunListing);
+ 		   	lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
 
         }
     }
@@ -206,7 +205,12 @@ public class PuzzleController {
     }
     
     @FXML private void copyPrevCode() {
-    	fullListing = lstPreviousRun.getItems();
+    	fullListing.clear();
+    	for (CommandTerm command : lstPreviousRun.getItems()) {
+    		if (allKeyTerms.contains(command.getRootKeyword())) {
+    			fullListing.add(command);
+    		}
+    	}
     	lstListing.setItems(fullListing);
         selectedProblem.setExpanded(true);
         showRunTimeButtons(fullListing.size() > 0);

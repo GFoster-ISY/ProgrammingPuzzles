@@ -72,6 +72,10 @@ public class KeyTermController {
     		keyword = new Look(pc, term);
     	} else if(term.equals("endloop")){
     		keyword = null;
+    	} else if(term.equals("endif")){
+    		keyword = null;
+    	} else if(term.equals("else")){
+    		keyword = null;
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
@@ -81,7 +85,11 @@ public class KeyTermController {
     public static CommandTerm getClosingKeyTerm(String term, PuzzleController pc)  throws UnknownKeywordException{
     	CommandTerm keyword;
     	if (term.equals("endloop")){
-    		keyword = new EndLoop(pc, null); // TODO check that the end match the open (ie you are not paring up an endloop with an if)
+    		keyword = new EndLoop(pc, null);
+    	} else if (term.equals("endif")){
+    		keyword = new EndIf(pc, null);
+    	} else if (term.equals("else")){
+    		keyword = new Else(pc, null);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword

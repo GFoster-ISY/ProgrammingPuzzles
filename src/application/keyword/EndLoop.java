@@ -13,6 +13,7 @@ public class EndLoop extends CommandTerm {
 		super(pc, "endloop");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "endloop";
+		rootKeyword = "loop";
 		closesIndent = true;
 		openLoop = (Loop)loop;
 	}

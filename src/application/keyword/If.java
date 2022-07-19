@@ -26,6 +26,7 @@ public class If extends CommandTerm {
 	
 
 	public CommandTerm getChildTerm() {return theElse;}
+	public void setChild(CommandTerm ct) {theElse = ct;}
 	
 	@Override
 	protected void setController(FXMLLoader load) {

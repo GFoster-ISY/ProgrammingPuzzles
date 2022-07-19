@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane;
 public abstract class CommandTerm {
 
 	private String keyword;
+	protected String rootKeyword;
 	protected String commandTermName;
 	protected ArrayList<String> args;
 	protected boolean needsClosure;
@@ -36,6 +37,7 @@ public abstract class CommandTerm {
 		errorMessage = null;
 		puzzleController = pc;
 		this.keyword = keyword;
+		rootKeyword = keyword;
 		needsClosure = false;
 		closesIndent = false;
 		indentLevel = 0;
@@ -56,6 +58,7 @@ public abstract class CommandTerm {
 	
 	public int argCount() {return 0;}
 	public String getKeyword() {return keyword;}
+	public String getRootKeyword() {return rootKeyword;}
 	public String getParentKeyword() {return "";}
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
@@ -108,6 +111,9 @@ public abstract class CommandTerm {
 				}
 			} else {
 				ct = KeyTermController.getClosingKeyTerm(term, pc);
+				if (ct.hasClosure()) {
+					openCT.get(term).addLast(ct);
+				}
 			}
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());

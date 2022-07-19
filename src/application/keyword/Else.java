@@ -14,6 +14,7 @@ public class Else extends CommandTerm {
 		super(pc, "else");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "else";
+		rootKeyword = "if";
 		closesIndent = true;
 		ifCondition = theIf;
 		needsClosure = true;
@@ -21,7 +22,9 @@ public class Else extends CommandTerm {
 	}
 
 	public CommandTerm getParentTerm() {return ifCondition;}
+	public void setParent(CommandTerm ct) {ifCondition = ct;}
 	public CommandTerm getChildTerm() {return endIf;}
+	public void setChild(CommandTerm ct) {endIf = ct;}
 	public String getParentKeyword() {return "if";}
 //	@Override public CommandTerm getClosure() {return endIf;}
 	

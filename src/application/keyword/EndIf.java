@@ -12,11 +12,14 @@ public class EndIf extends CommandTerm {
 		super(pc, "endif");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "endif";
+		rootKeyword = "if";
 		closesIndent = true;
 		elseCondition = theElse;
 	}
 
 	public CommandTerm getParentTerm() {return elseCondition;}
+	public void setParent(CommandTerm ct) {elseCondition = ct;}
+	
 	public String getParentKeyword() {return "else";}
 	@Override
 	protected void setController(FXMLLoader load) {
