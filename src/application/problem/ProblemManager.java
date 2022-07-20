@@ -113,7 +113,7 @@ public class ProblemManager {
 	public void gradeSolution() {
 		boolean testPassed = currentProblem.gradeSolution();
     	storeResultInJSON(testPassed);
-    	loadAllProblemsFromJSONFile(); //TODO just testing this
+    	loadAllProblemsFromJSONFile();
     	
 		Alert a = new Alert(AlertType.NONE);
 		String message = "";

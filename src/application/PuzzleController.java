@@ -320,11 +320,10 @@ public class PuzzleController {
     public boolean hasVariable(String var) {
     	return variableList.containsKey(var);
     }
-    public void addVariable(Variable var) {
+    public void addVariable(Variable var, boolean fullListing) {
     	if (!hasVariable(var.getName())){
     		variableList.put(var.getName(), var);
-    		// TODO make conditional as to whether the variable is being added to the instruction list or copies
-    		addInstruction(var);
+    		if (fullListing) {addInstruction(var);}
     	}
     }
     
@@ -334,12 +333,15 @@ public class PuzzleController {
     	}
     	return null;
     }
+    // This version is used when a commandTerm wishes to create a variable
     public Variable getVariable(String name, int initialValue, String parent) {
+    	// This will occur when reading previous code
     	if (variableList.containsKey(name)){
     		return variableList.get(name);
     	}
+    	// This will occur when the user selects the command term
 		Variable counter = new Variable(this, name, initialValue, parent);
-		addVariable(counter);
+		addVariable(counter, true);
 		return counter;
 		}
 

@@ -24,7 +24,7 @@ public class Variable extends CommandTerm {
 		args.set(1, ""+value);
 		initialValue = args.get(1);
 		rootKeyword = parent;
-		pc.addVariable(this);
+		pc.addVariable(this, true);
 	}
 	
 	public String getName() {return args.get(0);}
@@ -54,6 +54,12 @@ public class Variable extends CommandTerm {
 		value++;
 		setNumber(value);
 	}
+	
+	@Override public void reset() {
+		super.reset();
+		setNumber(resetNumber());
+	}
+	
 	public int resetNumber() {
 		return Integer.parseInt(initialValue);
 	}
@@ -90,7 +96,7 @@ public class Variable extends CommandTerm {
 		if (line.containsKey("Parent")) {
 			rootKeyword = (String) line.get("Parent");
 		}
-		puzzleController.addVariable(this);
+		puzzleController.addVariable(this,false);
 
 	}
 }
