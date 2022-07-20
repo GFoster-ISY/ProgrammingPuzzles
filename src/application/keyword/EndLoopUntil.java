@@ -13,10 +13,13 @@ public class EndLoopUntil extends CommandTerm {
 		super(pc, "endloopuntil");
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "endloopuntil";
+		rootKeyword = "loop until";
+		parentKeywordTerm = "loop until";
 		closesIndent = true;
 		openLoop = (LoopUntil)loop;
 	}
 	
+	@Override public void setParent(CommandTerm ct) {openLoop = (LoopUntil)ct;}
 	public CommandTerm getParentTerm() {return openLoop;}
 	
 	@Override protected void setController(FXMLLoader load) {

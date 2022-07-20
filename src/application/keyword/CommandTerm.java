@@ -16,9 +16,11 @@ import javafx.scene.layout.Pane;
 
 public abstract class CommandTerm {
 
-	private String keyword;
+	protected String keyword;
 	protected String rootKeyword;
 	protected String commandTermName;
+	protected String parentKeywordTerm;
+	
 	protected ArrayList<String> args;
 	protected boolean needsClosure;
 	protected boolean closesIndent;
@@ -59,7 +61,7 @@ public abstract class CommandTerm {
 	public int argCount() {return 0;}
 	public String getKeyword() {return keyword;}
 	public String getRootKeyword() {return rootKeyword;}
-	public String getParentKeyword() {return "";}
+	public String getParentKeyword() {return parentKeywordTerm;}
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
 	public CommandTerm getParentTerm() {return null;}
@@ -120,9 +122,11 @@ public abstract class CommandTerm {
         	ex.printStackTrace();
         	return null;
         }
+		ct.addExtraData(line);
 		return ct;
 	}
 	
+	protected void addExtraData(JSONObject line) {}
 	public String errorMsg() { return errorMessage;}
 	public void clearError() { errorMessage = null;}
 	

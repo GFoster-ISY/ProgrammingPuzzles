@@ -72,10 +72,14 @@ public class KeyTermController {
     		keyword = new Look(pc, term);
     	} else if(term.equals("endloop")){
     		keyword = null;
+    	} else if(term.equals("endloopuntil")){
+    		keyword = null;
     	} else if(term.equals("endif")){
     		keyword = null;
     	} else if(term.equals("else")){
     		keyword = null;
+    	} else if(term.equals("variable")){
+    		keyword = new Variable(pc, term);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
@@ -86,6 +90,8 @@ public class KeyTermController {
     	CommandTerm keyword;
     	if (term.equals("endloop")){
     		keyword = new EndLoop(pc, null);
+    	} else if (term.equals("endloopuntil")){
+    		keyword = new EndLoopUntil(pc, null);
     	} else if (term.equals("endif")){
     		keyword = new EndIf(pc, null);
     	} else if (term.equals("else")){

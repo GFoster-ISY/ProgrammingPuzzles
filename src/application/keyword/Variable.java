@@ -2,23 +2,29 @@ package application.keyword;
 
 import java.util.ArrayList;
 
-import application.Ball;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
 public class Variable extends CommandTerm {
-		
+	
+	protected String initialValue;
 	public Variable(PuzzleController pc, String term) {
 		super(pc, term);
 		FXMLFileName = "NestedTwoArgs.fxml";
 		commandTermName = "variable";
 	}
-	public Variable(PuzzleController pc, String name, int value) {
+	public Variable(PuzzleController pc, String name, int value, String parent) {
 		super(pc, "variable");
 		FXMLFileName = "NestedTwoArgs.fxml";
 		commandTermName = "variable";
 		args.set(0, name);
 		args.set(1, ""+value);
+		initialValue = args.get(1);
+		rootKeyword = parent;
+		pc.addVariable(this);
 	}
 	
 	public String getName() {return args.get(0);}
@@ -48,7 +54,13 @@ public class Variable extends CommandTerm {
 		value++;
 		setNumber(value);
 	}
+	public int resetNumber() {
+		return Integer.parseInt(initialValue);
+	}
 	
+	public int getInitialNumber() {
+		return Integer.parseInt(initialValue);
+	}
 	public int getNumber() {
 		return Integer.parseInt(args.get(1));
 	}
@@ -61,4 +73,24 @@ public class Variable extends CommandTerm {
 		return true;
 	}
 
+	@Override public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("keyword", keyword);
+		if (args.size()>0) {
+			JSONArray array = new JSONArray();
+			array.add(args.get(0));
+			array.add(initialValue);
+			json.put("Arguments", array);
+		}
+		json.put("Parent", rootKeyword);
+		return json;
+	}
+	@Override protected void addExtraData(JSONObject line) {
+		initialValue = args.get(1);
+		if (line.containsKey("Parent")) {
+			rootKeyword = (String) line.get("Parent");
+		}
+		puzzleController.addVariable(this);
+
+	}
 }

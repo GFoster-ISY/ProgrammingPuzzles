@@ -107,6 +107,10 @@ public class PuzzleController {
     	pm = new ProblemManager(this);
     	problemView.setExpandedPane(selectedProblem);
     	previousRunView.setExpandedPane(previousRun);
+        variableList = new HashMap<>();
+    	fullListing = FXCollections.observableArrayList();
+    	allKeyTerms = FXCollections.observableArrayList();
+
     	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
     	lstProblemListing.getSelectionModel().select(pm.getCurrentProblemIndex());
     	lstProblemListing.setCellFactory(problemCell -> new ProblemListViewCell());
@@ -114,14 +118,10 @@ public class PuzzleController {
     	cbProblemList.setItems(pm.getProblemListing());
     	cbProblemList.getSelectionModel().select(pm.getCurrentProblemIndex());
     	
-    	fullListing = FXCollections.observableArrayList();
     	lstListing.setItems(fullListing);
     	lstListing.setCellFactory(param -> new DragNDropCommandTermCell(this));
 
-    	allKeyTerms = FXCollections.observableArrayList();
         lstLexicon.setItems(allKeyTerms);
-    	
-        variableList = new HashMap<>();
     	
         pm.loadCurrentProblem();
         
@@ -317,9 +317,13 @@ public class PuzzleController {
     	view.refresh();
     }
     
+    public boolean hasVariable(String var) {
+    	return variableList.containsKey(var);
+    }
     public void addVariable(Variable var) {
-    	if (!variableList.containsKey(var.getName())){
+    	if (!hasVariable(var.getName())){
     		variableList.put(var.getName(), var);
+    		// TODO make conditional as to whether the variable is being added to the instruction list or copies
     		addInstruction(var);
     	}
     }
@@ -330,7 +334,15 @@ public class PuzzleController {
     	}
     	return null;
     }
-    
+    public Variable getVariable(String name, int initialValue, String parent) {
+    	if (variableList.containsKey(name)){
+    		return variableList.get(name);
+    	}
+		Variable counter = new Variable(this, name, initialValue, parent);
+		addVariable(counter);
+		return counter;
+		}
+
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();

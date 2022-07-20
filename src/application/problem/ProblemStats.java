@@ -2,7 +2,6 @@ package application.problem;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,7 +10,6 @@ import application.PuzzleController;
 import application.keyword.CommandTerm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
 
 public class ProblemStats {
 
@@ -79,6 +77,7 @@ public class ProblemStats {
 		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
 		openCommandTerm = new HashMap<>();
 		openCommandTerm.put("loop",new ArrayDeque<>());
+		openCommandTerm.put("loop until",new ArrayDeque<>());
 		openCommandTerm.put("if",new ArrayDeque<>());
 		openCommandTerm.put("else",new ArrayDeque<>());
 		return openCommandTerm;
