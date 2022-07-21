@@ -491,7 +491,7 @@ public class PuzzleController {
     	lstListing.refresh();
         selectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
     	Main.primaryStage.setTitle("Programming Puzzles - " + pm.getCurrentProblemName() );
-
+    	
     }
     
     public void manageButtons(boolean running) {

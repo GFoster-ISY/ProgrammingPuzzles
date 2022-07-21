@@ -5,9 +5,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 public class Cup {
 	private int id;
@@ -22,6 +26,7 @@ public class Cup {
 	
 	public Cup(int i){
 		id = i;
+		number = i+1;
 		contents = new ArrayList<>();
 		ballCount = 0;
 	}
@@ -38,7 +43,7 @@ public class Cup {
     	int height = initialHeight * rows;
 
 		cupWidth = width;
-		cupHeight = height;
+		cupHeight = height-(5*rows);
 	}
 	
 	public void put(Ball ball) {
@@ -108,10 +113,16 @@ public class Cup {
         		} else {
         			grade = new Image(new FileInputStream("resources/red-cross.jpg"));
         		}
-        		gc.drawImage(grade, x+cupWidth*3/2, y+10+cupHeight/6, cupWidth, cupWidth);
+        		gc.drawImage(grade, x+cupWidth*3/2, y+7+cupHeight/6, cupWidth, cupWidth);
     		} catch (FileNotFoundException e) {
     			e.printStackTrace();
     		}
+        } else {
+        	gc.setFill(Color.BLACK);
+        	gc.setTextAlign(TextAlignment.CENTER);
+            gc.setTextBaseline(VPos.CENTER);
+            gc.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+            gc.fillText(""+number, x+cupWidth*2, y+7+cupHeight/6+cupWidth/2);
         }
 	}	
 }
