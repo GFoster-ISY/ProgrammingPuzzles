@@ -104,11 +104,12 @@
                                         </TitledPane>
                                         <TitledPane fx:id="previousSuccessfulRun" animated="false" expanded="false" text="Last Successful Run">
                                           <content>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                <VBox>
                                                    <children>
-                                                      <ListView fx:id="lstPreviousSuccessfulRun" layoutX="45.0" layoutY="-28.0" prefHeight="180.0" prefWidth="379.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                      <ListView fx:id="lstPreviousSuccessfulRun" prefHeight="180.0" prefWidth="379.0" VBox.vgrow="ALWAYS" />
+                                                      <Button fx:id="btnSuccessCopy" mnemonicParsing="false" onAction="#copySuccessCode" text="Copy" />
                                                    </children>
-                                                </AnchorPane>
+                                                </VBox>
                                           </content>
                                         </TitledPane>
                                       </panes>
@@ -122,7 +123,7 @@
             </Accordion>
             <VBox prefWidth="300.0">
                <children>
-                  <ListView fx:id="lstListing" onMouseClicked="#selectInstruction" prefHeight="570.0" prefWidth="300.0" />
+                  <ListView fx:id="lstListing" onMouseClicked="#selectInstruction" prefHeight="570.0" prefWidth="400.0" />
                   <HBox fx:id="hboxRunningButtons" prefHeight="30.0" prefWidth="200.0" visible="false">
                      <children>
                         <Button fx:id="btnNext" defaultButton="true" minWidth="90.0" mnemonicParsing="false" onAction="#execByStep" text="Next">
@@ -162,6 +163,7 @@
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </Button>
+                        <Button fx:id="btnCopy" minWidth="90.0" mnemonicParsing="false" onAction="#clearCode" text="Clear" />
                      </children>
                   </HBox>
                </children>

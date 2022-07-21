@@ -27,7 +27,7 @@ public class Problem {
     	pm = manager;
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
-		nextProblemName = null;
+		nextProblemName = name;
 	}
  
 	public void setStats (ProblemStats stats) {ps = stats;}

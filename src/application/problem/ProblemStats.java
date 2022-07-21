@@ -57,7 +57,7 @@ public class ProblemStats {
  	   
  	   previousSuccessfulRunListing = FXCollections.observableArrayList();
  	   openCommandTerm = initOpenCommandTerm();
- 	   commands = (JSONArray)json.get("LastSuccessfulRunListing");
+ 	   commands = (JSONArray)json.get("LastSuccessfulListing");
  	   if (commands != null) {
      	   for (Object line : commands) {
      		  previousSuccessfulRunListing.add(CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm));

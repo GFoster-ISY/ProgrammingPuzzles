@@ -85,6 +85,7 @@ public class PuzzleController {
     @FXML private Button btnStep;
     @FXML private Button btnAuto;
     @FXML private Button btnFinal;
+    @FXML private Button btnCopy;
     @FXML private ListView<String> lstLexicon;
     
 
@@ -205,17 +206,29 @@ public class PuzzleController {
     }
     
     @FXML private void copyPrevCode() {
+    	copyCode(lstPreviousRun);
+    }
+    
+    @FXML private void copySuccessCode() {
+    	copyCode(lstPreviousSuccessfulRun);
+    }
+    
+    @FXML private void clearCode() {
     	fullListing.clear();
-    	for (CommandTerm command : lstPreviousRun.getItems()) {
+    	showRunTimeButtons(false);
+    }
+    
+    private void copyCode(ListView<CommandTerm> codeListing) {
+    	clearCode();
+    	for (CommandTerm command : codeListing.getItems()) {
     		if (allKeyTerms.contains(command.getRootKeyword())) {
     			fullListing.add(command);
     		}
     	}
     	lstListing.setItems(fullListing);
         selectedProblem.setExpanded(true);
-        showRunTimeButtons(fullListing.size() > 0);
+        showRunTimeButtons(fullListing.size() > 0);    	
     }
-    
     public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
     
     @FXML private void selectKeyTerm(MouseEvent event) {
@@ -494,6 +507,7 @@ public class PuzzleController {
     	btnStep.setDisable(!show);
     	btnAuto.setDisable(!show);
     	btnFinal.setDisable(!show);
+    	btnCopy.setDisable(!show);
     	btnNext.setDisable(!show);
     	btnAbort.setDisable(!show);
     	btnFinish.setDisable(!show);
