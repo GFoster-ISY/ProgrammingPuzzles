@@ -40,7 +40,7 @@ import application.keyword.Variable;
 import application.problem.Problem;
 import application.problem.ProblemListViewCell;
 import application.problem.ProblemManager;
-import application.problem.ProblemStats;
+import application.problem.ProblemHistory;
 
 public class PuzzleController {
 
@@ -96,6 +96,7 @@ public class PuzzleController {
     private ProblemManager pm;
     private ObservableList<CommandTerm> fullListing;
     private ObservableList<String> allKeyTerms;
+    private int nextUniqueId = 1;
     private Map<String, Variable> variableList;
     public Execute exec;
     Thread execThread;
@@ -135,15 +136,22 @@ public class PuzzleController {
     @FXML private void changeStatsProblem(ActionEvent ev) {
         Problem selectedItem = cbProblemList.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
-	        ProblemStats ps = selectedItem.getStats();
-	        lblStatsLastRun.setText(ps.getLastRun());
-	        lblStatsAttempts.setText(""+ps.getAttempts());
-	        lblStatsFailCount.setText(""+ps.getFailCount());
-	        lblStatsErrorCount.setText(""+ps.getErrorCount());
-	        lblStatsSuccessRate.setText(ps.getSuccessRate());
-	        lstPreviousRun.setItems(ps.previousRunListing);
- 		   	lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
-
+	        ProblemHistory ps = selectedItem.getStats();
+	        if (ps == null) {
+		        lblStatsLastRun.setText("Welcome have a go at this problem");
+		        lblStatsAttempts.setText("0");
+		        lblStatsFailCount.setText("0");
+		        lblStatsErrorCount.setText("0");
+		        lblStatsSuccessRate.setText("");
+	        } else {
+		        lblStatsLastRun.setText(ps.getLastRun());
+		        lblStatsAttempts.setText(""+ps.getAttempts());
+		        lblStatsFailCount.setText(""+ps.getFailCount());
+		        lblStatsErrorCount.setText(""+ps.getErrorCount());
+		        lblStatsSuccessRate.setText(ps.getSuccessRate());
+		        lstPreviousRun.setItems(ps.previousRunListing);
+	 		   	lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
+	        }
         }
     }
     
@@ -221,7 +229,7 @@ public class PuzzleController {
     private void copyCode(ListView<CommandTerm> codeListing) {
     	clearCode();
     	for (CommandTerm command : codeListing.getItems()) {
-    		if (allKeyTerms.contains(command.getRootKeyword())) {
+    		if (allKeyTerms.contains(command.getRootKeyword().getKeyword())) {
     			fullListing.add(command);
     		}
     	}
@@ -304,8 +312,8 @@ public class PuzzleController {
     
     private void removeInstruction(CommandTerm instruction) {
     	// Move to the start of any closure group and then delete each term
-    	if(instruction.getClosesIndent() && fullListing.contains(instruction.getParentTerm())) {
-    		removeInstruction(instruction.getParentTerm());
+    	if(instruction.getClosesIndent() && fullListing.contains(instruction.getParentKeyword())) {
+    		removeInstruction(instruction.getParentKeyword());
     	}
     	if (fullListing.contains(instruction)) {
     		fullListing.remove(instruction);
@@ -330,6 +338,13 @@ public class PuzzleController {
     	view.refresh();
     }
     
+    public int getNextId() {
+    	return nextUniqueId++;
+    }
+    
+    public void updateNextId(int newId) {
+    	if (newId >= nextUniqueId) {nextUniqueId++;}
+    }
     public boolean hasVariable(String var) {
     	return variableList.containsKey(var);
     }
@@ -347,13 +362,13 @@ public class PuzzleController {
     	return null;
     }
     // This version is used when a commandTerm wishes to create a variable
-    public Variable getVariable(String name, int initialValue, String parent) {
+    public Variable getVariable(String name, int initialValue, CommandTerm parent) {
     	// This will occur when reading previous code
     	if (variableList.containsKey(name)){
     		return variableList.get(name);
     	}
     	// This will occur when the user selects the command term
-		Variable counter = new Variable(this, name, initialValue, parent);
+		Variable counter = new Variable(this, name, initialValue, getNextId(), parent);
 		addVariable(counter, true);
 		return counter;
 		}

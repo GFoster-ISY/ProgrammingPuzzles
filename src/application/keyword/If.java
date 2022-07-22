@@ -16,12 +16,12 @@ public class If extends CommandTerm {
     protected CommandTerm theElse;
     public boolean conditionState = false;
 	
-	public If(PuzzleController pc, String term) {
-		super(pc, term);
+	public If(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedIf.fxml";
 		commandTermName = "if";
 		needsClosure = true;
-		theElse = new Else(puzzleController, this);
+		theElse = new Else(puzzleController, this, pc.getNextId());
 	}
 	
 

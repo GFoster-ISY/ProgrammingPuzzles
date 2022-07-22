@@ -6,8 +6,8 @@ import javafx.fxml.FXMLLoader;
 
 public class Replace extends CommandTerm {
 
-	public Replace(PuzzleController pc, String term) {
-		super(pc, term);
+	public Replace(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "replace";
 	}

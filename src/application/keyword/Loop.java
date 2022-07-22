@@ -11,12 +11,12 @@ public class Loop extends CommandTerm {
 
 	int loopCounter = 1;
 	
-	public Loop(PuzzleController pc, String term) {
-		super(pc, term);
+	public Loop(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop";
 		needsClosure = true;
-		endLoop = new EndLoop(puzzleController, this);
+		endLoop = new EndLoop(puzzleController, this, pc.getNextId());
 	}
 
 	public int getLoopCounter() {return loopCounter;}

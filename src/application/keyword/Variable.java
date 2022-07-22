@@ -11,19 +11,18 @@ import javafx.fxml.FXMLLoader;
 public class Variable extends CommandTerm {
 	
 	protected String initialValue;
-	public Variable(PuzzleController pc, String term) {
-		super(pc, term);
+	public Variable(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedTwoArgs.fxml";
-		commandTermName = "variable";
 	}
-	public Variable(PuzzleController pc, String name, int value, String parent) {
-		super(pc, "variable");
+	public Variable(PuzzleController pc, String name, int value, int id, CommandTerm parent) {
+		super(pc, "variable", id);
 		FXMLFileName = "NestedTwoArgs.fxml";
-		commandTermName = "variable";
 		args.set(0, name);
 		args.set(1, ""+value);
 		initialValue = args.get(1);
-		rootKeyword = parent;
+		parentTerm = parent;
+		rootTerm = parent;
 		pc.addVariable(this, true);
 	}
 	
@@ -88,13 +87,14 @@ public class Variable extends CommandTerm {
 			array.add(initialValue);
 			json.put("Arguments", array);
 		}
-		json.put("Parent", rootKeyword);
+		json.put("Parent", rootTerm);
 		return json;
 	}
 	@Override protected void addExtraData(JSONObject line) {
 		initialValue = args.get(1);
 		if (line.containsKey("Parent")) {
-			rootKeyword = (String) line.get("Parent");
+			// TODO get the Object from an ID which also needs to be added to the JSON
+			// rootKeyword = (String) line.get("Parent");
 		}
 		puzzleController.addVariable(this,false);
 

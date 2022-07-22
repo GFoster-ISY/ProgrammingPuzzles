@@ -9,24 +9,22 @@ public class Else extends CommandTerm {
 
 
     protected CommandTerm endIf;
-	CommandTerm ifCondition;
-	public Else(PuzzleController pc, CommandTerm theIf) {
-		super(pc, "else");
+
+    public Else(PuzzleController pc, CommandTerm theIf, int id) {
+		super(pc, "else", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		commandTermName = "else";
-		rootKeyword = "if";
+		// = theIf;
 		closesIndent = true;
-		ifCondition = theIf;
+		parentTerm = theIf;
+		rootTerm = theIf;
 		needsClosure = true;
-		endIf = new EndIf(puzzleController, this);
+		endIf = new EndIf(puzzleController, this, pc.getNextId());
 	}
 
-	public CommandTerm getParentTerm() {return ifCondition;}
-	public void setParent(CommandTerm ct) {ifCondition = ct;}
+	public CommandTerm getParentTerm() {return parentTerm;}
+	public void setParent(CommandTerm ct) {parentTerm = ct;}
 	public CommandTerm getChildTerm() {return endIf;}
 	public void setChild(CommandTerm ct) {endIf = ct;}
-	public String getParentKeyword() {return "if";}
-//	@Override public CommandTerm getClosure() {return endIf;}
 	
 	@Override
 	protected void setController(FXMLLoader load) {
@@ -44,7 +42,7 @@ public class Else extends CommandTerm {
 	}
 	
 	@Override public CommandTerm nextCommand() {
-		if (((If)ifCondition).conditionState) {
+		if (((If)parentTerm).conditionState) {
 			return endIf;
 		}
 		return null;

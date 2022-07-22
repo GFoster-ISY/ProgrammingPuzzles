@@ -3,11 +3,7 @@ package application.problem;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,9 +21,7 @@ import javafx.stage.Modality;
 public class ProblemManager {
 
 	private ObservableList<Problem> problemListing;
-	private ObservableList<ProblemStats> statsListing;
-	private ObservableList<CommandTerm> previousRun;
-	private ObservableList<CommandTerm> previousSuccessfulRun;
+	private ObservableList<ProblemHistory> statsListing;
 	private Problem currentProblem;
     private JSONObject generalJSONObject;
     private PuzzleController controller;
@@ -44,7 +38,9 @@ public class ProblemManager {
 				return problem;
 			}
 		}
-		return null;
+		Problem newProblem = new Problem(controller, this, name);
+ 	   	problemListing.add(newProblem);
+		return newProblem;
 	}
 	@SuppressWarnings("unchecked")
 	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
@@ -55,32 +51,35 @@ public class ProblemManager {
            Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
            generalJSONObject = (JSONObject)obj;
            
-           Map<?, JSONObject> problems = ((Map<?, JSONObject>)generalJSONObject.get("Results"));
            String currentProblemName = (String)generalJSONObject.get("CurrentProblem");
-           for(Object name: problems.keySet()) {
-        	   Problem newProblem = new Problem(controller, this, (String)name);
-        	   problemListing.add(newProblem);
-        	   ProblemStats stats = new ProblemStats(controller, newProblem, problems.get(name));
-        	   statsListing.add(stats);
-        	   newProblem.setStats(stats);
 
-        	   if (currentProblemName.equals((String)name)) {
-        		   currentProblem = newProblem;
-        		   controller.lstPreviousRun.setItems(stats.previousRunListing);
-        		   controller.lstPreviousSuccessfulRun.setItems(stats.previousSuccessfulRunListing);
-        	   }
+           Map<?, JSONObject> problems = ((Map<?, JSONObject>)generalJSONObject.get("Results"));
+           if (problems != null) {
+	           for(Object name: problems.keySet()) {
+	        	   Problem newProblem = new Problem(controller, this, (String)name);
+	        	   problemListing.add(newProblem);
+	        	   ProblemHistory stats = new ProblemHistory(controller, newProblem, problems.get(name));
+	        	   statsListing.add(stats);
+	        	   newProblem.setStats(stats);
+	
+	        	   if (currentProblemName.equals((String)name)) {
+	        		   currentProblem = newProblem;
+	        		   controller.lstPreviousRun.setItems(stats.previousRunListing);
+	        		   controller.lstPreviousSuccessfulRun.setItems(stats.previousSuccessfulRunListing);
+	        	   }
+	           }
            }
-        } catch(IOException | ParseException e) {
+        } catch( IOException | ParseException e) {
         	problemListing.add(new Problem(controller, this, "Problem1"));
         	// File is missing so create it.
-        	JSONObject obj = new JSONObject();
-            obj.put("CurrentProblem", "Problem1");
+        	generalJSONObject = new JSONObject();
+        	generalJSONObject.put("CurrentProblem", "Problem1");
         	try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
-                file.write(obj.toJSONString());
+                file.write(generalJSONObject.toJSONString());
         	} catch(Exception ew) {
                 ew.printStackTrace();
         	}
-        	e.printStackTrace();
+        	System.out.println("New currentProblem JSON file created");
         }
 
         ProblemComparator pc = new ProblemComparator();
@@ -176,6 +175,9 @@ public class ProblemManager {
     	} else {
     		if (currentProblem.getNextProblemName() != null) {
     			generalJSONObject.put("CurrentProblem",currentProblem.getNextProblemName());
+            	if (!results.containsKey(currentProblem.getNextProblemName())) {
+            		results.put(currentProblem.getNextProblemName(), new JSONObject());
+            	}
     		}
     		problemStats.put("LastRun", "SUCCESS");
         	problemStats.put("LastSuccessfulListing",lastListing);

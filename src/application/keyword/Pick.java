@@ -1,15 +1,13 @@
 package application.keyword;
 
-import java.util.ArrayList;
-
 import application.Ball;
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
 public class Pick extends CommandTerm {
 	
-	public Pick(PuzzleController pc, String term) {
-		super(pc, term);
+	public Pick(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		commandTermName = "pick";
 	}

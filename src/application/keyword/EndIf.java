@@ -7,20 +7,16 @@ import javafx.fxml.FXMLLoader;
 
 public class EndIf extends CommandTerm {
 
-	CommandTerm elseCondition;
-	public EndIf(PuzzleController pc, CommandTerm theElse) {
-		super(pc, "endif");
+	//CommandTerm elseCondition;
+	public EndIf(PuzzleController pc, CommandTerm theElse, int id) {
+		super(pc, "endif", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		commandTermName = "endif";
-		rootKeyword = "if";
+		parentTerm = theElse;
+		rootTerm = theElse;
 		closesIndent = true;
-		elseCondition = theElse;
+		//elseCondition = theElse;
 	}
-
-	public CommandTerm getParentTerm() {return elseCondition;}
-	public void setParent(CommandTerm ct) {elseCondition = ct;}
 	
-	public String getParentKeyword() {return "else";}
 	@Override
 	protected void setController(FXMLLoader load) {
 		controller = (NestedZeroArgsController)load.getController();

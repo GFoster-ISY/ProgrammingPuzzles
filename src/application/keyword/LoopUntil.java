@@ -11,13 +11,13 @@ public class LoopUntil extends CommandTerm {
 	protected Variable counter;
 
 	
-	public LoopUntil(PuzzleController pc, String term) {
-		super(pc, term);
+	public LoopUntil(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop until";
 		needsClosure = true;
-		counter = puzzleController.getVariable("counter", 0, commandTermName);
-		endLoop = new EndLoopUntil(puzzleController, this);
+		counter = puzzleController.getVariable("counter", 0, this);
+		endLoop = new EndLoopUntil(puzzleController, this, pc.getNextId());
 	}
 
 	public boolean hasLoopFinished() {

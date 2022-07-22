@@ -1,26 +1,21 @@
 package application.keyword;
 
-import java.util.ArrayList;
-
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
 public class EndLoop extends CommandTerm {
 
-	protected Loop openLoop;
-	
-	public EndLoop(PuzzleController pc, CommandTerm loop) {
-		super(pc, "endloop");
+
+	public EndLoop(PuzzleController pc, CommandTerm loop, int id) {
+		super(pc, "endloop", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		commandTermName = "endloop";
-		rootKeyword = "loop";
+		parentTerm = loop;
+		rootTerm = loop;
 		closesIndent = true;
-		openLoop = (Loop)loop;
 	}
 	
-	@Override public void setParent(CommandTerm ct) {openLoop = (Loop)ct;}
-	public CommandTerm getParentTerm() {return openLoop;}
-	public String getParentKeyword() {return "loop";}
+	@Override public void setParent(CommandTerm ct) {parentTerm = (Loop)ct;}
+	public CommandTerm getParentTerm() {return parentTerm;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedZeroArgsController)load.getController();
@@ -32,15 +27,15 @@ public class EndLoop extends CommandTerm {
 		return  indent() + "end loop";
 	}
 	@Override public boolean exec() {
-		openLoop.incrementLoopCounter();
+		((Loop)parentTerm).incrementLoopCounter();
 		return true;
 	}
 
 	@Override public CommandTerm nextCommand() {
-		int limit = Integer.parseInt(openLoop.args.get(0));
-		int count = openLoop.getLoopCounter();
+		int limit = Integer.parseInt(((Loop)parentTerm).args.get(0));
+		int count = ((Loop)parentTerm).getLoopCounter();
 		if (count <= limit) {
-			return openLoop;
+			return parentTerm;
 		}
 		return null;
 	}

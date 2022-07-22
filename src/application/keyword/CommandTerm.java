@@ -16,10 +16,47 @@ import javafx.scene.layout.Pane;
 
 public abstract class CommandTerm {
 
+	private int id;
+	/* There are two types of keywords
+	 * 1) keyword     - The display name in the lexicon and JSON files
+	 * 2) commandName - The value used in formatted display and excludes any parenthesis
+	 * The second version is used to format the display properly so put(n) can become put(2)
+	 */
 	protected String keyword;
-	protected String rootKeyword;
 	protected String commandTermName;
-	protected String parentKeywordTerm;
+	/* There are three types of Terms a CommandTerm can have
+	 * 1) parentTerm - the name of the CommandTerm this CommandTerm belongs with
+	 * 2) rootTerm   - the name of the CommandTerm that originally started a chain of CommandTerm
+	 * 3) childTerms - the name(s) of the CommandTerm that this will spawn
+	 * 
+	 * For example consider the if-else-endif block
+	 * if is the root CommandTerm so the first two properties will be set to if, and childTerms will be set to [else, endif]
+	 * else is a child of the if CommandTerm so the parentTerm and rootTerm will both be set to if and childTerms will be set to [endif]
+	 * endif is a child of the else CommandTerm so parentTerm will be else the rootTerm will be if and childTerms will be set to []
+	 * 
+	 * thus:
+	 * 
+	 * if
+	 *    parentTerm: if
+	 *    rootTerm:   if
+	 *    childTerms: [else, endif]
+	 * else
+	 *    parentTerm: if
+	 *    rootTerm:   if
+	 *    childTerms: [endif]
+	 * endif
+	 *    parentTerm: else
+	 *    rootTerm:   if
+	 *    childTerms: [] 
+	 */
+	protected CommandTerm parentTerm;
+	protected CommandTerm rootTerm;
+	protected CommandTerm[] childTerms;
+	
+	private int parentId;
+	private int rootId;
+	private ArrayList<String> childrenId;
+	
 	
 	protected ArrayList<String> args;
 	protected boolean needsClosure;
@@ -35,11 +72,15 @@ public abstract class CommandTerm {
 	protected boolean hoverState;
 	protected boolean hoverLinkedState;
 	
-	CommandTerm(PuzzleController pc, String keyword){
+	CommandTerm(PuzzleController pc, String keywordName, int id){
+		this.id = id;
 		errorMessage = null;
 		puzzleController = pc;
-		this.keyword = keyword;
-		rootKeyword = keyword;
+		this.keyword = keywordName;
+		parentTerm = this;
+		rootTerm = this;
+		childTerms = new CommandTerm[0];
+		commandTermName = keywordName;
 		needsClosure = false;
 		closesIndent = false;
 		indentLevel = 0;
@@ -52,6 +93,7 @@ public abstract class CommandTerm {
 		}
 	}
 
+	public int getId() {return id;}
 	public void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,controller.getArgValue(i));
@@ -60,12 +102,15 @@ public abstract class CommandTerm {
 	
 	public int argCount() {return 0;}
 	public String getKeyword() {return keyword;}
-	public String getRootKeyword() {return rootKeyword;}
-	public String getParentKeyword() {return parentKeywordTerm;}
+	public CommandTerm getRootKeyword() {return rootTerm;}
+	public CommandTerm getParentKeyword() {return parentTerm;}
+	public int getParentId() {return parentId;}
+	public int getRootId() {return rootId;}
+	public void setParent(CommandTerm ct) {parentTerm = ct;}
+	public void setRoot(CommandTerm ct) {rootTerm = ct;}
+	
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
-	public CommandTerm getParentTerm() {return null;}
-	public void setParent(CommandTerm ct) {}
 	public CommandTerm getChildTerm() {return null;}
 	public void setChild(CommandTerm ct) {}
 	public int getIndentLevel() {return indentLevel;}
@@ -80,11 +125,20 @@ public abstract class CommandTerm {
 		return indent() + commandTermName + "(" + argList + ")";
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JSONObject toJSON() {
 		JSONObject object = new JSONObject();
 		object.put("keyword", keyword);
+		object.put("id", id);
+		object.put("parentId", parentTerm.getId());
+		object.put("rootId", rootTerm.getId());
+		JSONArray array = new JSONArray();
+		for(CommandTerm ct : childTerms){
+			array.add(ct.getId());
+		}
+		object.put("childenId", array);
 		if (args.size()>0) {
-			JSONArray array = new JSONArray();
+			array = new JSONArray();
 			for(String arg : args){
 				array.add(arg);
 			}
@@ -93,8 +147,16 @@ public abstract class CommandTerm {
 		return object;
 	}
 	
-	public static CommandTerm fromJSON(PuzzleController pc, JSONObject line, HashMap<String, ArrayDeque<CommandTerm>> openCT) {
+	@SuppressWarnings("unchecked")
+	public static CommandTerm fromJSON(PuzzleController pc
+			                          ,JSONObject line
+			                          ,HashMap<String
+			                          ,ArrayDeque<CommandTerm>> openCT
+			                          ,HashMap<Integer, CommandTerm> commandTermById
+			                          ) {
 		String term = (String)line.get("keyword");
+		int id = ((Long)line.get("id")).intValue();
+		pc.updateNextId(id);
 		ArrayList<String> args = new ArrayList<String>();
 		if (line.containsKey("Arguments")) {
 			JSONArray jsonArray = (JSONArray) line.get("Arguments");
@@ -105,17 +167,24 @@ public abstract class CommandTerm {
 		}
 		CommandTerm ct;
 		try {
-			ct = KeyTermController.getNewKeyTerm(term, pc);
-			if (ct != null) {
-				ct.args = args;
-				if (ct.hasClosure()) {
-					openCT.get(term).addLast(ct);
-				}
-			} else {
-				ct = KeyTermController.getClosingKeyTerm(term, pc);
-				if (ct.hasClosure()) {
-					openCT.get(term).addLast(ct);
-				}
+			ct = KeyTermController.getNewKeyTerm(term, pc, id);
+			// for the child commandTerms they will not have their parent or root details
+			// so add the parent and root ids.
+			if (ct.getParentKeyword() == null) {
+				ct.parentId = (int)line.get("parentId");
+				ct.rootId = (int)line.get("rootId");
+			}
+			ct.childrenId = new ArrayList<String>();
+			JSONArray jsonArray = (JSONArray) line.get("childrenId");
+			if (jsonArray != null) {
+				Iterator<String> iterator = jsonArray.iterator();
+		         while(iterator.hasNext()) {
+		        	 ct.childrenId.add(iterator.next());
+		         }
+			}
+			ct.args = args;
+			if (ct.hasClosure()) {
+				openCT.get(term).addLast(ct);
 			}
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());

@@ -109,11 +109,11 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 				updateLinkedItems(item.getChildTerm(),highlight);
 			}
 		if (item.getClosesIndent() 
-				&& (highlight && item.getParentTerm().isHoverLinked() == item.getParentTerm().isHover()
-				|| (!highlight && item.getParentTerm().isHoverLinked() != item.getParentTerm().isHover())))
+				&& (highlight && item.getParentKeyword().isHoverLinked() == item.getParentKeyword().isHover()
+				|| (!highlight && item.getParentKeyword().isHoverLinked() != item.getParentKeyword().isHover())))
 			{
-				item.getParentTerm().setHoverLinked(highlight);
-				updateLinkedItems(item.getParentTerm(),highlight);
+				item.getParentKeyword().setHoverLinked(highlight);
+				updateLinkedItems(item.getParentKeyword(),highlight);
 			}
 	}
 	

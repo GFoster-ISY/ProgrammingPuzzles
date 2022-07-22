@@ -50,60 +50,44 @@ public class KeyTermController {
     	Stage stage = (Stage) fxmlEmbed.getScene().getWindow();
         stage.close();    	
     }
-    public static CommandTerm getNewKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
+    public static CommandTerm getNewKeyTerm(String term, PuzzleController pc, int id) throws UnknownKeywordException{
     	CommandTerm keyword;
     	if (term.equals("put(n)")){
-    		keyword = new Put(pc, term);
+    		keyword = new Put(pc, term, id);
     	} else if(term.equals("pick()")){
-    		keyword = new Pick(pc, term);
+    		keyword = new Pick(pc, term, id);
     	} else if(term.equals("pick(colour)")){
-    		keyword = new PickColour(pc, term);
+    		keyword = new PickColour(pc, term, id);
     	} else if(term.equals("loop")){
-    		keyword = new Loop(pc, term);
+    		keyword = new Loop(pc, term, id);
     	} else if(term.equals("loop until")){
-    		keyword = new LoopUntil(pc, term);
+    		keyword = new LoopUntil(pc, term, id);
     	} else if(term.equals("if")){
-    		keyword = new If(pc, term);
+    		keyword = new If(pc, term, id);
     	} else if(term.equals("replace()")){
-    		keyword = new Replace(pc, term);
+    		keyword = new Replace(pc, term, id);
     	} else if(term.equals("increment(n)")){
-    		keyword = new Increment(pc, term);
+    		keyword = new Increment(pc, term, id);
     	} else if(term.equals("look()")){
-    		keyword = new Look(pc, term);
+    		keyword = new Look(pc, term, id);
     	} else if(term.equals("endloop")){
-    		keyword = null;
-    	} else if(term.equals("endloopuntil")){
-    		keyword = null;
-    	} else if(term.equals("endif")){
-    		keyword = null;
-    	} else if(term.equals("else")){
-    		keyword = null;
-    	} else if(term.equals("variable")){
-    		keyword = new Variable(pc, term);
-    	} else {
-    		throw new UnknownKeywordException (term);
-    	}// end if on keyword
-    	return keyword;
-    }
-    
-    public static CommandTerm getClosingKeyTerm(String term, PuzzleController pc)  throws UnknownKeywordException{
-    	CommandTerm keyword;
-    	if (term.equals("endloop")){
-    		keyword = new EndLoop(pc, null);
+    		keyword = new EndLoop(pc, null, id);
     	} else if (term.equals("endloopuntil")){
-    		keyword = new EndLoopUntil(pc, null);
+    		keyword = new EndLoopUntil(pc, null, id);
     	} else if (term.equals("endif")){
-    		keyword = new EndIf(pc, null);
+    		keyword = new EndIf(pc, null, id);
     	} else if (term.equals("else")){
-    		keyword = new Else(pc, null);
+    		keyword = new Else(pc, null, id);
+    	} else if(term.equals("variable")){
+    		keyword = new Variable(pc, term, id);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
     	return keyword;
     }
-    
+       
 	public void setKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
-		keyword = getNewKeyTerm(term, pc);
+		keyword = getNewKeyTerm(term, pc, pc.getNextId());
     	displayNestedFXML();
     }
     
