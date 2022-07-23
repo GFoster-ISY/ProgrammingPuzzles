@@ -17,10 +17,11 @@ public class Loop extends CommandTerm {
 		commandTermName = "loop";
 		needsClosure = true;
 		endLoop = new EndLoop(puzzleController, this, pc.getNextId());
+		childTerms = new CommandTerm[2];
+		childTerms[0] = endLoop;
 	}
 
 	public int getLoopCounter() {return loopCounter;}
-	public CommandTerm getChildTerm() {return endLoop;}
 	public void setChild(CommandTerm ct) {endLoop = ct;}
 	public void incrementLoopCounter() {loopCounter++;}
 	

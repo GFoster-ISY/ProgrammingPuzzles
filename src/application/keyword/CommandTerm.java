@@ -106,12 +106,25 @@ public abstract class CommandTerm {
 	public CommandTerm getParentKeyword() {return parentTerm;}
 	public int getParentId() {return parentId;}
 	public int getRootId() {return rootId;}
+	public ArrayList<String> getChildrenId() {return childrenId;}
+	public void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
+		childTerms = new CommandTerm[childrenId.size()];
+		for (int i = 0; i < childrenId.size(); i++) {
+			childTerms[i] = commandTermById.get(Integer.parseInt(childrenId.get(i)));
+		}
+
+	}
 	public void setParent(CommandTerm ct) {parentTerm = ct;}
 	public void setRoot(CommandTerm ct) {rootTerm = ct;}
 	
 	public boolean hasClosure() { return needsClosure;}
 	public boolean getClosesIndent() { return closesIndent;}
-	public CommandTerm getChildTerm() {return null;}
+	public final CommandTerm getChildTerm() {
+		if (childTerms.length > 0) {
+			return childTerms[0];
+		}
+		return null;
+	}
 	public void setChild(CommandTerm ct) {}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}

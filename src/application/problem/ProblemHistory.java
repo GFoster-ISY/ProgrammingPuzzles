@@ -60,6 +60,7 @@ public class ProblemHistory {
 		 	}
 			listing = FXCollections.observableArrayList(commandTermById.values());
 		 	controller.indentCode(controller.lstPreviousRun, listing);
+		 	modifyAllParentCommandTerms(commandTermById, listing);
 			modifyAllChildCommandTerms(commandTermById, listing, openCommandTerm);
 		}
 		return listing;
@@ -83,6 +84,16 @@ public class ProblemHistory {
 		openCommandTerm.put("else",new ArrayDeque<>());
 		return openCommandTerm;
 	}
+	
+	private void modifyAllParentCommandTerms(HashMap<Integer, CommandTerm> commandTermById
+			,ObservableList<CommandTerm> commands) {
+		for (CommandTerm ct : commands) {
+			if (ct.getChildrenId().size() > 0) {
+				ct.setChildTerms(commandTermById);
+			}
+		}
+	}
+	
 	private void modifyAllChildCommandTerms(HashMap<Integer, CommandTerm> commandTermById
 			,ObservableList<CommandTerm> commands,
 			HashMap<String,ArrayDeque<CommandTerm>> openCT) {

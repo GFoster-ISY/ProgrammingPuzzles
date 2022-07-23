@@ -1,7 +1,5 @@
 package application.keyword;
 
-import java.util.ArrayList;
-
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
@@ -19,11 +17,12 @@ public class Else extends CommandTerm {
 		rootTerm = theIf;
 		needsClosure = true;
 		endIf = new EndIf(puzzleController, this, pc.getNextId());
+		childTerms = new CommandTerm[1];
+		childTerms[0] = endIf;
 	}
 
 	public CommandTerm getParentTerm() {return parentTerm;}
 	public void setParent(CommandTerm ct) {parentTerm = ct;}
-	public CommandTerm getChildTerm() {return endIf;}
 	public void setChild(CommandTerm ct) {endIf = ct;}
 	
 	@Override

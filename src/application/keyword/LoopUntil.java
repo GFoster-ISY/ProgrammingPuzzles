@@ -18,6 +18,9 @@ public class LoopUntil extends CommandTerm {
 		needsClosure = true;
 		counter = puzzleController.getVariable("counter", 0, this);
 		endLoop = new EndLoopUntil(puzzleController, this, pc.getNextId());
+		childTerms = new CommandTerm[2];
+		childTerms[0] = endLoop;
+		childTerms[1] = counter;
 	}
 
 	public boolean hasLoopFinished() {
@@ -26,7 +29,6 @@ public class LoopUntil extends CommandTerm {
 	}
 	
 	public int getLoopCounter() {return counter.getNumber();}
-	public CommandTerm getChildTerm() {return endLoop;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedOneArgController)load.getController();

@@ -22,10 +22,11 @@ public class If extends CommandTerm {
 		commandTermName = "if";
 		needsClosure = true;
 		theElse = new Else(puzzleController, this, pc.getNextId());
+		childTerms = new CommandTerm[2];
+		childTerms[0] = theElse;
+		childTerms[1] = theElse.getChildTerm();
 	}
 	
-
-	public CommandTerm getChildTerm() {return theElse;}
 	public void setChild(CommandTerm ct) {theElse = ct;}
 	
 	@Override
