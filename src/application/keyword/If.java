@@ -21,6 +21,8 @@ public class If extends CommandTerm {
 		FXMLFileName = "NestedIf.fxml";
 		commandTermName = "if";
 		theElse = new Else(puzzleController, this, pc.getNextId());
+		childIds.add(theElse.getId());
+		childIds.add(theElse.getChildTerm().getId());
 		childTerms = new CommandTerm[2];
 		childTerms[0] = theElse;
 		childTerms[1] = theElse.getChildTerm();

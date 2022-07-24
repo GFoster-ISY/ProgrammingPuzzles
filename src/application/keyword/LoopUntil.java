@@ -17,6 +17,8 @@ public class LoopUntil extends CommandTerm {
 		commandTermName = "loop until";
 		counter = puzzleController.getVariable("counter", 0, this);
 		endLoop = new EndLoopUntil(puzzleController, this, pc.getNextId());
+		childIds.add(endLoop.getId());
+		childIds.add(counter.getId());
 		childTerms = new CommandTerm[2];
 		childTerms[0] = endLoop;
 		childTerms[1] = counter;

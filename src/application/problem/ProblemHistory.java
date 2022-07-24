@@ -56,7 +56,7 @@ public class ProblemHistory {
 		JSONArray commands = (JSONArray)json.get(type);
 		if (commands != null) {
 			for (Object line : commands) {
-				CommandTerm ct = CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm, commandTermById);
+				CommandTerm ct = CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm);
 				commandTermById.put(ct.getId(), ct);
 		 	}
 			listing = FXCollections.observableArrayList(commandTermById.values());

@@ -14,31 +14,31 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
     private static final String LINKED_BACKGROUND = "derive(CornflowerBlue, 80%)";
     private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
     private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
-    private PuzzleController controller;
     
 	public DragNDropCommandTermCell (PuzzleController pc) {
-		controller = pc;
 		ListCell<CommandTerm> thisCell = this;
 		
 		setOnMouseEntered(event -> {
 			if (getItem() == null) { return;}
 	        ObservableList<CommandTerm> items = getListView().getItems();
 			CommandTerm ct = items.get(thisCell.getIndex());
-			// It is important to exit if we have already set the cell to hover is true
+			// It is important to return if hover is already true
 			// Because of the call getListView().refresh() which will cause a feedback loop 
 	        if (ct.isHover()) {return;}
+	        // For every hover item set it to false, because sometimes the mouseExit command is missed
+	        clearAllHoverItems(items);
+			updateLinkedItems(ct.getRootTerm(), true);
 			ct.setHover(true);
-			updateLinkedItems(ct, true);
 			event.consume();
 			getListView().refresh();
 	    });
-	        
+	    
 		setOnMouseExited(event -> {
 			if (getItem() == null) { return;}
 	        ObservableList<CommandTerm> items = getListView().getItems();
 			CommandTerm ct = items.get(thisCell.getIndex());
 	        if (!ct.isHover()) {return;}
-			ct.setHover(false);
+	        clearAllHoverItems(items);
 			updateLinkedItems(ct, false);
 			event.consume();
 			getListView().refresh();
@@ -100,21 +100,17 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 
 	} // end of constructor
 	
-	private void updateLinkedItems(CommandTerm item, boolean highlight) {
-		if (item.getChildTerm()!=null
-				&& (highlight && item.getChildTerm().isHoverLinked() == item.getChildTerm().isHover()
-				|| (!highlight && item.getChildTerm().isHoverLinked() != item.getChildTerm().isHover())))
-			{
-				item.getChildTerm().setHoverLinked(highlight);
-				updateLinkedItems(item.getChildTerm(),highlight);
-			}
-		if (item.getParentTerm() != item
-				&& (highlight && item.getParentTerm().isHoverLinked() == item.getParentTerm().isHover()
-				|| (!highlight && item.getParentTerm().isHoverLinked() != item.getParentTerm().isHover())))
-			{
-				item.getParentTerm().setHoverLinked(highlight);
-				updateLinkedItems(item.getParentTerm(),highlight);
-			}
+	private void clearAllHoverItems(ObservableList<CommandTerm> items) {
+		for (CommandTerm item : items) {
+			item.setHover(false);
+			item.setHoverLinked(false);
+		}
+	}
+	private void updateLinkedItems(CommandTerm root, boolean highlight) {
+		root.setHoverLinked(highlight);
+		for (CommandTerm term : root.getChildTerms()) {
+			term.setHoverLinked(highlight);
+		}
 	}
 	
 	@Override

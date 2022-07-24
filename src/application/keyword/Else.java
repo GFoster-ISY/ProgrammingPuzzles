@@ -14,6 +14,7 @@ public class Else extends CommandTerm {
 		parentTerm = theIf;
 		rootTerm = theIf;
 		endIf = new EndIf(puzzleController, this, pc.getNextId());
+		childIds.add(endIf.getId());
 		childTerms = new CommandTerm[1];
 		childTerms[0] = endIf;
 	}

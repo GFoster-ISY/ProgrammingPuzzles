@@ -55,7 +55,7 @@ public abstract class CommandTerm {
 	
 	private int parentId;
 	private int rootId;
-	private ArrayList<String> childrenId;
+	protected ArrayList<Integer> childIds;
 	
 	
 	protected ArrayList<String> args;
@@ -78,6 +78,9 @@ public abstract class CommandTerm {
 		parentTerm = this;
 		rootTerm = this;
 		childTerms = new CommandTerm[0];
+		parentId = id;
+		rootId = id;
+		childIds = new ArrayList<>();
 		commandTermName = keywordName;
 		indentLevel = 0;
 		runningState = false;
@@ -102,24 +105,24 @@ public abstract class CommandTerm {
 	public CommandTerm getParentTerm() {return parentTerm;}
 	public int getParentId() {return parentId;}
 	public int getRootId() {return rootId;}
-	public ArrayList<String> getChildrenId() {return childrenId;}
+	public ArrayList<Integer> getChildrenId() {return childIds;}
 	public void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
-		childTerms = new CommandTerm[childrenId.size()];
-		for (int i = 0; i < childrenId.size(); i++) {
-			childTerms[i] = commandTermById.get(Integer.parseInt(childrenId.get(i)));
+		childTerms = new CommandTerm[childIds.size()];
+		for (int i = 0; i < childIds.size(); i++) {
+			childTerms[i] = commandTermById.get(childIds.get(i));
 		}
 
 	}
 	public void setParent(CommandTerm ct) {parentTerm = ct;}
 	public void setRoot(CommandTerm ct) {rootTerm = ct;}
 	
+	public final CommandTerm[] getChildTerms() {return childTerms;}
 	public final CommandTerm getChildTerm() {
 		if (childTerms.length > 0) {
 			return childTerms[0];
 		}
 		return null;
 	}
-	public void setChild(CommandTerm ct) {}
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
 	public void abort() { errorMessage = "User aborted execution of the code.";}
@@ -157,14 +160,12 @@ public abstract class CommandTerm {
 	@SuppressWarnings("unchecked")
 	public static CommandTerm fromJSON(PuzzleController pc
 			                          ,JSONObject line
-			                          ,HashMap<String
-			                          ,ArrayDeque<CommandTerm>> openCT
-			                          ,HashMap<Integer, CommandTerm> commandTermById
+			                          ,HashMap<String, ArrayDeque<CommandTerm>> openCT
 			                          ) {
 		String term = (String)line.get("keyword");
 		int id = ((Long)line.get("id")).intValue();
 		pc.updateNextId(id);
-		ArrayList<String> args = new ArrayList<String>();
+		ArrayList<String> args = new ArrayList<>();
 		if (line.containsKey("Arguments")) {
 			JSONArray jsonArray = (JSONArray) line.get("Arguments");
 			Iterator<String> iterator = jsonArray.iterator();
@@ -172,6 +173,12 @@ public abstract class CommandTerm {
 	           args.add(iterator.next());
 	         }
 		}
+		ArrayList<Integer> childId = new ArrayList<>();
+		JSONArray jsonArray = (JSONArray) line.get("childenId");
+		Iterator<Long> iterator = jsonArray.iterator();
+         while(iterator.hasNext()) {
+        	 childId.add(iterator.next().intValue());
+         }
 		CommandTerm ct;
 		try {
 			ct = KeyTermController.getNewKeyTerm(term, pc, id);
@@ -181,15 +188,16 @@ public abstract class CommandTerm {
 				ct.parentId = ((Long)line.get("parentId")).intValue();
 				ct.rootId = ((Long)line.get("rootId")).intValue();
 			}
-			ct.childrenId = new ArrayList<String>();
-			JSONArray jsonArray = (JSONArray) line.get("childrenId");
-			if (jsonArray != null) {
-				Iterator<String> iterator = jsonArray.iterator();
-		         while(iterator.hasNext()) {
-		        	 ct.childrenId.add(iterator.next());
-		         }
-			}
+//			ct.childIds = new ArrayList<String>();
+//			JSONArray jsonArray = (JSONArray) line.get("childenId");
+//			if (jsonArray != null) {
+//				Iterator<String> iterator = jsonArray.iterator();
+//		        while(iterator.hasNext()) {
+//		        	ct.childIds.add(iterator.next());
+//		        }
+//			}
 			ct.args = args;
+			ct.childIds = childId;
 			if (ct.getChildTerm()!=null) {
 				openCT.get(term).addLast(ct);
 			}
