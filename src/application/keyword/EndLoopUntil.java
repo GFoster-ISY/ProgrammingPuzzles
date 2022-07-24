@@ -12,8 +12,6 @@ public class EndLoopUntil extends CommandTerm {
 		FXMLFileName = "NestedZeroArgs.fxml";
 		parentTerm = loop;
 		rootTerm = loop;
-		closesIndent = true;
-//		openLoop = (LoopUntil)loop;
 	}
 	
 	@Override public void setParent(CommandTerm ct) {parentTerm = (LoopUntil)ct;}

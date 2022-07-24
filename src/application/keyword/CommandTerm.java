@@ -59,8 +59,6 @@ public abstract class CommandTerm {
 	
 	
 	protected ArrayList<String> args;
-	protected boolean needsClosure;
-	protected boolean closesIndent;
 	protected int indentLevel;
 	
 	protected NestedController controller;
@@ -81,8 +79,6 @@ public abstract class CommandTerm {
 		rootTerm = this;
 		childTerms = new CommandTerm[0];
 		commandTermName = keywordName;
-		needsClosure = false;
-		closesIndent = false;
 		indentLevel = 0;
 		runningState = false;
 		hoverState = false;
@@ -102,8 +98,8 @@ public abstract class CommandTerm {
 	
 	public int argCount() {return 0;}
 	public String getKeyword() {return keyword;}
-	public CommandTerm getRootKeyword() {return rootTerm;}
-	public CommandTerm getParentKeyword() {return parentTerm;}
+	public CommandTerm getRootTerm() {return rootTerm;}
+	public CommandTerm getParentTerm() {return parentTerm;}
 	public int getParentId() {return parentId;}
 	public int getRootId() {return rootId;}
 	public ArrayList<String> getChildrenId() {return childrenId;}
@@ -117,8 +113,6 @@ public abstract class CommandTerm {
 	public void setParent(CommandTerm ct) {parentTerm = ct;}
 	public void setRoot(CommandTerm ct) {rootTerm = ct;}
 	
-	public boolean hasClosure() { return needsClosure;}
-	public boolean getClosesIndent() { return closesIndent;}
 	public final CommandTerm getChildTerm() {
 		if (childTerms.length > 0) {
 			return childTerms[0];
@@ -183,9 +177,9 @@ public abstract class CommandTerm {
 			ct = KeyTermController.getNewKeyTerm(term, pc, id);
 			// for the child commandTerms they will not have their parent or root details
 			// so add the parent and root ids.
-			if (ct.getParentKeyword() == null) {
-				ct.parentId = (int)line.get("parentId");
-				ct.rootId = (int)line.get("rootId");
+			if (ct.getParentTerm() == null) {
+				ct.parentId = ((Long)line.get("parentId")).intValue();
+				ct.rootId = ((Long)line.get("rootId")).intValue();
 			}
 			ct.childrenId = new ArrayList<String>();
 			JSONArray jsonArray = (JSONArray) line.get("childrenId");
@@ -196,7 +190,7 @@ public abstract class CommandTerm {
 		         }
 			}
 			ct.args = args;
-			if (ct.hasClosure()) {
+			if (ct.getChildTerm()!=null) {
 				openCT.get(term).addLast(ct);
 			}
         } catch (UnknownKeywordException ex) {

@@ -2,6 +2,7 @@ package application.problem;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,8 +49,8 @@ public class ProblemHistory {
 	}
 	
 	private ObservableList<CommandTerm> readListingFromJSON (JSONObject json, String type) {
-		HashMap<Integer, CommandTerm> commandTermById = new HashMap<>();
-		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
+		LinkedHashMap <Integer, CommandTerm> commandTermById = new LinkedHashMap <>();
+		LinkedHashMap <String, ArrayDeque<CommandTerm>> openCommandTerm;
 		openCommandTerm = initOpenCommandTerm();
 		ObservableList<CommandTerm> listing = FXCollections.observableArrayList();
 		JSONArray commands = (JSONArray)json.get(type);
@@ -75,9 +76,9 @@ public class ProblemHistory {
 		return "" + 100*(attempts-failCount-errorCount)/attempts + "%";
 	}
 	
-	private HashMap<String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
-		HashMap<String, ArrayDeque<CommandTerm>> openCommandTerm;
-		openCommandTerm = new HashMap<>();
+	private LinkedHashMap <String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
+		LinkedHashMap <String, ArrayDeque<CommandTerm>> openCommandTerm;
+		openCommandTerm = new LinkedHashMap <>();
 		openCommandTerm.put("loop",new ArrayDeque<>());
 		openCommandTerm.put("loop until",new ArrayDeque<>());
 		openCommandTerm.put("if",new ArrayDeque<>());
@@ -98,7 +99,7 @@ public class ProblemHistory {
 			,ObservableList<CommandTerm> commands,
 			HashMap<String,ArrayDeque<CommandTerm>> openCT) {
 		for (CommandTerm ct : commands) {
-			if (ct.getParentKeyword() == null) {
+			if (ct.getParentTerm() == null) {
 				ct.setParent(commandTermById.get(ct.getParentId()));
 				ct.setRoot(commandTermById.get(ct.getRootId()));
 			}

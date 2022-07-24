@@ -5,13 +5,11 @@ import javafx.fxml.FXMLLoader;
 
 public class EndLoop extends CommandTerm {
 
-
 	public EndLoop(PuzzleController pc, CommandTerm loop, int id) {
 		super(pc, "endloop", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
 		parentTerm = loop;
 		rootTerm = loop;
-		closesIndent = true;
 	}
 	
 	@Override public void setParent(CommandTerm ct) {parentTerm = (Loop)ct;}

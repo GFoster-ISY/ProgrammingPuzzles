@@ -11,17 +11,13 @@ public class Else extends CommandTerm {
     public Else(PuzzleController pc, CommandTerm theIf, int id) {
 		super(pc, "else", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		// = theIf;
-		closesIndent = true;
 		parentTerm = theIf;
 		rootTerm = theIf;
-		needsClosure = true;
 		endIf = new EndIf(puzzleController, this, pc.getNextId());
 		childTerms = new CommandTerm[1];
 		childTerms[0] = endIf;
 	}
 
-	public CommandTerm getParentTerm() {return parentTerm;}
 	public void setParent(CommandTerm ct) {parentTerm = ct;}
 	public void setChild(CommandTerm ct) {endIf = ct;}
 	

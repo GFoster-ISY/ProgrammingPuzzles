@@ -229,7 +229,7 @@ public class PuzzleController {
     private void copyCode(ListView<CommandTerm> codeListing) {
     	clearCode();
     	for (CommandTerm command : codeListing.getItems()) {
-    		if (allKeyTerms.contains(command.getRootKeyword().getKeyword())) {
+    		if (allKeyTerms.contains(command.getRootTerm().getKeyword())) {
     			fullListing.add(command);
     		}
     	}
@@ -304,7 +304,7 @@ public class PuzzleController {
     
     private void addInstruction(CommandTerm instruction) {
     	fullListing.add(instruction);
-    	if (instruction.hasClosure()) {
+    	if (instruction.getChildTerm()!=null) {
     		addInstruction(instruction.getChildTerm());
     	}
     	indentCode(lstListing, fullListing);
@@ -312,12 +312,12 @@ public class PuzzleController {
     
     private void removeInstruction(CommandTerm instruction) {
     	// Move to the start of any closure group and then delete each term
-    	if(instruction.getClosesIndent() && fullListing.contains(instruction.getParentKeyword())) {
-    		removeInstruction(instruction.getParentKeyword());
+    	if(instruction.getParentTerm() != instruction && fullListing.contains(instruction.getParentTerm())) {
+    		removeInstruction(instruction.getParentTerm());
     	}
     	if (fullListing.contains(instruction)) {
     		fullListing.remove(instruction);
-        	if (instruction.hasClosure()) {
+        	if (instruction.getChildTerm()!=null) {
         		removeInstruction(instruction.getChildTerm());
         	}
     	}
@@ -330,8 +330,8 @@ public class PuzzleController {
 		prev.setIndentLevel(indentLevel);
     	for ( int i = 1; i < list.size(); i++){
     		CommandTerm line = list.get(i);
-    		if (prev.hasClosure())   {indentLevel++;}
-    		if (line.getClosesIndent()) {indentLevel--;}
+    		if (prev.getChildTerm()!=null)   {indentLevel++;}
+    		if (line.getParentTerm() != line) {indentLevel--;}
     		line.setIndentLevel(indentLevel);
     		prev = line;
     	};

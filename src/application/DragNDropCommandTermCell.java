@@ -101,19 +101,19 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 	} // end of constructor
 	
 	private void updateLinkedItems(CommandTerm item, boolean highlight) {
-		if (item.hasClosure()
+		if (item.getChildTerm()!=null
 				&& (highlight && item.getChildTerm().isHoverLinked() == item.getChildTerm().isHover()
 				|| (!highlight && item.getChildTerm().isHoverLinked() != item.getChildTerm().isHover())))
 			{
 				item.getChildTerm().setHoverLinked(highlight);
 				updateLinkedItems(item.getChildTerm(),highlight);
 			}
-		if (item.getClosesIndent() 
-				&& (highlight && item.getParentKeyword().isHoverLinked() == item.getParentKeyword().isHover()
-				|| (!highlight && item.getParentKeyword().isHoverLinked() != item.getParentKeyword().isHover())))
+		if (item.getParentTerm() != item
+				&& (highlight && item.getParentTerm().isHoverLinked() == item.getParentTerm().isHover()
+				|| (!highlight && item.getParentTerm().isHoverLinked() != item.getParentTerm().isHover())))
 			{
-				item.getParentKeyword().setHoverLinked(highlight);
-				updateLinkedItems(item.getParentKeyword(),highlight);
+				item.getParentTerm().setHoverLinked(highlight);
+				updateLinkedItems(item.getParentTerm(),highlight);
 			}
 	}
 	

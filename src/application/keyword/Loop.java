@@ -15,9 +15,8 @@ public class Loop extends CommandTerm {
 		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop";
-		needsClosure = true;
 		endLoop = new EndLoop(puzzleController, this, pc.getNextId());
-		childTerms = new CommandTerm[2];
+		childTerms = new CommandTerm[1];
 		childTerms[0] = endLoop;
 	}
 
