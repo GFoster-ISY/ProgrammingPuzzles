@@ -12,8 +12,8 @@ public class EndLoop extends CommandTerm {
 		rootTerm = loop;
 	}
 	
-	@Override public void setParent(CommandTerm ct) {parentTerm = (Loop)ct;}
-	public CommandTerm getParentTerm() {return parentTerm;}
+//	@Override public void setParent(CommandTerm ct) {parentTerm = (Loop)ct;}
+//	public CommandTerm getParentTerm() {return parentTerm;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedZeroArgsController)load.getController();

@@ -60,9 +60,9 @@ public class ProblemHistory {
 				commandTermById.put(ct.getId(), ct);
 		 	}
 			listing = FXCollections.observableArrayList(commandTermById.values());
-		 	controller.indentCode(controller.lstPreviousRun, listing);
 		 	modifyAllParentCommandTerms(commandTermById, listing);
 			modifyAllChildCommandTerms(commandTermById, listing, openCommandTerm);
+		 	controller.indentCode(controller.lstPreviousRun, listing);
 		}
 		return listing;
 	}
@@ -102,6 +102,7 @@ public class ProblemHistory {
 			if (ct.getParentTerm() == null) {
 				ct.setParent(commandTermById.get(ct.getParentId()));
 				ct.setRoot(commandTermById.get(ct.getRootId()));
+				System.out.println(ct.getKeyword()+" ["+ct.getId()+"] ["+ct.getParentId()+"] ["+ct.getRootId()+"]");
 			}
 		}
 	}

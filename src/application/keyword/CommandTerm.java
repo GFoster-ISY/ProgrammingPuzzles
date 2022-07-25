@@ -184,21 +184,15 @@ public abstract class CommandTerm {
 			ct = KeyTermController.getNewKeyTerm(term, pc, id);
 			// for the child commandTerms they will not have their parent or root details
 			// so add the parent and root ids.
+			// The terms will be added by ProblemHistory::modifyAllChildCommandTerms() after
+			// this call is returned to ProblemHstory::readListingFromJSON()
 			if (ct.getParentTerm() == null) {
 				ct.parentId = ((Long)line.get("parentId")).intValue();
 				ct.rootId = ((Long)line.get("rootId")).intValue();
 			}
-//			ct.childIds = new ArrayList<String>();
-//			JSONArray jsonArray = (JSONArray) line.get("childenId");
-//			if (jsonArray != null) {
-//				Iterator<String> iterator = jsonArray.iterator();
-//		        while(iterator.hasNext()) {
-//		        	ct.childIds.add(iterator.next());
-//		        }
-//			}
 			ct.args = args;
 			ct.childIds = childId;
-			if (ct.getChildTerm()!=null) {
+			if(openCT.containsKey(term)) {
 				openCT.get(term).addLast(ct);
 			}
         } catch (UnknownKeywordException ex) {

@@ -8,8 +8,13 @@ public class EndIf extends CommandTerm {
 	public EndIf(PuzzleController pc, CommandTerm theElse, int id) {
 		super(pc, "endif", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		parentTerm = theElse;
-		rootTerm = theElse;
+		if (theElse != null) {
+			parentTerm = theElse;
+			rootTerm = theElse.getRootTerm();
+		} else {
+			parentTerm = null;
+			rootTerm = null;
+		}
 	}
 	
 	@Override

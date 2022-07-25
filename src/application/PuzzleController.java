@@ -331,7 +331,9 @@ public class PuzzleController {
     	for ( int i = 1; i < list.size(); i++){
     		CommandTerm line = list.get(i);
     		if (prev.getChildTerm()!=null)   {indentLevel++;}
-    		if (line.getParentTerm() != line) {indentLevel--;}
+    		if (line.getParentTerm()!=line) {
+    			indentLevel--;
+    		}
     		line.setIndentLevel(indentLevel);
     		prev = line;
     	};

@@ -7,22 +7,20 @@ import javafx.fxml.FXMLLoader;
 
 public class Loop extends CommandTerm {
 
-	protected CommandTerm endLoop;
-
 	int loopCounter = 1;
 	
 	public Loop(PuzzleController pc, String term, int id) {
 		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop";
-		endLoop = new EndLoop(puzzleController, this, pc.getNextId());
+		EndLoop endLoop = new EndLoop(puzzleController, this, pc.getNextId());
 		childIds.add(endLoop.getId());
 		childTerms = new CommandTerm[1];
 		childTerms[0] = endLoop;
 	}
 
 	public int getLoopCounter() {return loopCounter;}
-	public void setChild(CommandTerm ct) {endLoop = ct;}
+	public void setChild(CommandTerm ct) {childTerms[0] = ct;}
 	public void incrementLoopCounter() {loopCounter++;}
 	
 	@Override protected void setController(FXMLLoader load) {

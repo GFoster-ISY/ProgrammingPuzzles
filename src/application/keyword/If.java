@@ -12,15 +12,13 @@ import javafx.scene.control.TextField;
 
 public class If extends CommandTerm {
 
-
-    protected CommandTerm theElse;
     public boolean conditionState = false;
 	
 	public If(PuzzleController pc, String term, int id) {
 		super(pc, term, id);
 		FXMLFileName = "NestedIf.fxml";
 		commandTermName = "if";
-		theElse = new Else(puzzleController, this, pc.getNextId());
+		Else theElse = new Else(puzzleController, this, pc.getNextId());
 		childIds.add(theElse.getId());
 		childIds.add(theElse.getChildTerm().getId());
 		childTerms = new CommandTerm[2];
@@ -28,7 +26,7 @@ public class If extends CommandTerm {
 		childTerms[1] = theElse.getChildTerm();
 	}
 	
-	public void setChild(CommandTerm ct) {theElse = ct;}
+	public void setChild(CommandTerm ct) {childTerms[0] = ct;}
 	
 	@Override
 	protected void setController(FXMLLoader load) {
@@ -74,6 +72,6 @@ public class If extends CommandTerm {
 		if (conditionState) {
 			return null;
 		}
-		return theElse;
+		return childTerms[0];
 	}
 }

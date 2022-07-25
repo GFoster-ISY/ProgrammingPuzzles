@@ -5,8 +5,6 @@ import javafx.fxml.FXMLLoader;
 
 public class EndLoopUntil extends CommandTerm {
 
-//	protected LoopUntil openLoop;
-	
 	public EndLoopUntil(PuzzleController pc, CommandTerm loop, int id) {
 		super(pc, "endloopuntil", id);
 		FXMLFileName = "NestedZeroArgs.fxml";
