@@ -7,13 +7,11 @@ import javafx.fxml.FXMLLoader;
 
 public class LoopUntil extends CommandTerm {
 
-	protected Variable counter;
-
 	public LoopUntil(PuzzleController pc, String term, int id) {
 		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop until";
-		counter = puzzleController.getVariable("counter", 0, this);
+		Variable counter = puzzleController.getVariable("counter", 0, this);
 		EndLoopUntil endLoop = new EndLoopUntil(puzzleController, this, pc.getNextId());
 		childIds.add(endLoop.getId());
 		childIds.add(counter.getId());
@@ -24,10 +22,10 @@ public class LoopUntil extends CommandTerm {
 
 	public boolean hasLoopFinished() {
 		int limit = Integer.parseInt(args.get(0));
-		return (counter.getNumber() >= limit);
+		return (getLoopCounter() >= limit);
 	}
 	
-	public int getLoopCounter() {return counter.getNumber();}
+	public int getLoopCounter() {return ((Variable)childTerms[1]).getNumber();}
 	
 	@Override protected void setController(FXMLLoader load) {
 		controller = (NestedOneArgController)load.getController();
@@ -49,7 +47,7 @@ public class LoopUntil extends CommandTerm {
 	
 	@Override public void reset() {
 		super.reset();
-		counter.resetNumber();
+		((Variable)childTerms[1]).resetNumber();
 	}
 	
 	@Override public boolean exec() {
@@ -59,6 +57,4 @@ public class LoopUntil extends CommandTerm {
 		}
 		return true;
 	}
-
-
 }

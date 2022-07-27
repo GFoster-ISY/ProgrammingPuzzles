@@ -102,7 +102,6 @@ public class ProblemHistory {
 			if (ct.getParentTerm() == null) {
 				ct.setParent(commandTermById.get(ct.getParentId()));
 				ct.setRoot(commandTermById.get(ct.getRootId()));
-				System.out.println(ct.getKeyword()+" ["+ct.getId()+"] ["+ct.getParentId()+"] ["+ct.getRootId()+"]");
 			}
 		}
 	}

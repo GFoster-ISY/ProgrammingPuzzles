@@ -79,6 +79,7 @@ public class ProblemManager {
         	} catch(Exception ew) {
                 ew.printStackTrace();
         	}
+        	e.printStackTrace();
         	System.out.println("New currentProblem JSON file created");
         }
 

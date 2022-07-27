@@ -378,7 +378,16 @@ public class PuzzleController {
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
-    		fullListing.forEach(line -> code.add(line));
+    		//fullListing.forEach(line -> code.add(line));
+    		// TODO variableList should be moved to the Execute class
+    		variableList.clear();
+    		for (CommandTerm ct: fullListing) {
+    			code.add(ct);
+    			if(ct instanceof Variable){
+    				ct.reset();
+    				addVariable((Variable)ct,false);
+    			}
+    		}
     		exec = new Execute(code);
     	}
     	exec.step();    	

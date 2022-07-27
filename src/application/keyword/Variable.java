@@ -12,8 +12,11 @@ public class Variable extends CommandTerm {
 	
 	protected String initialValue;
 	public Variable(PuzzleController pc, String term, int id) {
-		super(pc, term, id);
+		super(pc, "variable", id);
 		FXMLFileName = "NestedTwoArgs.fxml";
+		parentTerm = null;
+		rootTerm = null;
+		// The variable will be added to pc in addExtraData()
 	}
 	public Variable(PuzzleController pc, String name, int value, int id, CommandTerm parent) {
 		super(pc, "variable", id);
@@ -45,7 +48,16 @@ public class Variable extends CommandTerm {
 		controller.setArgRequired(req);
 	}
 
-
+	@SuppressWarnings("unchecked")
+	@Override public JSONObject toJSON() {
+		JSONObject json = super.toJSON();
+		JSONArray originalArguments = (JSONArray) json.get("Arguments");
+        JSONArray arguments = new JSONArray();
+        arguments.add(originalArguments.get(0));
+        arguments.add(initialValue);
+        json.put("Arguments", arguments);
+		return json;
+	}
 	public int argCount() {return 2;}
 	
 	public void increment() {
@@ -78,25 +90,8 @@ public class Variable extends CommandTerm {
 		return true;
 	}
 
-	@Override public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-		json.put("keyword", keyword);
-		if (args.size()>0) {
-			JSONArray array = new JSONArray();
-			array.add(args.get(0));
-			array.add(initialValue);
-			json.put("Arguments", array);
-		}
-		json.put("Parent", rootTerm);
-		return json;
-	}
 	@Override protected void addExtraData(JSONObject line) {
 		initialValue = args.get(1);
-		if (line.containsKey("Parent")) {
-			// TODO get the Object from an ID which also needs to be added to the JSON
-			// rootKeyword = (String) line.get("Parent");
-		}
 		puzzleController.addVariable(this,false);
-
 	}
 }

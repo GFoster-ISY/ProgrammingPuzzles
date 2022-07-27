@@ -79,7 +79,7 @@ public class KeyTermController {
     	} else if (term.equals("else")){
     		keyword = new Else(pc, null, id);
     	} else if(term.equals("variable")){
-    		keyword = new Variable(pc, term, id);
+    		keyword = new Variable(pc, null, id);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword
