@@ -128,6 +128,7 @@ public class PuzzleController {
     	
         pm.loadCurrentProblem();
         
+        clear();
         exec = null;
 
         hboxRunningButtons.setManaged(false);
@@ -223,7 +224,7 @@ public class PuzzleController {
     }
     
     @FXML private void clearCode() {
-    	fullListing.clear();
+    	clear();
     	showRunTimeButtons(false);
     }
     
