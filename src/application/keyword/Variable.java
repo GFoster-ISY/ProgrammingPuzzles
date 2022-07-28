@@ -35,17 +35,17 @@ public class Variable extends CommandTerm {
 	}
 	@Override
 	protected void setController(FXMLLoader load) {
-		controller = (NestedTwoArgsController)load.getController();
+		nestedController = (NestedTwoArgsController)load.getController();
 	}
 	
 	@Override protected void populateFXML () {
-		controller.setName("Variable Name",0);
-		controller.setName("Initial Value",1);
-		controller.setArgValue(args);
+		nestedController.setName("Variable Name",0);
+		nestedController.setName("Initial Value",1);
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 	@SuppressWarnings("unchecked")

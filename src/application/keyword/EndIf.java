@@ -19,7 +19,7 @@ public class EndIf extends CommandTerm {
 	
 	@Override
 	protected void setController(FXMLLoader load) {
-		controller = (NestedZeroArgsController)load.getController();
+		nestedController = (NestedZeroArgsController)load.getController();
 	}
 
 	@Override

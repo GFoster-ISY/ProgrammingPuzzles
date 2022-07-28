@@ -15,15 +15,15 @@ public class Put extends CommandTerm {
 	}
 
 	protected void populateFXML () {
-		controller.setName("Pot number");
-		controller.setArgValue(args);
+		nestedController.setName("Pot number");
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 	@Override protected void setController(FXMLLoader load) {
-		controller = (NestedOneArgController)load.getController();
+		nestedController = (NestedOneArgController)load.getController();
 	}
 	
 

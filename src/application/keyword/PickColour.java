@@ -17,15 +17,15 @@ public class PickColour extends Pick {
 	
 	@Override
 	protected void setController(FXMLLoader load) {
-		controller = (NestedOneArgController)load.getController();
+		nestedController = (NestedOneArgController)load.getController();
 	}
 	
 	@Override protected void populateFXML () {
-		controller.setName("Ball Colour");
-		controller.setArgValue(args);
+		nestedController.setName("Ball Colour");
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 

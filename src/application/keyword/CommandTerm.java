@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import application.PuzzleController;
+import application.exec.Execute;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -17,6 +18,12 @@ import javafx.scene.layout.Pane;
 public abstract class CommandTerm {
 
 	private int id;
+
+	protected PuzzleController puzzleController;
+	protected Execute exec;
+	protected NestedController nestedController;
+	protected String FXMLFileName;
+
 	/* There are two types of keywords
 	 * 1) keyword     - The display name in the lexicon and JSON files
 	 * 2) commandName - The value used in formatted display and excludes any parenthesis
@@ -53,79 +60,95 @@ public abstract class CommandTerm {
 	protected CommandTerm rootTerm;
 	protected CommandTerm[] childTerms;
 	
+	/* These are the ids of the terms mentioned above.
+	 * The recording of the ids is important since they will be held in the JSON file
+	 * This will allow the objects to be recreated and the pairing to be made correctly.
+	 */
 	private int parentId;
 	private int rootId;
 	protected ArrayList<Integer> childIds;
 	
-	
+	/* Each CommandTerm may have a different number of properties these are held as arguments
+	 * The number of args is returned by argCount().
+	 * These args are obtained either from the FXML file or from the JSON file.
+	 * All args are held as String but may need to be converted to other data types.
+	 */
 	protected ArrayList<String> args;
+		
 	protected int indentLevel;
 	
-	protected NestedController controller;
-	protected PuzzleController puzzleController;
-	protected String FXMLFileName;
-	
-	protected String errorMessage;
-	protected boolean runningState;
 	protected boolean hoverState;
 	protected boolean hoverLinkedState;
 	
+	protected String errorMessage;
+	protected boolean runningState;
+	
 	CommandTerm(PuzzleController pc, String keywordName, int id){
 		this.id = id;
-		errorMessage = null;
 		puzzleController = pc;
+		exec = null;
+		
 		this.keyword = keywordName;
+		commandTermName = keywordName;
+		
 		parentTerm = this;
 		rootTerm = this;
 		childTerms = new CommandTerm[0];
+		
 		parentId = id;
 		rootId = id;
 		childIds = new ArrayList<>();
-		commandTermName = keywordName;
-		indentLevel = 0;
-		runningState = false;
-		hoverState = false;
-		hoverLinkedState = false;
+		
 		args = new ArrayList<>();
 		for (int i = 0; i < argCount() ; i++) {
 			args.add("");
 		}
+
+		indentLevel = 0;
+		hoverState = false;
+		hoverLinkedState = false;
+
+		runningState = false;
+		errorMessage = null;
 	}
 
 	public int getId() {return id;}
-	public void updateArgs() {
-		for (int i = 0; i < argCount() ; i++) {
-			args.set(i,controller.getArgValue(i));
-		}
-	}
-	
-	public int argCount() {return 0;}
-	public String getKeyword() {return keyword;}
-	public CommandTerm getRootTerm() {return rootTerm;}
-	public CommandTerm getParentTerm() {return parentTerm;}
-	public int getParentId() {return parentId;}
-	public int getRootId() {return rootId;}
-	public ArrayList<Integer> getChildrenId() {return childIds;}
-	public void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
-		childTerms = new CommandTerm[childIds.size()];
-		for (int i = 0; i < childIds.size(); i++) {
-			childTerms[i] = commandTermById.get(childIds.get(i));
-		}
 
-	}
-	public void setParent(CommandTerm ct) {parentTerm = ct;}
-	public void setRoot(CommandTerm ct) {rootTerm = ct;}
-	
+	public String getKeyword() {return keyword;}
+
+	public CommandTerm getParentTerm() {return parentTerm;}
+	public void setParentTerm(CommandTerm ct) {parentTerm = ct;}
+	public CommandTerm getRootTerm() {return rootTerm;}
+	public void setRootTerm(CommandTerm ct) {rootTerm = ct;}
 	public final CommandTerm[] getChildTerms() {return childTerms;}
-	public final CommandTerm getChildTerm() {
+	public final CommandTerm getPrimaryChildTerm() {
 		if (childTerms.length > 0) {
 			return childTerms[0];
 		}
 		return null;
 	}
+	public void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
+		childTerms = new CommandTerm[childIds.size()];
+		for (int i = 0; i < childIds.size(); i++) {
+			childTerms[i] = commandTermById.get(childIds.get(i));
+		}
+	}
+
+	public int getParentId() {return parentId;}
+	public int getRootId() {return rootId;}
+	public ArrayList<Integer> getChildrenId() {return childIds;}
+	
+	
+	public int argCount() {return 0;}
+	public void updateArgs() {
+		for (int i = 0; i < argCount() ; i++) {
+			args.set(i,nestedController.getArgValue(i));
+		}
+	}
+	
 	public int getIndentLevel() {return indentLevel;}
 	public void setIndentLevel(int level) {indentLevel = level;}
-	public void abort() { errorMessage = "User aborted execution of the code.";}
+	
 	protected String indent() {
 		if (indentLevel > 0) return "   ".repeat(indentLevel);
 		else return "";
@@ -213,7 +236,7 @@ public abstract class CommandTerm {
 		try {
 			fxmlEmbed.getChildren().add((Node)load.load());
 			setController(load);
-			controller.setNestedController(this.controller);
+			controller.setNestedController(this.nestedController);
 			populateFXML ();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -236,4 +259,5 @@ public abstract class CommandTerm {
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();
 	public abstract boolean exec();
+	public void abort() { errorMessage = "User aborted execution of the code.";}
 }

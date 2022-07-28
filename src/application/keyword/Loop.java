@@ -24,15 +24,15 @@ public class Loop extends CommandTerm {
 	public void incrementLoopCounter() {loopCounter++;}
 	
 	@Override protected void setController(FXMLLoader load) {
-		controller = (NestedOneArgController)load.getController();
+		nestedController = (NestedOneArgController)load.getController();
 	}
 
 	@Override protected void populateFXML() {
-		controller.setName("Times");
-		controller.setArgValue(args);
+		nestedController.setName("Times");
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 

@@ -28,15 +28,15 @@ public class LoopUntil extends CommandTerm {
 	public int getLoopCounter() {return ((Variable)childTerms[1]).getNumber();}
 	
 	@Override protected void setController(FXMLLoader load) {
-		controller = (NestedOneArgController)load.getController();
+		nestedController = (NestedOneArgController)load.getController();
 	}
 
 	@Override protected void populateFXML() {
-		controller.setName("Counter");
-		controller.setArgValue(args);
+		nestedController.setName("Counter");
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 	public int argCount() {return 1;}

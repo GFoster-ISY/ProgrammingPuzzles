@@ -12,10 +12,10 @@ public class EndLoopUntil extends CommandTerm {
 		rootTerm = loop;
 	}
 	
-	@Override public void setParent(CommandTerm ct) {parentTerm = (LoopUntil)ct;}
+	@Override public void setParentTerm(CommandTerm ct) {parentTerm = (LoopUntil)ct;}
 	
 	@Override protected void setController(FXMLLoader load) {
-		controller = (NestedZeroArgsController)load.getController();
+		nestedController = (NestedZeroArgsController)load.getController();
 	}
 
 	@Override protected void populateFXML() { }

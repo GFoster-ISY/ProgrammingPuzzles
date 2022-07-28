@@ -15,15 +15,15 @@ public class Increment extends CommandTerm {
 	}
 
 	protected void populateFXML () {
-		controller.setName("Valiable Name");
-		controller.setArgValue(args);
+		nestedController.setName("Valiable Name");
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 	@Override protected void setController(FXMLLoader load) {
-		controller = (NestedOneArgController)load.getController();
+		nestedController = (NestedOneArgController)load.getController();
 	}
 	
 

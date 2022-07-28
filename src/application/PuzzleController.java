@@ -304,8 +304,8 @@ public class PuzzleController {
     
     private void addInstruction(CommandTerm instruction) {
     	fullListing.add(instruction);
-    	if (instruction.getChildTerm()!=null) {
-    		addInstruction(instruction.getChildTerm());
+    	if (instruction.getPrimaryChildTerm()!=null) {
+    		addInstruction(instruction.getPrimaryChildTerm());
     	}
     	indentCode(lstListing, fullListing);
     }
@@ -317,8 +317,8 @@ public class PuzzleController {
     	}
     	if (fullListing.contains(instruction)) {
     		fullListing.remove(instruction);
-        	if (instruction.getChildTerm()!=null) {
-        		removeInstruction(instruction.getChildTerm());
+        	if (instruction.getPrimaryChildTerm()!=null) {
+        		removeInstruction(instruction.getPrimaryChildTerm());
         	}
     	}
     	indentCode(lstListing, fullListing);
@@ -330,7 +330,7 @@ public class PuzzleController {
 		prev.setIndentLevel(indentLevel);
     	for ( int i = 1; i < list.size(); i++){
     		CommandTerm line = list.get(i);
-    		if (prev.getChildTerm()!=null)   {indentLevel++;}
+    		if (prev.getPrimaryChildTerm()!=null)   {indentLevel++;}
     		if (line.getParentTerm()!=line) {
     			indentLevel--;
     		}

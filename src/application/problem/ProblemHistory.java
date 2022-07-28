@@ -100,8 +100,8 @@ public class ProblemHistory {
 			HashMap<String,ArrayDeque<CommandTerm>> openCT) {
 		for (CommandTerm ct : commands) {
 			if (ct.getParentTerm() == null) {
-				ct.setParent(commandTermById.get(ct.getParentId()));
-				ct.setRoot(commandTermById.get(ct.getRootId()));
+				ct.setParentTerm(commandTermById.get(ct.getParentId()));
+				ct.setRootTerm(commandTermById.get(ct.getRootId()));
 			}
 		}
 	}

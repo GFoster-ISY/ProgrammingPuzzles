@@ -20,27 +20,27 @@ public class If extends CommandTerm {
 		commandTermName = "if";
 		Else theElse = new Else(puzzleController, this, pc.getNextId());
 		childIds.add(theElse.getId());
-		childIds.add(theElse.getChildTerm().getId());
+		childIds.add(theElse.getPrimaryChildTerm().getId());
 		childTerms = new CommandTerm[2];
 		childTerms[0] = theElse;
-		childTerms[1] = theElse.getChildTerm();
+		childTerms[1] = theElse.getPrimaryChildTerm();
 	}
 	
 	public void setChild(CommandTerm ct) {childTerms[0] = ct;}
 	
 	@Override
 	protected void setController(FXMLLoader load) {
-		controller = (NestedIfController)load.getController();
+		nestedController = (NestedIfController)load.getController();
 	}
 
 	@Override
 	protected void populateFXML() {
-		controller.setArgValue(args);
+		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
 		req.add(true);
 		req.add(true);
-		controller.setArgRequired(req);
+		nestedController.setArgRequired(req);
 	}
 
 
