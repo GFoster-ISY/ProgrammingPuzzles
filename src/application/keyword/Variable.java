@@ -18,6 +18,7 @@ public class Variable extends CommandTerm {
 		rootTerm = null;
 		// The variable will be added to pc in addExtraData()
 	}
+
 	public Variable(PuzzleController pc, String name, int value, int id, CommandTerm parent) {
 		super(pc, "variable", id);
 		FXMLFileName = "NestedTwoArgs.fxml";
@@ -29,13 +30,12 @@ public class Variable extends CommandTerm {
 		pc.addVariable(this, true);
 	}
 	
-	public String getName() {return args.get(0);}
+	@Override protected void setController(FXMLLoader load) {
+		nestedController = (NestedTwoArgsController)load.getController();
+	}
+
 	@Override public String toString() {
 		return  indent() + args.get(0) + " is set to " + args.get(1);
-	}
-	@Override
-	protected void setController(FXMLLoader load) {
-		nestedController = (NestedTwoArgsController)load.getController();
 	}
 	
 	@Override protected void populateFXML () {
@@ -58,18 +58,31 @@ public class Variable extends CommandTerm {
         json.put("Arguments", arguments);
 		return json;
 	}
-	public int argCount() {return 2;}
 	
+	@Override public int argCount() {return 2;}
+	
+	@Override protected void addExtraData(JSONObject line) {
+		initialValue = args.get(1);
+		puzzleController.addVariable(this,false);
+	}
+
+	@Override public void reset() {
+		super.reset();
+		setNumber(resetNumber());
+	}
+	@Override public boolean exec() {
+		return true;
+	}
+
+
+	public String getName() {return args.get(0);}
+
 	public void increment() {
 		int value = Integer.parseInt(args.get(1));
 		value++;
 		setNumber(value);
 	}
 	
-	@Override public void reset() {
-		super.reset();
-		setNumber(resetNumber());
-	}
 	
 	public int resetNumber() {
 		return Integer.parseInt(initialValue);
@@ -86,12 +99,4 @@ public class Variable extends CommandTerm {
 		args.set(1, ""+value);
 	}
 
-	@Override public boolean exec() {
-		return true;
-	}
-
-	@Override protected void addExtraData(JSONObject line) {
-		initialValue = args.get(1);
-		puzzleController.addVariable(this,false);
-	}
 }

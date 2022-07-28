@@ -17,19 +17,17 @@ public class EndIf extends CommandTerm {
 		}
 	}
 	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedZeroArgsController)load.getController();
 	}
 
-	@Override
-	protected void populateFXML() { }
+	@Override protected void populateFXML() { }
 
 	@Override public String toString() {
 		return  indent() + "end if";
 	}
+	
 	@Override public boolean exec() {
 		return true;
 	}
-
-}
+} // end of class EndIf

@@ -26,15 +26,11 @@ public class If extends CommandTerm {
 		childTerms[1] = theElse.getPrimaryChildTerm();
 	}
 	
-	public void setChild(CommandTerm ct) {childTerms[0] = ct;}
-	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedIfController)load.getController();
 	}
 
-	@Override
-	protected void populateFXML() {
+	@Override protected void populateFXML() {
 		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
 		req.add(true);
@@ -43,15 +39,13 @@ public class If extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-
-	public int argCount() {return 3;}
+	@Override public int argCount() {return 3;}
 
 	@Override public String toString() {
 		return  indent() + "if " + args.get(0) + " " + args.get(1) + " " + args.get(2) + " then";
 	}
 	
-	@Override
-	public boolean exec() {
+	@Override public boolean exec() {
 		if (puzzleController.getHand().isEmpty()) {
 			errorMessage = "There is no ball to look at";
 			return false;
@@ -74,4 +68,4 @@ public class If extends CommandTerm {
 		}
 		return childTerms[0];
 	}
-}
+} // end of class If

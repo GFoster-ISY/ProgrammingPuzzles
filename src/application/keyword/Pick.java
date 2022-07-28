@@ -12,16 +12,12 @@ public class Pick extends CommandTerm {
 		commandTermName = "pick";
 	}
 	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedZeroArgsController)load.getController();
 	}
 	
 	@Override protected void populateFXML () {}
 
-	protected Ball getBall() {
-		return puzzleController.getContainer().getBall();
-	}
 	@Override public boolean exec() {
 		if (!puzzleController.getHand().isEmpty()) {
 			errorMessage = "The hand is already holding a ball";
@@ -37,4 +33,7 @@ public class Pick extends CommandTerm {
 		}
 	}
 
-}
+	protected Ball getBall() {
+		return puzzleController.getContainer().getBall();
+	}
+} // end class Pick

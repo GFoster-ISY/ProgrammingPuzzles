@@ -14,7 +14,11 @@ public class Increment extends CommandTerm {
 		commandTermName = "increment";
 	}
 
-	protected void populateFXML () {
+	@Override protected void setController(FXMLLoader load) {
+		nestedController = (NestedOneArgController)load.getController();
+	}
+	
+	@Override protected void populateFXML () {
 		nestedController.setName("Valiable Name");
 		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
@@ -22,12 +26,7 @@ public class Increment extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	@Override protected void setController(FXMLLoader load) {
-		nestedController = (NestedOneArgController)load.getController();
-	}
-	
-
-	public int argCount() {return 1;}
+	@Override public int argCount() {return 1;}
 	
 	@Override public boolean exec() {
 		if (args.get(0).isEmpty()) {

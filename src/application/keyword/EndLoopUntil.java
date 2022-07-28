@@ -12,8 +12,6 @@ public class EndLoopUntil extends CommandTerm {
 		rootTerm = loop;
 	}
 	
-	@Override public void setParentTerm(CommandTerm ct) {parentTerm = (LoopUntil)ct;}
-	
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedZeroArgsController)load.getController();
 	}
@@ -23,6 +21,7 @@ public class EndLoopUntil extends CommandTerm {
 	@Override public String toString() {
 		return  indent() + "until counter equals " + parentTerm.args.get(0) ;
 	}
+	
 	@Override public boolean exec() {
 		return true;
 	}
@@ -34,4 +33,4 @@ public class EndLoopUntil extends CommandTerm {
 		return null;
 	}
 	
-}
+} // end of class EndLoopUntil

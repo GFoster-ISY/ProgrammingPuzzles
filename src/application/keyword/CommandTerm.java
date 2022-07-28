@@ -112,14 +112,14 @@ public abstract class CommandTerm {
 		errorMessage = null;
 	}
 
-	public int getId() {return id;}
+	public final int getId() {return id;}
 
-	public String getKeyword() {return keyword;}
+	public final String getKeyword() {return keyword;}
 
-	public CommandTerm getParentTerm() {return parentTerm;}
-	public void setParentTerm(CommandTerm ct) {parentTerm = ct;}
-	public CommandTerm getRootTerm() {return rootTerm;}
-	public void setRootTerm(CommandTerm ct) {rootTerm = ct;}
+	public final CommandTerm getParentTerm() {return parentTerm;}
+	public final void setParentTerm(CommandTerm ct) {parentTerm = ct;}
+	public final CommandTerm getRootTerm() {return rootTerm;}
+	public final void setRootTerm(CommandTerm ct) {rootTerm = ct;}
 	public final CommandTerm[] getChildTerms() {return childTerms;}
 	public final CommandTerm getPrimaryChildTerm() {
 		if (childTerms.length > 0) {
@@ -127,29 +127,29 @@ public abstract class CommandTerm {
 		}
 		return null;
 	}
-	public void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
+	public final void setChildTerms(HashMap<Integer, CommandTerm> commandTermById) {
 		childTerms = new CommandTerm[childIds.size()];
 		for (int i = 0; i < childIds.size(); i++) {
 			childTerms[i] = commandTermById.get(childIds.get(i));
 		}
 	}
 
-	public int getParentId() {return parentId;}
-	public int getRootId() {return rootId;}
-	public ArrayList<Integer> getChildrenId() {return childIds;}
+	public final int getParentId() {return parentId;}
+	public final int getRootId() {return rootId;}
+	public final ArrayList<Integer> getChildrenId() {return childIds;}
 	
 	
 	public int argCount() {return 0;}
-	public void updateArgs() {
+	public final void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,nestedController.getArgValue(i));
 		}
 	}
 	
-	public int getIndentLevel() {return indentLevel;}
-	public void setIndentLevel(int level) {indentLevel = level;}
+	public final int getIndentLevel() {return indentLevel;}
+	public final void setIndentLevel(int level) {indentLevel = level;}
 	
-	protected String indent() {
+	protected final String indent() {
 		if (indentLevel > 0) return "   ".repeat(indentLevel);
 		else return "";
 	}
@@ -243,13 +243,14 @@ public abstract class CommandTerm {
 		}
 	}
 	
-	public void setRunningState(boolean state) {runningState = state;}
-	public boolean isRunning() {return runningState;}
-	public boolean isInError() {return errorMessage != null;}
-	public void setHover(boolean state) {hoverState = state;}
-	public boolean isHover() {return hoverState;}
-	public void setHoverLinked(boolean state) {hoverLinkedState = state;}
-	public boolean isHoverLinked() {return hoverLinkedState;}
+	public final void setHover(boolean state) {hoverState = state;}
+	public final boolean isHover() {return hoverState;}
+	public final void setHoverLinked(boolean state) {hoverLinkedState = state;}
+	public final boolean isHoverLinked() {return hoverLinkedState;}
+
+	public final void setRunningState(boolean state) {runningState = state;}
+	public final boolean isRunning() {return runningState;}
+	public final boolean isInError() {return errorMessage != null;}
 	public CommandTerm nextCommand() {return null;}
 	public void reset() {
 		clearError();
@@ -259,5 +260,5 @@ public abstract class CommandTerm {
 	protected abstract void setController(FXMLLoader load);
 	protected abstract void populateFXML();
 	public abstract boolean exec();
-	public void abort() { errorMessage = "User aborted execution of the code.";}
+	public final void abort() { errorMessage = "User aborted execution of the code.";}
 }

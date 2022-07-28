@@ -14,7 +14,7 @@ public class Put extends CommandTerm {
 		commandTermName = "put";
 	}
 
-	protected void populateFXML () {
+	@Override protected void populateFXML () {
 		nestedController.setName("Pot number");
 		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
@@ -26,8 +26,7 @@ public class Put extends CommandTerm {
 		nestedController = (NestedOneArgController)load.getController();
 	}
 	
-
-	public int argCount() {return 1;}
+	@Override public int argCount() {return 1;}
 	
 	@Override public boolean exec() {
 		if (puzzleController.getHand().isEmpty()) {
@@ -63,5 +62,4 @@ public class Put extends CommandTerm {
 		puzzleController.getCups()[selectedCup].put(ball);
 		return true;
 	}
-
-}
+} // end class Put

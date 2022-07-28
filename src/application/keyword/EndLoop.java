@@ -34,4 +34,4 @@ public class EndLoop extends CommandTerm {
 		}
 		return null;
 	}
-}
+} // end class EndLoop

@@ -16,17 +16,16 @@ public class Else extends CommandTerm {
 		childTerms[0] = endIf;
 	}
 	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedZeroArgsController)load.getController();
 	}
 
-	@Override
-	protected void populateFXML() { }
-
+	@Override protected void populateFXML() {}
+	
 	@Override public String toString() {
 		return  indent() + "else";
 	}
+
 	@Override public boolean exec() {
 		return true;
 	}
@@ -38,4 +37,4 @@ public class Else extends CommandTerm {
 		return null;
 	}
 
-}
+} // end class Else

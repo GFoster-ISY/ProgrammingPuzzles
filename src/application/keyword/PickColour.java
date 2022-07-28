@@ -15,8 +15,7 @@ public class PickColour extends Pick {
 		commandTermName = "pick";
 	}
 	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedOneArgController)load.getController();
 	}
 	
@@ -28,8 +27,7 @@ public class PickColour extends Pick {
 		nestedController.setArgRequired(req);
 	}
 
-
-	public int argCount() {return 1;}
+	@Override public int argCount() {return 1;}
 
 	@Override protected Ball getBall() {
 		String colourName = args.get(0);
@@ -39,4 +37,4 @@ public class PickColour extends Pick {
 		return null;
 	}
 
-}
+} // end class PickColour

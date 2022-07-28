@@ -18,10 +18,6 @@ public class Loop extends CommandTerm {
 		childTerms = new CommandTerm[1];
 		childTerms[0] = endLoop;
 	}
-
-	public int getLoopCounter() {return loopCounter;}
-	public void setChild(CommandTerm ct) {childTerms[0] = ct;}
-	public void incrementLoopCounter() {loopCounter++;}
 	
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedOneArgController)load.getController();
@@ -35,8 +31,7 @@ public class Loop extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-
-	public int argCount() {return 1;}
+	@Override public int argCount() {return 1;}
 
 	@Override public String toString() {
 		return  indent() + "loop from 1 to " + args.get(0);
@@ -56,4 +51,7 @@ public class Loop extends CommandTerm {
 	}
 
 
-}
+	public int getLoopCounter() {return loopCounter;}
+	public void incrementLoopCounter() {loopCounter++;}
+
+} // end class Loop

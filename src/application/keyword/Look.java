@@ -14,8 +14,7 @@ public class Look extends CommandTerm {
 		commandTermName = "look";
 	}
 	
-	@Override
-	protected void setController(FXMLLoader load) {
+	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedZeroArgsController)load.getController();
 	}
 	
@@ -30,4 +29,4 @@ public class Look extends CommandTerm {
 		return true;
 	}
 
-}
+} // end class Look

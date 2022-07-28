@@ -20,13 +20,6 @@ public class LoopUntil extends CommandTerm {
 		childTerms[1] = counter;
 	}
 
-	public boolean hasLoopFinished() {
-		int limit = Integer.parseInt(args.get(0));
-		return (getLoopCounter() >= limit);
-	}
-	
-	public int getLoopCounter() {return ((Variable)childTerms[1]).getNumber();}
-	
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedOneArgController)load.getController();
 	}
@@ -39,7 +32,7 @@ public class LoopUntil extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	public int argCount() {return 1;}
+	@Override public int argCount() {return 1;}
 	
 	@Override public String toString() {
 		return  indent() + "loop";
@@ -57,4 +50,12 @@ public class LoopUntil extends CommandTerm {
 		}
 		return true;
 	}
-}
+
+	public boolean hasLoopFinished() {
+		int limit = Integer.parseInt(args.get(0));
+		return (getLoopCounter() >= limit);
+	}
+	
+	public int getLoopCounter() {return ((Variable)childTerms[1]).getNumber();}
+	
+} // end of class LoopUntil
