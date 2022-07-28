@@ -34,7 +34,7 @@ public class Increment extends CommandTerm {
 			return false;
 		}
 
-		Variable var = puzzleController.getVariable(args.get(0));
+		VarInteger var = ((VarInteger) exec.getVariable(args.get(0)));
 		if (var == null) {
 			errorMessage = "There is no variable with the name " + args.get(0);
 			return false;

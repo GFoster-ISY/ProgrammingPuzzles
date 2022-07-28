@@ -41,13 +41,13 @@ public class Put extends CommandTerm {
 		try {
 			cupNumber = Integer.parseInt(args.get(0))-1;// Subtract one to convert to array indices
 		} catch (NumberFormatException e) {
-			Variable var = puzzleController.getVariable(args.get(0));
+			Variable var = exec.getVariable(args.get(0));
 			if (var == null) {
 				errorMessage = "There is no variable with the name " + args.get(0);
 				return false;
 			}
 			try {
-				cupNumber = var.getNumber();
+				cupNumber = ((VarInteger)var).getNumber();
 			}catch (NumberFormatException ex) {
 				errorMessage = "The variable " + args.get(0) + " doesn't contain a number.";
 				return false;

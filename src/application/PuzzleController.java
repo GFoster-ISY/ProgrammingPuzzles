@@ -36,6 +36,7 @@ import application.exec.Execute;
 import application.keyword.CommandTerm;
 import application.keyword.KeyTermController;
 import application.keyword.UnknownKeywordException;
+import application.keyword.VarInteger;
 import application.keyword.Variable;
 import application.problem.Problem;
 import application.problem.ProblemListViewCell;
@@ -351,8 +352,8 @@ public class PuzzleController {
     	return variableList.containsKey(var);
     }
     public void addVariable(Variable var, boolean fullListing) {
-    	if (!hasVariable(var.getName())){
-    		variableList.put(var.getName(), var);
+    	if (!hasVariable(var.getVariableName())){
+    		variableList.put(var.getVariableName(), var);
     		if (fullListing) {addInstruction(var);}
     	}
     }
@@ -370,7 +371,7 @@ public class PuzzleController {
     		return variableList.get(name);
     	}
     	// This will occur when the user selects the command term
-		Variable counter = new Variable(this, name, initialValue, getNextId(), parent);
+		VarInteger counter = new VarInteger(this, "integer", name, initialValue, getNextId(), parent);
 		addVariable(counter, true);
 		return counter;
 		}
@@ -378,15 +379,8 @@ public class PuzzleController {
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
-    		//fullListing.forEach(line -> code.add(line));
-    		// TODO variableList should be moved to the Execute class
-    		variableList.clear();
     		for (CommandTerm ct: fullListing) {
     			code.add(ct);
-    			if(ct instanceof Variable){
-    				ct.reset();
-    				addVariable((Variable)ct,false);
-    			}
     		}
     		exec = new Execute(code);
     	}

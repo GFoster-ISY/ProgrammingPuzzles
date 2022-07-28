@@ -8,19 +8,20 @@ import org.json.simple.JSONObject;
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
-public class Variable extends CommandTerm {
+public abstract class Variable extends CommandTerm {
 	
 	protected String initialValue;
+	
 	public Variable(PuzzleController pc, String term, int id) {
-		super(pc, "variable", id);
+		super(pc, term, id);
 		FXMLFileName = "NestedTwoArgs.fxml";
 		parentTerm = null;
 		rootTerm = null;
 		// The variable will be added to pc in addExtraData()
 	}
 
-	public Variable(PuzzleController pc, String name, int value, int id, CommandTerm parent) {
-		super(pc, "variable", id);
+	public Variable(PuzzleController pc, String term, String name, int value, int id, CommandTerm parent) {
+		super(pc, term, id);
 		FXMLFileName = "NestedTwoArgs.fxml";
 		args.set(0, name);
 		args.set(1, ""+value);
@@ -68,35 +69,16 @@ public class Variable extends CommandTerm {
 
 	@Override public void reset() {
 		super.reset();
-		setNumber(resetNumber());
+		setValue(initialValue);
 	}
 	@Override public boolean exec() {
 		return true;
 	}
 
-
-	public String getName() {return args.get(0);}
-
-	public void increment() {
-		int value = Integer.parseInt(args.get(1));
-		value++;
-		setNumber(value);
-	}
-	
-	
-	public int resetNumber() {
-		return Integer.parseInt(initialValue);
-	}
-	
-	public int getInitialNumber() {
-		return Integer.parseInt(initialValue);
-	}
-	public int getNumber() {
-		return Integer.parseInt(args.get(1));
-	}
-	
-	public void setNumber(int value) {
+	public final String getVariableName() {return args.get(0);}
+	public final String getValue() {return args.get(1);}
+	public final void setValue(String value) {
 		args.set(1, ""+value);
 	}
-
-}
+	
+} // end of class Variable

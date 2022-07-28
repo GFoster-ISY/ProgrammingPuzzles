@@ -78,8 +78,8 @@ public class KeyTermController {
     		keyword = new EndIf(pc, null, id);
     	} else if (term.equals("else")){
     		keyword = new Else(pc, null, id);
-    	} else if(term.equals("variable")){
-    		keyword = new Variable(pc, null, id);
+    	} else if(term.equals("integer")){
+    		keyword = new VarInteger(pc, term, id);
     	} else {
     		throw new UnknownKeywordException (term);
     	}// end if on keyword

@@ -40,7 +40,7 @@ public class LoopUntil extends CommandTerm {
 	
 	@Override public void reset() {
 		super.reset();
-		((Variable)childTerms[1]).resetNumber();
+		((VarInteger)childTerms[1]).reset();
 	}
 	
 	@Override public boolean exec() {
@@ -53,9 +53,13 @@ public class LoopUntil extends CommandTerm {
 
 	public boolean hasLoopFinished() {
 		int limit = Integer.parseInt(args.get(0));
-		return (getLoopCounter() >= limit);
+		return (getLoopCounter().getNumber() >= limit);
 	}
 	
-	public int getLoopCounter() {return ((Variable)childTerms[1]).getNumber();}
+	public VarInteger getLoopCounter() {
+		Variable var = (Variable)childTerms[1];
+		String varName = var.getVariableName();
+		return ((VarInteger)exec.getVariable(varName));
+	}
 	
 } // end of class LoopUntil

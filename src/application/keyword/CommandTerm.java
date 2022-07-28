@@ -112,6 +112,8 @@ public abstract class CommandTerm {
 		errorMessage = null;
 	}
 
+	public final void setExec(Execute e) {exec = e;}
+	
 	public final int getId() {return id;}
 
 	public final String getKeyword() {return keyword;}
