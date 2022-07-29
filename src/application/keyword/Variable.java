@@ -28,7 +28,6 @@ public abstract class Variable extends CommandTerm {
 		initialValue = args.get(1);
 		parentTerm = parent;
 		rootTerm = parent;
-		pc.addVariable(this, true);
 	}
 	
 	@Override protected void setController(FXMLLoader load) {
@@ -60,11 +59,10 @@ public abstract class Variable extends CommandTerm {
 		return json;
 	}
 	
-	@Override public int argCount() {return 2;}
+	public static int argCount() {return 2;}
 	
 	@Override protected void addExtraData(JSONObject line) {
 		initialValue = args.get(1);
-		puzzleController.addVariable(this,false);
 	}
 
 	@Override public void reset() {
@@ -76,9 +74,10 @@ public abstract class Variable extends CommandTerm {
 	}
 
 	public final String getVariableName() {return args.get(0);}
+	public final void setVariableName(String name) {args.set(0, name);}
 	public final String getValue() {return args.get(1);}
 	public final void setValue(String value) {
-		args.set(1, ""+value);
+		args.set(1, value);
 	}
 	
 } // end of class Variable

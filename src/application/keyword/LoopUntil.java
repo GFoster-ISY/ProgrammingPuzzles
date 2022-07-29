@@ -3,6 +3,7 @@ package application.keyword;
 import java.util.ArrayList;
 
 import application.PuzzleController;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 
 public class LoopUntil extends CommandTerm {
@@ -11,7 +12,11 @@ public class LoopUntil extends CommandTerm {
 		super(pc, term, id);
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop until";
-		Variable counter = puzzleController.getVariable("counter", 0, this);
+		VarInteger counter = new VarInteger(puzzleController, "integer", pc.getNextId());
+		counter.setVariableName("counter");
+		counter.setValue("0");
+		counter.setParentTerm(this);
+		counter.setRootTerm(this);
 		EndLoopUntil endLoop = new EndLoopUntil(puzzleController, "endloopuntil", pc.getNextId());
 		endLoop.setParentTerm(this);
 		endLoop.setRootTerm(this);
@@ -34,7 +39,13 @@ public class LoopUntil extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	@Override public int argCount() {return 1;}
+	@Override protected void addToListing(ObservableList<CommandTerm> list) {
+		list.add(childTerms[1]); // variable declaration
+		list.add(this);          // loop
+		list.add(childTerms[0]); // end loop
+	}
+
+	public static int argCount() {return 1;}
 	
 	@Override public String toString() {
 		return  indent() + "loop";

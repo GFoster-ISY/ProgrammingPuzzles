@@ -12,6 +12,10 @@ import application.Container;
 import application.Cup;
 import application.PuzzleController;
 import application.Tray;
+import application.keyword.CommandTerm;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 
 public class Problem {
 
@@ -20,16 +24,31 @@ public class Problem {
 	private ProblemHistory ps;
     private PuzzleController controller;
     private ProblemManager pm;
+    public ObservableList<CommandTerm> fullListing; // TODO change visibility to private
     private Map<?, ?> solution;
 	
 	public Problem(PuzzleController pc, ProblemManager manager, String name) {
     	controller = pc;
     	pm = manager;
+    	fullListing = FXCollections.observableArrayList();
+    	controller.lstListing.setItems(fullListing);
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
 		nextProblemName = name;
 	}
  
+	public void clear() {
+		fullListing.clear();
+	}
+	public void copyCode(ListView<CommandTerm> codeListing) {
+    	clear();
+    	for (CommandTerm command : codeListing.getItems()) {
+    		if (controller.allKeyTerms.contains(command.getRootTerm().getKeyword())) {
+    			fullListing.add(command);
+    		}
+    	}
+	}
+	
 	public void setStats (ProblemHistory stats) {ps = stats;}
 	public ProblemHistory getStats() {return ps;}
     public void loadProblem() {

@@ -44,7 +44,7 @@ public class If extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	@Override public int argCount() {return 3;}
+	public static int argCount() {return 3;}
 
 	@Override public String toString() {
 		return  indent() + "if " + args.get(0) + " " + args.get(1) + " " + args.get(2) + " then";

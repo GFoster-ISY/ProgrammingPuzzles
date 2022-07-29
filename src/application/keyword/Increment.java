@@ -26,7 +26,7 @@ public class Increment extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	@Override public int argCount() {return 1;}
+	public static int argCount() {return 1;}
 	
 	@Override public boolean exec() {
 		if (args.get(0).isEmpty()) {

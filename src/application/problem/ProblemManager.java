@@ -15,6 +15,7 @@ import application.keyword.CommandTerm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 
@@ -22,7 +23,7 @@ public class ProblemManager {
 
 	private ObservableList<Problem> problemListing;
 	private ObservableList<ProblemHistory> statsListing;
-	private Problem currentProblem;
+	public Problem currentProblem; // TODO change visibility to private
     private JSONObject generalJSONObject;
     private PuzzleController controller;
 	
@@ -32,6 +33,14 @@ public class ProblemManager {
     	controller = pc;
    	}
 
+	public void clear() {
+		currentProblem.clear();
+	}
+	
+	public void copyCode(ListView<CommandTerm> codeListing) {
+		currentProblem.copyCode(codeListing);
+	}
+	
 	private Problem findProblem(String name) {
 		for(Problem problem : problemListing) {
 			if (problem.getName().equals(name)) {
@@ -153,7 +162,7 @@ public class ProblemManager {
     	}
     	problemStats.put("Attempts", attempts);
     	JSONArray lastListing = new JSONArray();
-    	for (CommandTerm ct : controller.getListing()) {
+    	for (CommandTerm ct : currentProblem.fullListing) { // TODO move to Problem ??
     		lastListing.add(ct.toJSON());
     	}
     	problemStats.put("LastRunListing",lastListing);
@@ -202,7 +211,8 @@ public class ProblemManager {
 			currentProblem = findProblem(newProblemName);
 			controller.clear();
 		} else {
-			controller.reset();
+			// TODO get problem to rest the details
+//			controller.reset();
 		}
 		if (currentProblem == null) {
 			currentProblem = oldProblem;

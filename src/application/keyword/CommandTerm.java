@@ -1,6 +1,8 @@
 package application.keyword;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import org.json.simple.JSONObject;
 
 import application.PuzzleController;
 import application.exec.Execute;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -21,8 +24,8 @@ public abstract class CommandTerm {
 
 	protected PuzzleController puzzleController;
 	protected Execute exec;
-	protected NestedController nestedController;
-	protected String FXMLFileName;
+	protected static NestedController nestedController;
+	protected static String FXMLFileName;
 
 	/* There are two types of keywords
 	 * 1) keyword     - The display name in the lexicon and JSON files
@@ -100,7 +103,21 @@ public abstract class CommandTerm {
 		childIds = new ArrayList<>();
 		
 		args = new ArrayList<>();
-		for (int i = 0; i < argCount() ; i++) {
+		Method argCntMethod;
+		int argCnt = 0;
+		/* Okay so this is a bit complicated...
+		 * The argCount is held as a static method so using reflection we first get the Class
+		 * Then we get the static method for the correct class
+		 * Finally the method is invoked to get the number or arguments required
+		 */
+		try {
+			argCntMethod = this.getClass().getMethod("argCount");
+			argCnt = (int) argCntMethod.invoke(null);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (int i = 0; i < argCnt ; i++) {
 			args.add("");
 		}
 
@@ -112,6 +129,9 @@ public abstract class CommandTerm {
 		errorMessage = null;
 	}
 
+//	public static NestedController getNestedController() {return ;}
+//	public static String getFXMLFileName() {return "NestedZeroArgs.fxml";}
+	
 	public final void setExec(Execute e) {exec = e;}
 	
 	public final int getId() {return id;}
@@ -141,7 +161,7 @@ public abstract class CommandTerm {
 	public final ArrayList<Integer> getChildrenId() {return childIds;}
 	
 	
-	public int argCount() {return 0;}
+	public static int argCount() {return 0;}
 	public final void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,nestedController.getArgValue(i));
@@ -229,6 +249,12 @@ public abstract class CommandTerm {
 		return ct;
 	}
 	
+	protected void addToListing(ObservableList<CommandTerm> list) {
+		list.add(this);
+		for (CommandTerm ct : childTerms) {
+			list.add(ct);
+		}
+	}
 	protected void addExtraData(JSONObject line) {}
 	public String errorMsg() { return errorMessage;}
 	public void clearError() { errorMessage = null;}

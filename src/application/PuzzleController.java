@@ -77,7 +77,7 @@ public class PuzzleController {
     
     @FXML private ListView<Problem> lstProblemListing;
     
-    @FXML private ListView<CommandTerm> lstListing;
+    @FXML public ListView<CommandTerm> lstListing;
     @FXML private HBox hboxRunningButtons;
     @FXML private Button btnAbort;
     @FXML private Button btnNext;
@@ -95,10 +95,8 @@ public class PuzzleController {
     private Hand hand;
     private int cupCount;
     private ProblemManager pm;
-    private ObservableList<CommandTerm> fullListing;
-    private ObservableList<String> allKeyTerms;
+    public ObservableList<String> allKeyTerms;
     private int nextUniqueId = 1;
-    private Map<String, Variable> variableList;
     public Execute exec;
     Thread execThread;
     Thread finishThread;
@@ -110,8 +108,6 @@ public class PuzzleController {
     	pm = new ProblemManager(this);
     	problemView.setExpandedPane(selectedProblem);
     	previousRunView.setExpandedPane(previousRun);
-        variableList = new HashMap<>();
-    	fullListing = FXCollections.observableArrayList();
     	allKeyTerms = FXCollections.observableArrayList();
 
     	lstProblemListing.setItems(pm.loadAllProblemsFromJSONFile());
@@ -121,7 +117,6 @@ public class PuzzleController {
     	cbProblemList.setItems(pm.getProblemListing());
     	cbProblemList.getSelectionModel().select(pm.getCurrentProblemIndex());
     	
-    	lstListing.setItems(fullListing);
     	lstListing.setCellFactory(param -> new DragNDropCommandTermCell(this));
 
         lstLexicon.setItems(allKeyTerms);
@@ -138,21 +133,21 @@ public class PuzzleController {
     @FXML private void changeStatsProblem(ActionEvent ev) {
         Problem selectedItem = cbProblemList.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
-	        ProblemHistory ps = selectedItem.getStats();
-	        if (ps == null) {
+	        ProblemHistory ph = selectedItem.getStats();
+	        if (ph == null) {
 		        lblStatsLastRun.setText("Welcome have a go at this problem");
 		        lblStatsAttempts.setText("0");
 		        lblStatsFailCount.setText("0");
 		        lblStatsErrorCount.setText("0");
 		        lblStatsSuccessRate.setText("");
 	        } else {
-		        lblStatsLastRun.setText(ps.getLastRun());
-		        lblStatsAttempts.setText(""+ps.getAttempts());
-		        lblStatsFailCount.setText(""+ps.getFailCount());
-		        lblStatsErrorCount.setText(""+ps.getErrorCount());
-		        lblStatsSuccessRate.setText(ps.getSuccessRate());
-		        lstPreviousRun.setItems(ps.previousRunListing);
-	 		   	lstPreviousSuccessfulRun.setItems(ps.previousSuccessfulRunListing);
+		        lblStatsLastRun.setText(ph.getLastRun());
+		        lblStatsAttempts.setText(""+ph.getAttempts());
+		        lblStatsFailCount.setText(""+ph.getFailCount());
+		        lblStatsErrorCount.setText(""+ph.getErrorCount());
+		        lblStatsSuccessRate.setText(ph.getSuccessRate());
+		        lstPreviousRun.setItems(ph.previousRunListing);
+	 		   	lstPreviousSuccessfulRun.setItems(ph.previousSuccessfulRunListing);
 	        }
         }
     }
@@ -180,29 +175,26 @@ public class PuzzleController {
     }
     
     public boolean hasCodeListing() {
-    	return fullListing.size() > 0;
+    	return lstListing.getItems().size() > 0;
     }
-    public ObservableList<CommandTerm> getListing(){
-    	return fullListing;
-    }
+
     public void clearListingSelection() {
     	lstListing.getSelectionModel().clearSelection();
 		lstListing.refresh();
     }
     
     public void clear() {
-    	fullListing.clear();
-		variableList.clear();
+    	pm.clear();
     }
     
-    public void reset() {
-    	clearListingSelection();
-    	fullListing.forEach(term -> {
-			term.reset();
-		});
-    	initilaliseControls();
-    	exec = null;
-    }
+//    public void reset() {
+//    	clearListingSelection();
+//    	fullListing.forEach(term -> {
+//			term.reset();
+//		});
+//    	initilaliseControls();
+//    	exec = null;
+//    }
     
     @FXML private void selectProblem(MouseEvent click) {
     	if (click.getClickCount() == 2) {
@@ -229,15 +221,9 @@ public class PuzzleController {
     }
     
     private void copyCode(ListView<CommandTerm> codeListing) {
-    	clearCode();
-    	for (CommandTerm command : codeListing.getItems()) {
-    		if (allKeyTerms.contains(command.getRootTerm().getKeyword())) {
-    			fullListing.add(command);
-    		}
-    	}
-    	lstListing.setItems(fullListing);
+    	pm.copyCode(codeListing);
         selectedProblem.setExpanded(true);
-        showRunTimeButtons(fullListing.size() > 0);    	
+        showRunTimeButtons(hasCodeListing());    	
     }
     public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
     
@@ -250,28 +236,34 @@ public class PuzzleController {
         Stage stage = getStage(loader);
         if (stage == null) return;
 
-        // Get the dialog controller so that a public method can be run to send data to the dialog
-        KeyTermController ktc = loader.<KeyTermController>getController();
-
+        Class ctClass;
+        KeyTermController ktc;
         try {
-        	ktc.setKeyTerm(keyTerm, this);
+        	// Use static methods to get details about which dialog box to show
+        	ctClass = KeyTermController.getKeyTermClass(keyTerm);
+        	ktc = KeyTermController.displayKeyTermDialog(ctClass, this, loader);
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
         	ex.printStackTrace();
         	return;
         }
         // Only display the dialog box if we have some arguments to fill.
-        if (ktc.getArgCount()>0) {
+        if (KeyTermController.getArgCount(ctClass)>0) {
             // Show the dialog (and wait for the user to close it)
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         }
         
-        if (ktc.okayPressed() || ktc.getArgCount()==0) {
-        	ktc.getInstruction().updateArgs();
-        	addInstruction(ktc.getInstruction());
+        if (ktc.okayPressed() || KeyTermController.getArgCount(ctClass)==0) {
+        	// Now create an instance of the commandTerm
+        	ktc.createInstance(ctClass, this, keyTerm);
+        	// TODO add class to list
+        	// TODO indent code
+//        	ktc.setKeyTerm(keyTerm, this);
+//        	ktc.getInstruction().updateArgs();
+//        	addInstruction(ktc.getInstruction());
         }
-        showRunTimeButtons(fullListing.size() > 0);
+        showRunTimeButtons(hasCodeListing());
         lstLexicon.getSelectionModel().clearSelection();
     }
     
@@ -287,7 +279,8 @@ public class PuzzleController {
         // Get the dialog controller so that a public method can be run to send data to the dialog
         KeyTermController ktc = loader.<KeyTermController>getController();
 
-        ktc.setKeyTerm(instruction);
+//        ktc.setKeyTerm(instruction);
+        // TODO edit the instruction in Problem
         ktc.showDeleteButton();
         
         // Show the dialog (and wait for the user to close it)
@@ -300,30 +293,31 @@ public class PuzzleController {
         }
 
     	lstListing.refresh();
-        showRunTimeButtons(fullListing.size() > 0);
+        showRunTimeButtons(hasCodeListing());
         lstListing.getSelectionModel().clearSelection();
     }
     
-    private void addInstruction(CommandTerm instruction) {
-    	fullListing.add(instruction);
-    	if (instruction.getPrimaryChildTerm()!=null) {
-    		addInstruction(instruction.getPrimaryChildTerm());
-    	}
-    	indentCode(lstListing, fullListing);
-    }
+//    private void addInstruction(CommandTerm instruction) {
+//    	fullListing.add(instruction);
+//    	if (instruction.getPrimaryChildTerm()!=null) {
+//    		addInstruction(instruction.getPrimaryChildTerm());
+//    	}
+//    	indentCode(lstListing, fullListing);
+//    }
     
     private void removeInstruction(CommandTerm instruction) {
     	// Move to the start of any closure group and then delete each term
-    	if(instruction.getParentTerm() != instruction && fullListing.contains(instruction.getParentTerm())) {
-    		removeInstruction(instruction.getParentTerm());
-    	}
-    	if (fullListing.contains(instruction)) {
-    		fullListing.remove(instruction);
-        	if (instruction.getPrimaryChildTerm()!=null) {
-        		removeInstruction(instruction.getPrimaryChildTerm());
-        	}
-    	}
-    	indentCode(lstListing, fullListing);
+    	// TODO remove any command terms in teh class Problem
+//    	if(instruction.getParentTerm() != instruction && fullListing.contains(instruction.getParentTerm())) {
+//    		removeInstruction(instruction.getParentTerm());
+//    	}
+//    	if (fullListing.contains(instruction)) {
+//    		fullListing.remove(instruction);
+//        	if (instruction.getPrimaryChildTerm()!=null) {
+//        		removeInstruction(instruction.getPrimaryChildTerm());
+//        	}
+//    	}
+//    	indentCode(lstListing, fullListing);
     }
     
     public void indentCode(ListView<CommandTerm> view, ObservableList<CommandTerm> list) {
@@ -349,38 +343,10 @@ public class PuzzleController {
     public void updateNextId(int newId) {
     	if (newId >= nextUniqueId) {nextUniqueId++;}
     }
-    public boolean hasVariable(String var) {
-    	return variableList.containsKey(var);
-    }
-    public void addVariable(Variable var, boolean fullListing) {
-    	if (!hasVariable(var.getVariableName())){
-    		variableList.put(var.getVariableName(), var);
-    		if (fullListing) {addInstruction(var);}
-    	}
-    }
-    
-    public Variable getVariable(String name) {
-    	if (variableList.containsKey(name)){
-    		return variableList.get(name);
-    	}
-    	return null;
-    }
-    // This version is used when a commandTerm wishes to create a variable
-    public Variable getVariable(String name, int initialValue, CommandTerm parent) {
-    	// This will occur when reading previous code
-    	if (variableList.containsKey(name)){
-    		return variableList.get(name);
-    	}
-    	// This will occur when the user selects the command term
-		VarInteger counter = new VarInteger(this, "integer", name, initialValue, getNextId(), parent);
-		addVariable(counter, true);
-		return counter;
-	}
-
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
-    		for (CommandTerm ct: fullListing) {
+    		for (CommandTerm ct: pm.currentProblem.fullListing) {
     			code.add(ct);
     		}
     		exec = new Execute(code);
@@ -561,7 +527,8 @@ public class PuzzleController {
 		a.setContentText(message);
 		a.initModality(Modality.APPLICATION_MODAL); 
 		a.showAndWait();
-		reset();
+		// TODO ask problem manager to reset the current problem
+//		reset();
     }
 
 }
