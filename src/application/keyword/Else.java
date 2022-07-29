@@ -5,12 +5,14 @@ import javafx.fxml.FXMLLoader;
 
 public class Else extends CommandTerm {
 
-    public Else(PuzzleController pc, CommandTerm theIf, int id) {
-		super(pc, "else", id);
+    public Else(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		parentTerm = theIf;
-		rootTerm = theIf;
-		EndIf endIf = new EndIf(puzzleController, this, pc.getNextId());
+		parentTerm = null;
+		rootTerm = null;
+		EndIf endIf = new EndIf(puzzleController, "endif", pc.getNextId());
+		endIf.setParentTerm(this);
+		endIf.setRootTerm(this);
 		childIds.add(endIf.getId());
 		childTerms = new CommandTerm[1];
 		childTerms[0] = endIf;

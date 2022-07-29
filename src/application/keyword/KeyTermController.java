@@ -71,13 +71,13 @@ public class KeyTermController {
     	} else if(term.equals("look()")){
     		keyword = new Look(pc, term, id);
     	} else if(term.equals("endloop")){
-    		keyword = new EndLoop(pc, null, id);
+    		keyword = new EndLoop(pc, term, id);
     	} else if (term.equals("endloopuntil")){
-    		keyword = new EndLoopUntil(pc, null, id);
+    		keyword = new EndLoopUntil(pc, term, id);
     	} else if (term.equals("endif")){
-    		keyword = new EndIf(pc, null, id);
+    		keyword = new EndIf(pc, term, id);
     	} else if (term.equals("else")){
-    		keyword = new Else(pc, null, id);
+    		keyword = new Else(pc, term, id);
     	} else if(term.equals("integer")){
     		keyword = new VarInteger(pc, term, id);
     	} else {

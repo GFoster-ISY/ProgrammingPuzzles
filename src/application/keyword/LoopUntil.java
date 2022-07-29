@@ -12,7 +12,9 @@ public class LoopUntil extends CommandTerm {
 		FXMLFileName = "NestedOneArg.fxml";
 		commandTermName = "loop until";
 		Variable counter = puzzleController.getVariable("counter", 0, this);
-		EndLoopUntil endLoop = new EndLoopUntil(puzzleController, this, pc.getNextId());
+		EndLoopUntil endLoop = new EndLoopUntil(puzzleController, "endloopuntil", pc.getNextId());
+		endLoop.setParentTerm(this);
+		endLoop.setRootTerm(this);
 		childIds.add(endLoop.getId());
 		childIds.add(counter.getId());
 		childTerms = new CommandTerm[2];

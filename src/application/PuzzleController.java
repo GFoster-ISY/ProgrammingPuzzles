@@ -375,7 +375,7 @@ public class PuzzleController {
 		VarInteger counter = new VarInteger(this, "integer", name, initialValue, getNextId(), parent);
 		addVariable(counter, true);
 		return counter;
-		}
+	}
 
     private void runOneLineOfCode() {
     	if (exec == null) {

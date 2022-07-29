@@ -5,16 +5,11 @@ import javafx.fxml.FXMLLoader;
 
 public class EndIf extends CommandTerm {
 
-	public EndIf(PuzzleController pc, CommandTerm theElse, int id) {
-		super(pc, "endif", id);
+	public EndIf(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		if (theElse != null) {
-			parentTerm = theElse;
-			rootTerm = theElse.getRootTerm();
-		} else {
-			parentTerm = null;
-			rootTerm = null;
-		}
+		parentTerm = null;
+		rootTerm = null;
 	}
 	
 	@Override protected void setController(FXMLLoader load) {

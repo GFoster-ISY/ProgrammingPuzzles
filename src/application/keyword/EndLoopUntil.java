@@ -5,11 +5,11 @@ import javafx.fxml.FXMLLoader;
 
 public class EndLoopUntil extends CommandTerm {
 
-	public EndLoopUntil(PuzzleController pc, CommandTerm loop, int id) {
-		super(pc, "endloopuntil", id);
+	public EndLoopUntil(PuzzleController pc, String term, int id) {
+		super(pc, term, id);
 		FXMLFileName = "NestedZeroArgs.fxml";
-		parentTerm = loop;
-		rootTerm = loop;
+		parentTerm = null;
+		rootTerm = null;
 	}
 	
 	@Override protected void setController(FXMLLoader load) {
