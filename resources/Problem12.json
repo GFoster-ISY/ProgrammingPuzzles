@@ -1,0 +1,8 @@
+{"ObjectiveStatement": "Put two balls in each pot.",
+"PotCount": 3,
+"Container":"Bag",
+"BallColour":{"Red":3,"Blue":3,"Green":3,"Yellow":3},
+"KeyTerms":["pick()","put(n)","loop until","increment(n)"],
+"Solution":{"PotCount":[2,2,2]},
+"NextProblem": "Problem13"
+}

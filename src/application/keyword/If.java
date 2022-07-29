@@ -21,11 +21,14 @@ public class If extends CommandTerm {
 		Else theElse = new Else(puzzleController, "else", pc.getNextId());
 		theElse.setParentTerm(this);
 		theElse.setRootTerm(this);
+		EndIf endif = (EndIf)theElse.getPrimaryChildTerm();
+		endif.setParentTerm(theElse);
+		endif.setRootTerm(this);
 		childIds.add(theElse.getId());
-		childIds.add(theElse.getPrimaryChildTerm().getId());
+		childIds.add(endif.getId());
 		childTerms = new CommandTerm[2];
 		childTerms[0] = theElse;
-		childTerms[1] = theElse.getPrimaryChildTerm();
+		childTerms[1] = endif;
 	}
 	
 	@Override protected void setController(FXMLLoader load) {

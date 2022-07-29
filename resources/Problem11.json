@@ -1,0 +1,7 @@
+{"ObjectiveStatement": "Put one Red ball in each pot.",
+"PotCount": 4,
+"BallColour":{"Red":6,"Blue":3,"Green":3,"Yellow":3},
+"KeyTerms":["pick()","put(n)","loop until","if","replace()","increment(n)"],
+"Solution":{"PotColour":[{"Red":1},{"Red":1},{"Red":1},{"Red":1}]},
+"NextProblem": "Problem12"
+}

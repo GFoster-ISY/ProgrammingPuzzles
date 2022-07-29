@@ -1,7 +1,7 @@
 {"ObjectiveStatement": "Put all the Red balls in the first pot, all the Blue balls in the second pot, all the Green balls in the third pot and all the Yellow balls in the fourth pot.",
 "PotCount": 4,
-"BallColour":{"Red":6,"Blue":3,"Green":3,"Yellow":4},
-"KeyTerms":["pick()","put(n)","loop","if"],
-"Solution":{"PotColour":[{"Red":6},{"Blue":3},{"Green":3},{"Yellow":4}]},
+"BallColour":{"Red":4,"Blue":4,"Green":4,"Yellow":4},
+"KeyTerms":["pick(colour)","put(n)","loop"],
+"Solution":{"PotColour":[{"Red":4},{"Blue":4},{"Green":4},{"Yellow":4}]},
 "NextProblem": "Problem8"
 }
