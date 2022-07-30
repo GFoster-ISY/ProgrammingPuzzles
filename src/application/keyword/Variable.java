@@ -59,7 +59,7 @@ public abstract class Variable extends CommandTerm {
 		return json;
 	}
 	
-	public static int argCount() {return 2;}
+	public int argCount() {return 2;}
 	
 	@Override protected void addExtraData(JSONObject line) {
 		initialValue = args.get(1);

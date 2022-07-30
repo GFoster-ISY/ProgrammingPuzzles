@@ -147,7 +147,11 @@ public class PuzzleController {
 		        lblStatsErrorCount.setText(""+ph.getErrorCount());
 		        lblStatsSuccessRate.setText(ph.getSuccessRate());
 		        lstPreviousRun.setItems(ph.previousRunListing);
+		    	indentCode(lstPreviousRun, ph.previousRunListing);
+		    	lstPreviousRun.refresh();
 	 		   	lstPreviousSuccessfulRun.setItems(ph.previousSuccessfulRunListing);
+		    	indentCode(lstPreviousSuccessfulRun, ph.previousSuccessfulRunListing);
+		    	lstPreviousSuccessfulRun.refresh();
 	        }
         }
     }
@@ -222,12 +226,13 @@ public class PuzzleController {
     
     private void copyCode(ListView<CommandTerm> codeListing) {
     	pm.copyCode(codeListing);
+    	indentCode(lstListing, pm.currentProblem.fullListing);
         selectedProblem.setExpanded(true);
         showRunTimeButtons(hasCodeListing());    	
     }
     public void setErrorMsg(String msg) {txtErrorMsg.setText(msg);}
     
-    @FXML private void selectKeyTerm(MouseEvent event) {
+    @FXML private void addNewKeyTerm(MouseEvent event) {
         event.consume();
         String keyTerm = lstLexicon.getSelectionModel().getSelectedItem();
         if (keyTerm == null) return;
@@ -236,38 +241,34 @@ public class PuzzleController {
         Stage stage = getStage(loader);
         if (stage == null) return;
 
-        Class ctClass;
-        KeyTermController ktc;
+        CommandTerm dummyct = null;
+        KeyTermController ktc = loader.<KeyTermController>getController();
+        // Create a dummy object so that the dialog box can be populated
         try {
-        	// Use static methods to get details about which dialog box to show
-        	ctClass = KeyTermController.getKeyTermClass(keyTerm);
-        	ktc = KeyTermController.displayKeyTermDialog(ctClass, this, loader);
+        	dummyct = KeyTermController.getNewKeyTerm(keyTerm, this, getNextId());
+            // Only display the dialog box if we have some arguments to fill.
+            if (ktc.hasArguments(dummyct)) {
+            	ktc.displayNestedFXML(dummyct);
+                // Show the dialog (and wait for the user to close it)
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+            }
+            
+            if (ktc.okayPressed() || !ktc.hasArguments(dummyct)) {
+            	// Now create an instance of the commandTerm
+            	ktc.createInstance(this, keyTerm, pm.currentProblem.fullListing);
+            	indentCode(lstListing, pm.currentProblem.fullListing);
+            }
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
         	ex.printStackTrace();
         	return;
         }
-        // Only display the dialog box if we have some arguments to fill.
-        if (KeyTermController.getArgCount(ctClass)>0) {
-            // Show the dialog (and wait for the user to close it)
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-        }
-        
-        if (ktc.okayPressed() || KeyTermController.getArgCount(ctClass)==0) {
-        	// Now create an instance of the commandTerm
-        	ktc.createInstance(ctClass, this, keyTerm);
-        	// TODO add class to list
-        	// TODO indent code
-//        	ktc.setKeyTerm(keyTerm, this);
-//        	ktc.getInstruction().updateArgs();
-//        	addInstruction(ktc.getInstruction());
-        }
         showRunTimeButtons(hasCodeListing());
         lstLexicon.getSelectionModel().clearSelection();
     }
     
-    @FXML private void selectInstruction(MouseEvent event) {
+    @FXML private void modifyKeyTerm(MouseEvent event) {
     	event.consume();
         CommandTerm instruction = lstListing.getSelectionModel().getSelectedItem();
         if (instruction == null) {return;}
@@ -278,9 +279,8 @@ public class PuzzleController {
 
         // Get the dialog controller so that a public method can be run to send data to the dialog
         KeyTermController ktc = loader.<KeyTermController>getController();
-
-//        ktc.setKeyTerm(instruction);
-        // TODO edit the instruction in Problem
+        ktc.displayNestedFXML(instruction);
+        ktc.showEditButton();
         ktc.showDeleteButton();
         
         // Show the dialog (and wait for the user to close it)
@@ -289,7 +289,9 @@ public class PuzzleController {
         if (ktc.okayPressed()) { 
         	instruction.updateArgs();
         } else if (ktc.deleteInstruction()) {
-        	removeInstruction(instruction);
+        	pm.currentProblem.remove(instruction);
+        	indentCode(lstListing, pm.currentProblem.fullListing);
+//        	removeInstruction(instruction);
         }
 
     	lstListing.refresh();
@@ -305,7 +307,7 @@ public class PuzzleController {
 //    	indentCode(lstListing, fullListing);
 //    }
     
-    private void removeInstruction(CommandTerm instruction) {
+//    private void removeInstruction(CommandTerm instruction) {
     	// Move to the start of any closure group and then delete each term
     	// TODO remove any command terms in teh class Problem
 //    	if(instruction.getParentTerm() != instruction && fullListing.contains(instruction.getParentTerm())) {
@@ -318,9 +320,10 @@ public class PuzzleController {
 //        	}
 //    	}
 //    	indentCode(lstListing, fullListing);
-    }
+//    }
     
     public void indentCode(ListView<CommandTerm> view, ObservableList<CommandTerm> list) {
+    	if (!hasCodeListing()) {return;}
     	CommandTerm prev = list.get(0);
     	int indentLevel = 0;
 		prev.setIndentLevel(indentLevel);

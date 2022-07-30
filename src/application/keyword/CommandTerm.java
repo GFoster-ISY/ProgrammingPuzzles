@@ -25,7 +25,7 @@ public abstract class CommandTerm {
 	protected PuzzleController puzzleController;
 	protected Execute exec;
 	protected static NestedController nestedController;
-	protected static String FXMLFileName;
+	protected String FXMLFileName;
 
 	/* There are two types of keywords
 	 * 1) keyword     - The display name in the lexicon and JSON files
@@ -103,21 +103,7 @@ public abstract class CommandTerm {
 		childIds = new ArrayList<>();
 		
 		args = new ArrayList<>();
-		Method argCntMethod;
-		int argCnt = 0;
-		/* Okay so this is a bit complicated...
-		 * The argCount is held as a static method so using reflection we first get the Class
-		 * Then we get the static method for the correct class
-		 * Finally the method is invoked to get the number or arguments required
-		 */
-		try {
-			argCntMethod = this.getClass().getMethod("argCount");
-			argCnt = (int) argCntMethod.invoke(null);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (int i = 0; i < argCnt ; i++) {
+		for (int i = 0; i < argCount() ; i++) {
 			args.add("");
 		}
 
@@ -161,7 +147,7 @@ public abstract class CommandTerm {
 	public final ArrayList<Integer> getChildrenId() {return childIds;}
 	
 	
-	public static int argCount() {return 0;}
+	public int argCount() {return 0;}
 	public final void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,nestedController.getArgValue(i));
@@ -260,11 +246,11 @@ public abstract class CommandTerm {
 	public void clearError() { errorMessage = null;}
 	
 	public void display(Pane fxmlEmbed, KeyTermController controller) {
-		FXMLLoader load = new FXMLLoader(getClass().getResource(FXMLFileName));
+		FXMLLoader load = new FXMLLoader(CommandTerm.class.getResource(FXMLFileName));
 		try {
 			fxmlEmbed.getChildren().add((Node)load.load());
-			setController(load);
-			controller.setNestedController(this.nestedController);
+			nestedController = load.getController();
+			controller.setNestedController(nestedController);
 			populateFXML ();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -285,8 +271,8 @@ public abstract class CommandTerm {
 		runningState = false;
 	}
 	
-	protected abstract void setController(FXMLLoader load);
-	protected abstract void populateFXML();
+	protected  abstract void setController(FXMLLoader load);
+	protected void populateFXML() {};
 	public abstract boolean exec();
 	public final void abort() { errorMessage = "User aborted execution of the code.";}
 }

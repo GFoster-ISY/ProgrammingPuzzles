@@ -33,7 +33,7 @@ public class Loop extends CommandTerm {
 		nestedController.setArgRequired(req);
 	}
 
-	public static int argCount() {return 1;}
+	public int argCount() {return 1;}
 
 	@Override public String toString() {
 		return  indent() + "loop from 1 to " + args.get(0);

@@ -47,8 +47,16 @@ public class Problem {
     			fullListing.add(command);
     		}
     	}
+    	
 	}
 	
+	public void remove(CommandTerm existingTerm) {
+		CommandTerm rootTerm = existingTerm.getRootTerm();
+		for (CommandTerm ct :rootTerm.getChildTerms()) {
+			fullListing.remove(ct);
+		}
+		fullListing.remove(rootTerm);
+	}
 	public void setStats (ProblemHistory stats) {ps = stats;}
 	public ProblemHistory getStats() {return ps;}
     public void loadProblem() {
@@ -87,6 +95,7 @@ public class Problem {
            
            controller.setContainer(container);
            JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
+           controller.lstListing.setItems(fullListing);
            controller.setAllKeyTerms(keyTerms);
            controller.initilaliseControls();
            

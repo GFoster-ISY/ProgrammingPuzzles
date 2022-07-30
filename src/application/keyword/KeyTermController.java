@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Stack;
 
 import application.PuzzleController;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -91,7 +92,12 @@ public class KeyTermController {
     	}// end if on keyword
     	return keyword;
     }
-       
+    
+    public void createInstance(PuzzleController pc, String term, ObservableList<CommandTerm>listing) throws UnknownKeywordException {
+    	CommandTerm newTerm = getNewKeyTerm(term, pc, pc.getNextId());
+    	newTerm.updateArgs();
+    	newTerm.addToListing(listing);
+    }
 //	public void setKeyTerm(String term, PuzzleController pc) throws UnknownKeywordException{
 //		keyword = getNewKeyTerm(term, pc, pc.getNextId());
 //    	displayNestedFXML();
@@ -112,6 +118,9 @@ public class KeyTermController {
     	return nc.getArgValue(posn);
     }
 
+    public void showEditButton() {
+    	btnDefault.setText("Edit");
+    }
     public void showDeleteButton() {
     	btnDelete.setVisible(true);
     }
@@ -120,80 +129,80 @@ public class KeyTermController {
     public CommandTerm getInstruction() {
     	return keyword;
     }
-    public static Class getKeyTermClass(String term) throws UnknownKeywordException{
-    	Class theClass;
-		try {
-	    	if (term.equals("put(n)")){
-				theClass = Class.forName("Put");
-	    	} else if(term.equals("pick()")){
-	    		theClass = Class.forName("Pick");
-	    	} else if(term.equals("pick(colour)")){
-	    		theClass = Class.forName("PickColour");
-	    	} else if(term.equals("loop")){
-	    		theClass = Class.forName("Loop");
-	    	} else if(term.equals("loop until")){
-	    		theClass = Class.forName("LoopUntil");
-	    	} else if(term.equals("if")){
-	    		theClass = Class.forName("If");
-	    	} else if(term.equals("replace()")){
-	    		theClass = Class.forName("Replace");
-	    	} else if(term.equals("increment(n)")){
-	    		theClass = Class.forName("Increment");
-	    	} else if(term.equals("look()")){
-	    		theClass = Class.forName("Look");
-	    	} else if(term.equals("endloop")){
-	    		theClass = Class.forName("EndLoop");
-	    	} else if (term.equals("endloopuntil")){
-	    		theClass = Class.forName("EndLoopUntil");
-	    	} else if (term.equals("endif")){
-	    		theClass = Class.forName("EndIf");
-	    	} else if (term.equals("else")){
-	    		theClass = Class.forName("Else");
-	    	} else if(term.equals("integer")){
-	    		theClass = Class.forName("VarInteger");
-	    	} else {
-	    		throw new UnknownKeywordException (term);
-	    	}// end if on term
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new UnknownKeywordException (term);
-		}
-    	return theClass;
+//    public static Class getKeyTermClass(String term, PuzzleController pc) throws UnknownKeywordException{
+//    	Class theClass;
+//		try {
+//	    	if (term.equals("put(n)")){
+//				theClass = Class.forName("application.keyword.Put");
+//	    	} else if(term.equals("pick()")){
+//	    		theClass = Class.forName("application.keyword.Pick");
+//	    	} else if(term.equals("pick(colour)")){
+//	    		theClass = Class.forName("application.keyword.PickColour");
+//	    	} else if(term.equals("loop")){
+//	    		theClass = Class.forName("application.keyword.Loop");
+//	    	} else if(term.equals("loop until")){
+//	    		theClass = Class.forName("application.keyword.LoopUntil");
+//	    	} else if(term.equals("if")){
+//	    		theClass = Class.forName("application.keyword.If");
+//	    	} else if(term.equals("replace()")){
+//	    		theClass = Class.forName("application.keyword.Replace");
+//	    	} else if(term.equals("increment(n)")){
+//	    		theClass = Class.forName("application.keyword.Increment");
+//	    	} else if(term.equals("look()")){
+//	    		theClass = Class.forName("application.keyword.Look");
+//	    	} else if(term.equals("endloop")){
+//	    		theClass = Class.forName("application.keyword.EndLoop");
+//	    	} else if (term.equals("endloopuntil")){
+//	    		theClass = Class.forName("application.keyword.EndLoopUntil");
+//	    	} else if (term.equals("endif")){
+//	    		theClass = Class.forName("application.keyword.EndIf");
+//	    	} else if (term.equals("else")){
+//	    		theClass = Class.forName("application.keyword.Else");
+//	    	} else if(term.equals("integer")){
+//	    		theClass = Class.forName("application.keyword.VarInteger");
+//	    	} else {
+//	    		throw new UnknownKeywordException (term);
+//	    	}// end if on term
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//			throw new UnknownKeywordException (term);
+//		}
+//    	return theClass;
+//    }
+//	public static KeyTermController displayKeyTermDialog(Class ctClass, PuzzleController puzzleController, FXMLLoader loader) throws UnknownKeywordException {
+//        // Get the dialog controller so that a public method can be run to send data to the dialog
+//        KeyTermController ktc = loader.<KeyTermController>getController();
+//    	ktc.displayNestedFXML(ctClass);
+//    	return ktc;
+//	}
+    public int getArgCount() { return getArgCount(keyword);}
+    public int getArgCount(CommandTerm ct) {
+    	if (ct == null) return 0;
+    	return ct.argCount();
+	}
+    public boolean hasArguments() {
+    	return hasArguments(keyword);
     }
-	public static KeyTermController displayKeyTermDialog(Class ctClass, PuzzleController puzzleController, FXMLLoader loader) throws UnknownKeywordException {
-        // Get the dialog controller so that a public method can be run to send data to the dialog
-        KeyTermController ktc = loader.<KeyTermController>getController();
-    	ktc.displayNestedFXML(ctClass);
-    	return ktc;
-	}
-    public static int getArgCount(Class ctClass) {
-    	Method argMethod;
-		try {
-			argMethod = ctClass.getMethod("argCount");
-	    	return (int)(argMethod.invoke(null));
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}
-    
-    protected void displayNestedFXML(Class ctClass) {
-    	lblCommand.setText(keyword.commandTermName);
-    	keyword.display(fxmlEmbed, this);
-    	fxmlEmbed.setMinHeight(getArgCount(ctClass)*30);
-    	gridPane.setMinHeight(getArgCount(ctClass)*30+60);
+    public boolean hasArguments(CommandTerm ct) {
+    	if (ct == null) return false;
+    	return  ct.argCount()>0;
+    }
+    public void displayNestedFXML(CommandTerm ct) {
+    	lblCommand.setText(ct.commandTermName);
+    	ct.display(fxmlEmbed, this);
+    	fxmlEmbed.setMinHeight(getArgCount(ct)*30);
+    	gridPane.setMinHeight(getArgCount(ct)*30+60);
     	enableDefaultButton();    	
     }
 
-    public CommandTerm createInstance(Class ctClass, PuzzleController pc, String term) {
-    	Constructor ctConstructor = ctClass.getConstructors()[0]; 
-    	try {
-			return (CommandTerm)(ctConstructor.newInstance(pc, term, pc.getNextId()));
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			e.printStackTrace();
-		}
-    	return null;
-    }
+//    public CommandTerm createInstance(Class ctClass, PuzzleController pc, String term) {
+//    	Constructor ctConstructor = ctClass.getConstructors()[0]; 
+//    	try {
+//			return (CommandTerm)(ctConstructor.newInstance(pc, term, pc.getNextId()));
+//		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+//				| InvocationTargetException e) {
+//			e.printStackTrace();
+//		}
+//    	return null;
+//    }
 }

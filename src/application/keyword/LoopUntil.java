@@ -31,7 +31,7 @@ public class LoopUntil extends CommandTerm {
 		nestedController = (NestedOneArgController)load.getController();
 	}
 
-	@Override protected void populateFXML() {
+	protected void populateFXML() {
 		nestedController.setName("Counter");
 		nestedController.setArgValue(args);
 		ArrayList<Boolean> req = new ArrayList<>();
@@ -45,7 +45,7 @@ public class LoopUntil extends CommandTerm {
 		list.add(childTerms[0]); // end loop
 	}
 
-	public static int argCount() {return 1;}
+	public int argCount() {return 1;}
 	
 	@Override public String toString() {
 		return  indent() + "loop";

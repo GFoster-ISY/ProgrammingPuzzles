@@ -123,7 +123,7 @@
             </Accordion>
             <VBox prefWidth="300.0">
                <children>
-                  <ListView fx:id="lstListing" onMouseClicked="#selectInstruction" prefHeight="570.0" prefWidth="400.0" />
+                  <ListView fx:id="lstListing" onMouseClicked="#modifyKeyTerm" prefHeight="570.0" prefWidth="400.0" />
                   <HBox fx:id="hboxRunningButtons" prefHeight="30.0" prefWidth="200.0" visible="false">
                      <children>
                         <Button fx:id="btnNext" defaultButton="true" minWidth="90.0" mnemonicParsing="false" onAction="#execByStep" text="Next">
@@ -168,7 +168,7 @@
                   </HBox>
                </children>
             </VBox>
-            <ListView fx:id="lstLexicon" minWidth="-Infinity" onMouseClicked="#selectKeyTerm" prefHeight="600.0" prefWidth="300.0" />
+            <ListView fx:id="lstLexicon" minWidth="-Infinity" onMouseClicked="#addNewKeyTerm" prefHeight="600.0" prefWidth="300.0" />
          </children>
       </HBox>
    </children>
