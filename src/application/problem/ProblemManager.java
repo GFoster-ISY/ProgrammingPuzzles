@@ -37,6 +37,22 @@ public class ProblemManager {
 		currentProblem.clear();
 	}
 	
+	public static void indentCode(ObservableList<CommandTerm> list) {
+    	if (list.size() == 0) {return;}
+    	CommandTerm prev = list.get(0);
+    	int indentLevel = 0;
+		prev.setIndentLevel(indentLevel);
+    	for ( int i = 1; i < list.size(); i++){
+    		CommandTerm line = list.get(i);
+    		if (prev.getPrimaryChildTerm()!=null)   {indentLevel++;}
+    		if (line.getParentTerm()!=line) {
+    			indentLevel--;
+    		}
+    		line.setIndentLevel(indentLevel);
+    		prev = line;
+    	};
+	}
+	
 	public void copyCode(ListView<CommandTerm> codeListing) {
 		currentProblem.copyCode(codeListing);
 	}

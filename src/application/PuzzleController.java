@@ -27,8 +27,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.json.simple.*;
 
@@ -36,8 +34,6 @@ import application.exec.Execute;
 import application.keyword.CommandTerm;
 import application.keyword.KeyTermController;
 import application.keyword.UnknownKeywordException;
-import application.keyword.VarInteger;
-import application.keyword.Variable;
 import application.problem.Problem;
 import application.problem.ProblemListViewCell;
 import application.problem.ProblemManager;
@@ -122,7 +118,10 @@ public class PuzzleController {
         lstLexicon.setItems(allKeyTerms);
     	
         pm.loadCurrentProblem();
-        
+
+    	lstPreviousRun.refresh();
+    	lstPreviousSuccessfulRun.refresh();
+    	
         clear();
         exec = null;
 
@@ -147,11 +146,7 @@ public class PuzzleController {
 		        lblStatsErrorCount.setText(""+ph.getErrorCount());
 		        lblStatsSuccessRate.setText(ph.getSuccessRate());
 		        lstPreviousRun.setItems(ph.previousRunListing);
-		    	indentCode(lstPreviousRun, ph.previousRunListing);
-		    	lstPreviousRun.refresh();
 	 		   	lstPreviousSuccessfulRun.setItems(ph.previousSuccessfulRunListing);
-		    	indentCode(lstPreviousSuccessfulRun, ph.previousSuccessfulRunListing);
-		    	lstPreviousSuccessfulRun.refresh();
 	        }
         }
     }
@@ -191,15 +186,6 @@ public class PuzzleController {
     	pm.clear();
     }
     
-//    public void reset() {
-//    	clearListingSelection();
-//    	fullListing.forEach(term -> {
-//			term.reset();
-//		});
-//    	initilaliseControls();
-//    	exec = null;
-//    }
-    
     @FXML private void selectProblem(MouseEvent click) {
     	if (click.getClickCount() == 2) {
             Problem problem = lstProblemListing.getSelectionModel()
@@ -226,7 +212,6 @@ public class PuzzleController {
     
     private void copyCode(ListView<CommandTerm> codeListing) {
     	pm.copyCode(codeListing);
-    	indentCode(lstListing, pm.currentProblem.fullListing);
         selectedProblem.setExpanded(true);
         showRunTimeButtons(hasCodeListing());    	
     }
@@ -257,7 +242,6 @@ public class PuzzleController {
             if (ktc.okayPressed() || !ktc.hasArguments(dummyct)) {
             	// Now create an instance of the commandTerm
             	ktc.createInstance(this, keyTerm, pm.currentProblem.fullListing);
-            	indentCode(lstListing, pm.currentProblem.fullListing);
             }
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
@@ -290,55 +274,13 @@ public class PuzzleController {
         	instruction.updateArgs();
         } else if (ktc.deleteInstruction()) {
         	pm.currentProblem.remove(instruction);
-        	indentCode(lstListing, pm.currentProblem.fullListing);
-//        	removeInstruction(instruction);
         }
 
     	lstListing.refresh();
         showRunTimeButtons(hasCodeListing());
         lstListing.getSelectionModel().clearSelection();
     }
-    
-//    private void addInstruction(CommandTerm instruction) {
-//    	fullListing.add(instruction);
-//    	if (instruction.getPrimaryChildTerm()!=null) {
-//    		addInstruction(instruction.getPrimaryChildTerm());
-//    	}
-//    	indentCode(lstListing, fullListing);
-//    }
-    
-//    private void removeInstruction(CommandTerm instruction) {
-    	// Move to the start of any closure group and then delete each term
-    	// TODO remove any command terms in teh class Problem
-//    	if(instruction.getParentTerm() != instruction && fullListing.contains(instruction.getParentTerm())) {
-//    		removeInstruction(instruction.getParentTerm());
-//    	}
-//    	if (fullListing.contains(instruction)) {
-//    		fullListing.remove(instruction);
-//        	if (instruction.getPrimaryChildTerm()!=null) {
-//        		removeInstruction(instruction.getPrimaryChildTerm());
-//        	}
-//    	}
-//    	indentCode(lstListing, fullListing);
-//    }
-    
-    public void indentCode(ListView<CommandTerm> view, ObservableList<CommandTerm> list) {
-    	if (!hasCodeListing()) {return;}
-    	CommandTerm prev = list.get(0);
-    	int indentLevel = 0;
-		prev.setIndentLevel(indentLevel);
-    	for ( int i = 1; i < list.size(); i++){
-    		CommandTerm line = list.get(i);
-    		if (prev.getPrimaryChildTerm()!=null)   {indentLevel++;}
-    		if (line.getParentTerm()!=line) {
-    			indentLevel--;
-    		}
-    		line.setIndentLevel(indentLevel);
-    		prev = line;
-    	};
-    	view.refresh();
-    }
-    
+        
     public int getNextId() {
     	return nextUniqueId++;
     }
@@ -458,9 +400,6 @@ public class PuzzleController {
     	cvsContainer.setHeight(canvasHeight);
     	display();
     }
-
-
-
     
     public void display() {
     	Cup.setCupSize(cupCount, (int)cvsCups.getWidth(), (int)cvsCups.getHeight());

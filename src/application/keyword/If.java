@@ -2,13 +2,9 @@ package application.keyword;
 
 import java.util.ArrayList;
 
-import application.Ball;
 import application.Colour;
 import application.PuzzleController;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 
 public class If extends CommandTerm {
 
@@ -62,6 +58,12 @@ public class If extends CommandTerm {
 				conditionState = true;
 			} else {
 				conditionState =  false;
+			}
+		} else if (args.get(1).equals("Not Equal To")) {
+			if (requiredColour.equals(ballColour)) {
+				conditionState = false;
+			} else {
+				conditionState =  true;
 			}
 		}
 		return true;

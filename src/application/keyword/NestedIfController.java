@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 
 public class NestedIfController extends NestedController {
 
@@ -41,8 +40,18 @@ public class NestedIfController extends NestedController {
 
 	@Override
 	public void setArgValue(ArrayList<String> args) {
-		// TODO Auto-generated method stub
-
+    	if (args != null) {
+    		if (args.size()>1) {
+    			if (args.get(1) != "") {
+    				arg1Value.getSelectionModel().select(args.get(1));
+    			}
+    		}
+    		if (args.size()>2) {
+    			if (args.get(2) != "") {
+    				arg2Value.getSelectionModel().select(args.get(2));
+    			}
+    		}
+    	}
 	}
 
 	@Override

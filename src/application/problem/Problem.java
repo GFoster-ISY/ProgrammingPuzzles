@@ -14,6 +14,7 @@ import application.PuzzleController;
 import application.Tray;
 import application.keyword.CommandTerm;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 
@@ -31,6 +32,11 @@ public class Problem {
     	controller = pc;
     	pm = manager;
     	fullListing = FXCollections.observableArrayList();
+    	fullListing.addListener(new ListChangeListener<CommandTerm>() {
+    	     public void onChanged(Change<? extends CommandTerm> c) {
+    	    	 ProblemManager.indentCode(fullListing);
+    	     }
+		});
     	controller.lstListing.setItems(fullListing);
 		int number = Integer.parseInt(name.substring(7));
 		id = number;

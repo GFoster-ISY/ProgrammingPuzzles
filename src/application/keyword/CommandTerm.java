@@ -1,8 +1,6 @@
 package application.keyword;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,9 +113,6 @@ public abstract class CommandTerm {
 		errorMessage = null;
 	}
 
-//	public static NestedController getNestedController() {return ;}
-//	public static String getFXMLFileName() {return "NestedZeroArgs.fxml";}
-	
 	public final void setExec(Execute e) {exec = e;}
 	
 	public final int getId() {return id;}

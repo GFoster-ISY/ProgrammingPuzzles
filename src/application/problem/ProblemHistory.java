@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import application.PuzzleController;
 import application.keyword.CommandTerm;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class ProblemHistory {
@@ -43,8 +44,18 @@ public class ProblemHistory {
 			errorCount = ((Long)json.get("ErrorCount")).intValue();
 		}
 		previousRunListing = readListingFromJSON(json, "LastRunListing");
+		previousRunListing.addListener(new ListChangeListener<CommandTerm>() {
+	   	     public void onChanged(Change<? extends CommandTerm> c) {
+	   	    	 ProblemManager.indentCode(previousRunListing);
+	   	     }
+			});
 		controller.lstPreviousRun.setItems(previousRunListing);
 		previousSuccessfulRunListing = readListingFromJSON(json, "LastSuccessfulListing");
+		previousSuccessfulRunListing.addListener(new ListChangeListener<CommandTerm>() {
+	   	     public void onChanged(Change<? extends CommandTerm> c) {
+	   	    	 ProblemManager.indentCode(previousSuccessfulRunListing);
+	   	     }
+			});
 		controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRunListing);
 	}
 	
@@ -62,7 +73,7 @@ public class ProblemHistory {
 			listing = FXCollections.observableArrayList(commandTermById.values());
 		 	modifyAllParentCommandTerms(commandTermById, listing);
 			modifyAllChildCommandTerms(commandTermById, listing, openCommandTerm);
-		 	controller.indentCode(controller.lstPreviousRun, listing);
+		 	ProblemManager.indentCode(listing);
 		}
 		return listing;
 	}

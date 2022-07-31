@@ -2,7 +2,6 @@ package application.keyword;
 
 import java.util.ArrayList;
 
-import application.Ball;
 import application.PuzzleController;
 import javafx.fxml.FXMLLoader;
 
