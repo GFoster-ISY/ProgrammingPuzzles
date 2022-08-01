@@ -133,22 +133,26 @@ public class PuzzleController {
         Problem selectedItem = cbProblemList.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
 	        ProblemHistory ph = selectedItem.getStats();
-	        if (ph == null) {
-		        lblStatsLastRun.setText("Welcome have a go at this problem");
-		        lblStatsAttempts.setText("0");
-		        lblStatsFailCount.setText("0");
-		        lblStatsErrorCount.setText("0");
-		        lblStatsSuccessRate.setText("");
-	        } else {
-		        lblStatsLastRun.setText(ph.getLastRun());
-		        lblStatsAttempts.setText(""+ph.getAttempts());
-		        lblStatsFailCount.setText(""+ph.getFailCount());
-		        lblStatsErrorCount.setText(""+ph.getErrorCount());
-		        lblStatsSuccessRate.setText(ph.getSuccessRate());
-		        lstPreviousRun.setItems(ph.previousRunListing);
-	 		   	lstPreviousSuccessfulRun.setItems(ph.previousSuccessfulRunListing);
-	        }
+	        displayStats(ph);
         }
+    }
+    
+    public void displayStats(ProblemHistory ph) {
+		if (ph == null) {
+		    lblStatsLastRun.setText("Welcome have a go at this problem");
+		    lblStatsAttempts.setText("0");
+		    lblStatsFailCount.setText("0");
+		    lblStatsErrorCount.setText("0");
+		    lblStatsSuccessRate.setText("");
+		} else {
+		    lblStatsLastRun.setText(ph.getLastRun());
+		    lblStatsAttempts.setText(""+ph.getAttempts());
+		    lblStatsFailCount.setText(""+ph.getFailCount());
+		    lblStatsErrorCount.setText(""+ph.getErrorCount());
+		    lblStatsSuccessRate.setText(ph.getSuccessRate());
+		    lstPreviousRun.setItems(pm.currentProblem.previousRunListing);
+		   	lstPreviousSuccessfulRun.setItems(pm.currentProblem.previousSuccessfulRunListing);
+		}
     }
     
     public Container getContainer() {return container;}
@@ -164,13 +168,14 @@ public class PuzzleController {
     	allKeyTerms.addAll(keyTerms);
     	lstLexicon.setItems(allKeyTerms);
     }
-    public void initilaliseControls() {
+    public void initialiseControls() {
         hand = new Hand();
         cups = new Cup[cupCount];
         Cup.gradingCups(false);
         for (int i = 0; i < cupCount; i++) {
             cups[i] = new Cup(i);
         }
+		container.resetContainer();
     }
     
     public boolean hasCodeListing() {
@@ -304,8 +309,19 @@ public class PuzzleController {
 		if (exec.inError()) {
 			displayError();
 		} else {
-			pm.gradeSolution();
+			if (pm.gradeSolution()) {
+				clear();
+				display();
+				lstProblemListing.getSelectionModel().select(pm.currentProblem);
+				cbProblemList.getSelectionModel().select(pm.currentProblem);
+			} else {
+				initialiseControls();
+			}
 		}
+		clearListingSelection();
+		manageButtons(false);
+		showRunTimeButtons(hasCodeListing());
+
     }
     
     @FXML private void execByStep() {
@@ -417,10 +433,8 @@ public class PuzzleController {
     			txtErrorMsg.setText("");
     		}
     	}
-    	lstListing.refresh();
         selectedProblem.setText("Selected Problem - " + pm.getCurrentProblemName());
     	Main.primaryStage.setTitle("Programming Puzzles - " + pm.getCurrentProblemName() );
-    	
     }
     
     public void manageButtons(boolean running) {
@@ -469,8 +483,8 @@ public class PuzzleController {
 		a.setContentText(message);
 		a.initModality(Modality.APPLICATION_MODAL); 
 		a.showAndWait();
-		// TODO ask problem manager to reset the current problem
-//		reset();
+		pm.reset();
+		initialiseControls();
     }
 
 }

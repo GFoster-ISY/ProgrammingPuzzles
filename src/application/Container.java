@@ -11,6 +11,7 @@ import javafx.scene.canvas.GraphicsContext;
 public abstract class Container {
 
 	protected Ball[] contents;
+	private Ball[] initialValue;
 	protected int ballCount;
 	protected abstract boolean lookedAtBall();
 	
@@ -21,6 +22,7 @@ public abstract class Container {
 			contents[i] = new Ball(i+1, 1, new Colour());
 			if (lookedAtBall()) {contents[i].look();}
 		}
+		initialValue = Arrays.copyOf(contents, contents.length);
 	}
 	
 	public Container(Map<String, Long> ballColour) {
@@ -44,6 +46,7 @@ public abstract class Container {
 		List<Ball> ballList = Arrays.asList(contents);
 		Collections.shuffle(ballList, new Random());
 		ballList.toArray(contents);
+		initialValue = Arrays.copyOf(contents, contents.length);
 	}
 	
 	public Ball getBall() {
@@ -79,4 +82,9 @@ public abstract class Container {
 		ballCount++;
 	}
 	abstract void display(GraphicsContext gc, double width, double height);
+	
+	public void resetContainer() {
+		ballCount = initialValue.length;
+		contents = Arrays.copyOf(initialValue, initialValue.length);
+	}
 }

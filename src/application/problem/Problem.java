@@ -1,6 +1,9 @@
 package application.problem;
 
 import java.io.FileReader;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -22,13 +25,15 @@ public class Problem {
 
 	private int id;
 	private String nextProblemName;
-	private ProblemHistory ps;
     private PuzzleController controller;
     private ProblemManager pm;
     public ObservableList<CommandTerm> fullListing; // TODO change visibility to private
+	public ObservableList<CommandTerm> previousRunListing;
+	public ObservableList<CommandTerm> previousSuccessfulRunListing;
+	private ProblemHistory stats;
     private Map<?, ?> solution;
 	
-	public Problem(PuzzleController pc, ProblemManager manager, String name) {
+	public Problem(PuzzleController pc, ProblemManager manager, String name, JSONObject json) {
     	controller = pc;
     	pm = manager;
     	fullListing = FXCollections.observableArrayList();
@@ -41,11 +46,21 @@ public class Problem {
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
 		nextProblemName = name;
+		loadProblem();
+		loadHistory(json);
 	}
  
 	public void clear() {
 		fullListing.clear();
 	}
+	
+	public void copyCode(ObservableList<CommandTerm> from, ObservableList<CommandTerm> to) {
+		to.clear();
+		for (CommandTerm command : from) {
+			to.add(command);
+    	}
+	}
+	
 	public void copyCode(ListView<CommandTerm> codeListing) {
     	clear();
     	for (CommandTerm command : codeListing.getItems()) {
@@ -53,7 +68,6 @@ public class Problem {
     			fullListing.add(command);
     		}
     	}
-    	
 	}
 	
 	public void remove(CommandTerm existingTerm) {
@@ -63,8 +77,7 @@ public class Problem {
 		}
 		fullListing.remove(rootTerm);
 	}
-	public void setStats (ProblemHistory stats) {ps = stats;}
-	public ProblemHistory getStats() {return ps;}
+	public ProblemHistory getStats() {return stats;}
     public void loadProblem() {
     	String task; 
     	JSONParser parser = new JSONParser();
@@ -103,14 +116,107 @@ public class Problem {
            JSONArray keyTerms = (JSONArray)problemJSONObject.get("KeyTerms");
            controller.lstListing.setItems(fullListing);
            controller.setAllKeyTerms(keyTerms);
-           controller.initilaliseControls();
+           controller.initialiseControls();
            
            solution = ((Map<?, ?>)problemJSONObject.get("Solution"));
+           
         } catch(Exception e) {
                 e.printStackTrace();
         }    	
     }
     
+    public void updateHistory(Map<String, Object> problemStats) {
+    	if (problemStats.containsKey("Attempts")) {
+    		stats.attempts = ((Long)problemStats.get("Attempts")).intValue();
+    	} else {
+    		stats.attempts = 0;
+    	}
+    	if (problemStats.containsKey("FailCount")) {
+    		stats.failCount = ((Long)problemStats.get("FailCount")).intValue();
+    	} else {
+    		stats.failCount = 0;
+    	}
+    	if (problemStats.containsKey("ErrorCount")) {
+    		stats.errorCount = ((Long)problemStats.get("ErrorCount")).intValue();
+    	} else {
+    		stats.errorCount = 0;
+    	}
+    	if (problemStats.containsKey("LastRun")) {
+    		stats.lastRun = (String)problemStats.get("LastRun");
+    	} else {
+    		stats.lastRun = "A new problem awaits.";
+    	}
+    	controller.displayStats(stats);
+    }
+    
+    private void loadHistory(JSONObject json) {
+		previousRunListing = readListingFromJSON(json, "LastRunListing");
+		previousRunListing.addListener(new ListChangeListener<CommandTerm>() {
+		     public void onChanged(Change<? extends CommandTerm> c) {
+		    	 ProblemManager.indentCode(previousRunListing);
+		     }
+			});
+		controller.lstPreviousRun.setItems(previousRunListing);
+		previousSuccessfulRunListing = readListingFromJSON(json, "LastSuccessfulListing");
+		previousSuccessfulRunListing.addListener(new ListChangeListener<CommandTerm>() {
+		     public void onChanged(Change<? extends CommandTerm> c) {
+		    	 ProblemManager.indentCode(previousSuccessfulRunListing);
+		     }
+			});
+		controller.lstPreviousSuccessfulRun.setItems(previousSuccessfulRunListing);
+    	
+        stats = new ProblemHistory(controller, this, json);
+    }
+    
+	private ObservableList<CommandTerm> readListingFromJSON (JSONObject json, String type) {
+		LinkedHashMap <Integer, CommandTerm> commandTermById = new LinkedHashMap <>();
+		LinkedHashMap <String, ArrayDeque<CommandTerm>> openCommandTerm;
+		openCommandTerm = initOpenCommandTerm();
+		ObservableList<CommandTerm> listing = FXCollections.observableArrayList();
+		JSONArray commands = (JSONArray)json.get(type);
+		if (commands != null) {
+			for (Object line : commands) {
+				CommandTerm ct = CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm);
+				commandTermById.put(ct.getId(), ct);
+		 	}
+			listing = FXCollections.observableArrayList(commandTermById.values());
+		 	modifyAllParentCommandTerms(commandTermById, listing);
+			modifyAllChildCommandTerms(commandTermById, listing, openCommandTerm);
+		 	ProblemManager.indentCode(listing);
+		}
+		return listing;
+	}
+
+	private LinkedHashMap <String, ArrayDeque<CommandTerm>> initOpenCommandTerm(){
+		LinkedHashMap <String, ArrayDeque<CommandTerm>> openCommandTerm;
+		openCommandTerm = new LinkedHashMap <>();
+		openCommandTerm.put("loop",new ArrayDeque<>());
+		openCommandTerm.put("loop until",new ArrayDeque<>());
+		openCommandTerm.put("if",new ArrayDeque<>());
+		openCommandTerm.put("else",new ArrayDeque<>());
+		return openCommandTerm;
+	}
+
+	private void modifyAllParentCommandTerms(HashMap<Integer, CommandTerm> commandTermById
+			,ObservableList<CommandTerm> commands) {
+		for (CommandTerm ct : commands) {
+			if (ct.getChildrenId().size() > 0) {
+				ct.setChildTerms(commandTermById);
+			}
+		}
+	}
+	
+	private void modifyAllChildCommandTerms(HashMap<Integer, CommandTerm> commandTermById
+			,ObservableList<CommandTerm> commands,
+			HashMap<String,ArrayDeque<CommandTerm>> openCT) {
+		for (CommandTerm ct : commands) {
+			if (ct.getParentTerm() == null) {
+				ct.setParentTerm(commandTermById.get(ct.getParentId()));
+				ct.setRootTerm(commandTermById.get(ct.getRootId()));
+			}
+		}
+	}
+
     public boolean gradeSolution() {
     	Cup.gradingCups(true);
     	boolean testPassed = true;

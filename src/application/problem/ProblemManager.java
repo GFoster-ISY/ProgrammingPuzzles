@@ -3,6 +3,7 @@ package application.problem;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -30,6 +31,8 @@ public class ProblemManager {
 	public ProblemManager(PuzzleController pc) {
     	problemListing = FXCollections.observableArrayList();
     	statsListing = FXCollections.observableArrayList();
+    	currentProblem = null;
+    	generalJSONObject = null;
     	controller = pc;
    	}
 
@@ -63,50 +66,56 @@ public class ProblemManager {
 				return problem;
 			}
 		}
-		Problem newProblem = new Problem(controller, this, name);
+		JSONObject json = getCurrentProblemJSONObjects().get(name);
+		Problem newProblem = new Problem(controller, this, name, json);
  	   	problemListing.add(newProblem);
 		return newProblem;
 	}
+	
+
 	@SuppressWarnings("unchecked")
+	private Map<?, JSONObject> getCurrentProblemJSONObjects() {
+    	JSONParser parser = new JSONParser();
+    	Map<String, JSONObject> problems = new HashMap<String, JSONObject>();
+    	if (generalJSONObject == null) {
+	        try {
+	           Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
+	           generalJSONObject = (JSONObject)obj;
+	        } catch( IOException | ParseException e) {
+	        	problemListing.add(new Problem(controller, this, "Problem1", problems.get("Problem1")));
+	        	// File is missing so create it.
+	        	generalJSONObject = new JSONObject();
+	        	generalJSONObject.put("CurrentProblem", "Problem1");
+	        	try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
+	                file.write(generalJSONObject.toJSONString());
+	        	} catch(Exception ew) {
+	                ew.printStackTrace();
+	        	}
+	//        	e.printStackTrace();
+	        	System.out.println("New currentProblem JSON file created");
+	        }
+    	}
+	    problems = ((Map<String, JSONObject>)generalJSONObject.get("Results"));
+		return problems;
+	}
+	
 	public ObservableList<Problem> loadAllProblemsFromJSONFile(){
 		problemListing.clear();
-		
-    	JSONParser parser = new JSONParser();
-        try {
-           Object obj = parser.parse(new FileReader("resources/currentProblem.json"));
-           generalJSONObject = (JSONObject)obj;
-           
-           String currentProblemName = (String)generalJSONObject.get("CurrentProblem");
-
-           Map<?, JSONObject> problems = ((Map<?, JSONObject>)generalJSONObject.get("Results"));
-           if (problems != null) {
-	           for(Object name: problems.keySet()) {
-	        	   Problem newProblem = new Problem(controller, this, (String)name);
-	        	   problemListing.add(newProblem);
-	        	   ProblemHistory stats = new ProblemHistory(controller, newProblem, problems.get(name));
-	        	   statsListing.add(stats);
-	        	   newProblem.setStats(stats);
+		Map<?, JSONObject> problems = getCurrentProblemJSONObjects();
+		if (problems != null) {
+	        String currentProblemName = (String)generalJSONObject.get("CurrentProblem");
+			for(Object name: problems.keySet()) {
+				Problem newProblem = new Problem(controller, this, (String)name, problems.get(name));
+				problemListing.add(newProblem);
+				statsListing.add(newProblem.getStats());
 	
-	        	   if (currentProblemName.equals((String)name)) {
-	        		   currentProblem = newProblem;
-	        		   controller.lstPreviousRun.setItems(stats.previousRunListing);
-	        		   controller.lstPreviousSuccessfulRun.setItems(stats.previousSuccessfulRunListing);
-	        	   }
-	           }
-           }
-        } catch( IOException | ParseException e) {
-        	problemListing.add(new Problem(controller, this, "Problem1"));
-        	// File is missing so create it.
-        	generalJSONObject = new JSONObject();
-        	generalJSONObject.put("CurrentProblem", "Problem1");
-        	try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
-                file.write(generalJSONObject.toJSONString());
-        	} catch(Exception ew) {
-                ew.printStackTrace();
-        	}
-//        	e.printStackTrace();
-        	System.out.println("New currentProblem JSON file created");
-        }
+				if (currentProblemName.equals((String)name)) {
+					currentProblem = newProblem;
+		    		controller.lstPreviousRun.setItems(newProblem.previousRunListing);
+	    			controller.lstPreviousSuccessfulRun.setItems(newProblem.previousSuccessfulRunListing);
+	    		}
+			}
+		} // end if there are some problems
 
         ProblemComparator pc = new ProblemComparator();
         FXCollections.sort(problemListing, pc);
@@ -135,10 +144,9 @@ public class ProblemManager {
 		currentProblem.loadProblem();
 	}
 	
-	public void gradeSolution() {
+	public boolean gradeSolution() {
 		boolean testPassed = currentProblem.gradeSolution();
     	storeResultInJSON(testPassed);
-    	loadAllProblemsFromJSONFile();
     	
 		Alert a = new Alert(AlertType.NONE);
 		String message = "";
@@ -157,6 +165,7 @@ public class ProblemManager {
 		a.showAndWait();
 
 		resetPuzzle(testPassed);
+		return testPassed;
 	}
 
     @SuppressWarnings("unchecked")
@@ -182,6 +191,7 @@ public class ProblemManager {
     		lastListing.add(ct.toJSON());
     	}
     	problemStats.put("LastRunListing",lastListing);
+    	currentProblem.copyCode(currentProblem.fullListing, currentProblem.previousRunListing);
     	if (controller.exec.inError()) {
         	long errorCount = 1;
         	if (problemStats.containsKey("ErrorCount")) {
@@ -199,6 +209,7 @@ public class ProblemManager {
         	problemStats.put("FailCount", failCount);
     		problemStats.put("LastRun", "FAILED");
     	} else {
+    		currentProblem.clear();
     		if (currentProblem.getNextProblemName() != null) {
     			generalJSONObject.put("CurrentProblem",currentProblem.getNextProblemName());
             	if (!results.containsKey(currentProblem.getNextProblemName())) {
@@ -207,6 +218,7 @@ public class ProblemManager {
     		}
     		problemStats.put("LastRun", "SUCCESS");
         	problemStats.put("LastSuccessfulListing",lastListing);
+        	currentProblem.copyCode(currentProblem.fullListing, currentProblem.previousSuccessfulRunListing);
     	}
     	//Write JSON file
         try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
@@ -216,8 +228,20 @@ public class ProblemManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        currentProblem.updateHistory(problemStats);
     }
     
+	public void reset() {
+    	controller.exec.stopExec();
+    	controller.exec = null;
+		for (CommandTerm ct : currentProblem.fullListing) {
+			ct.reset();
+		}
+		controller.initialiseControls();
+		controller.clearListingSelection();
+	}
+	
+
     private void resetPuzzle(boolean passed) {
     	controller.exec.stopExec();
     	controller.exec = null;
@@ -225,10 +249,10 @@ public class ProblemManager {
 		if (passed) {
 			String newProblemName = currentProblem.getNextProblemName();
 			currentProblem = findProblem(newProblemName);
-			controller.clear();
 		} else {
-			// TODO get problem to rest the details
-//			controller.reset();
+			for (CommandTerm ct : currentProblem.fullListing) {
+				ct.reset();
+			}
 		}
 		if (currentProblem == null) {
 			currentProblem = oldProblem;
@@ -240,13 +264,6 @@ public class ProblemManager {
 			a.showAndWait();
 		}
 		currentProblem.loadProblem();
-		
-		if (passed) {
-			controller.display();
-		}
-		controller.clearListingSelection();
-		controller.manageButtons(false);
-		controller.showRunTimeButtons(controller.hasCodeListing());
     }
     
     public ObservableList<Problem> getProblemListing(){ return problemListing;}
