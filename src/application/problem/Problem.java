@@ -27,9 +27,9 @@ public class Problem {
 	private String nextProblemName;
     private PuzzleController controller;
     private ProblemManager pm;
-    public ObservableList<CommandTerm> fullListing; // TODO change visibility to private
-	public ObservableList<CommandTerm> previousRunListing;
-	public ObservableList<CommandTerm> previousSuccessfulRunListing;
+    private ObservableList<CommandTerm> fullListing; // TODO change visibility to private
+    private ObservableList<CommandTerm> previousRunListing;
+    private ObservableList<CommandTerm> previousSuccessfulRunListing;
 	private ProblemHistory stats;
     private Map<?, ?> solution;
 	
@@ -78,6 +78,10 @@ public class Problem {
 		fullListing.remove(rootTerm);
 	}
 	public ProblemHistory getStats() {return stats;}
+    public ObservableList<CommandTerm> getFullListing(){ return fullListing;}
+    public ObservableList<CommandTerm> getPreviousListing(){ return previousRunListing;}
+    public ObservableList<CommandTerm> getSuccessfulListing(){ return previousSuccessfulRunListing;}
+
     public void loadProblem() {
     	String task; 
     	JSONParser parser = new JSONParser();
