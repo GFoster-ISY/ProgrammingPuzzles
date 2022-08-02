@@ -150,8 +150,8 @@ public class PuzzleController {
 		    lblStatsFailCount.setText(""+ph.getFailCount());
 		    lblStatsErrorCount.setText(""+ph.getErrorCount());
 		    lblStatsSuccessRate.setText(ph.getSuccessRate());
-		    lstPreviousRun.setItems(pm.getPreviousListing());
-		   	lstPreviousSuccessfulRun.setItems(pm.getSuccessfulListing());
+		    lstPreviousRun.setItems(pm.currentProblem.previousRunListing);
+		   	lstPreviousSuccessfulRun.setItems(pm.currentProblem.previousSuccessfulRunListing);
 		}
     }
     
@@ -246,7 +246,7 @@ public class PuzzleController {
             
             if (ktc.okayPressed() || !ktc.hasArguments(dummyct)) {
             	// Now create an instance of the commandTerm
-            	ktc.createInstance(this, keyTerm, pm.getFullListing());
+            	ktc.createInstance(this, keyTerm, pm.currentProblem.fullListing);
             }
         } catch (UnknownKeywordException ex) {
         	System.err.println("UnknownKeywordException: " + ex.getMessage());
@@ -278,7 +278,7 @@ public class PuzzleController {
         if (ktc.okayPressed()) { 
         	instruction.updateArgs();
         } else if (ktc.deleteInstruction()) {
-        	pm.getCurrentProblem().remove(instruction);
+        	pm.currentProblem.remove(instruction);
         }
 
     	lstListing.refresh();
@@ -296,7 +296,7 @@ public class PuzzleController {
     private void runOneLineOfCode() {
     	if (exec == null) {
     		ArrayList<CommandTerm> code = new ArrayList<>();
-    		for (CommandTerm ct: pm.getFullListing()) {
+    		for (CommandTerm ct: pm.currentProblem.fullListing) {
     			code.add(ct);
     		}
     		exec = new Execute(code);
@@ -312,8 +312,8 @@ public class PuzzleController {
 			if (pm.gradeSolution()) {
 				clear();
 				display();
-				lstProblemListing.getSelectionModel().select(pm.getCurrentProblem());
-				cbProblemList.getSelectionModel().select(pm.getCurrentProblem());
+				lstProblemListing.getSelectionModel().select(pm.currentProblem);
+				cbProblemList.getSelectionModel().select(pm.currentProblem);
 			} else {
 				initialiseControls();
 			}

@@ -24,7 +24,7 @@ public class ProblemManager {
 
 	private ObservableList<Problem> problemListing;
 	private ObservableList<ProblemHistory> statsListing;
-	private Problem currentProblem;
+	public Problem currentProblem; // TODO change visibility to private
     private JSONObject generalJSONObject;
     private PuzzleController controller;
 	
@@ -111,8 +111,8 @@ public class ProblemManager {
 	
 				if (currentProblemName.equals((String)name)) {
 					currentProblem = newProblem;
-		    		controller.lstPreviousRun.setItems(newProblem.getPreviousListing());
-	    			controller.lstPreviousSuccessfulRun.setItems(newProblem.getSuccessfulListing());
+		    		controller.lstPreviousRun.setItems(newProblem.previousRunListing);
+	    			controller.lstPreviousSuccessfulRun.setItems(newProblem.previousSuccessfulRunListing);
 	    		}
 			}
 		} // end if there are some problems
@@ -187,11 +187,11 @@ public class ProblemManager {
     	}
     	problemStats.put("Attempts", attempts);
     	JSONArray lastListing = new JSONArray();
-    	for (CommandTerm ct : getFullListing()) { // TODO move to Problem ??
+    	for (CommandTerm ct : currentProblem.fullListing) { // TODO move to Problem ??
     		lastListing.add(ct.toJSON());
     	}
     	problemStats.put("LastRunListing",lastListing);
-    	currentProblem.copyCode(getFullListing(), getPreviousListing());
+    	currentProblem.copyCode(currentProblem.fullListing, currentProblem.previousRunListing);
     	if (controller.exec.inError()) {
         	long errorCount = 1;
         	if (problemStats.containsKey("ErrorCount")) {
@@ -218,7 +218,7 @@ public class ProblemManager {
     		}
     		problemStats.put("LastRun", "SUCCESS");
         	problemStats.put("LastSuccessfulListing",lastListing);
-        	currentProblem.copyCode(getFullListing(), currentProblem.getSuccessfulListing());
+        	currentProblem.copyCode(currentProblem.fullListing, currentProblem.previousSuccessfulRunListing);
     	}
     	//Write JSON file
         try (FileWriter file = new FileWriter("resources/currentProblem.json")) {
@@ -234,7 +234,7 @@ public class ProblemManager {
 	public void reset() {
     	controller.exec.stopExec();
     	controller.exec = null;
-		for (CommandTerm ct : getFullListing()) {
+		for (CommandTerm ct : currentProblem.fullListing) {
 			ct.reset();
 		}
 		controller.initialiseControls();
@@ -250,7 +250,7 @@ public class ProblemManager {
 			String newProblemName = currentProblem.getNextProblemName();
 			currentProblem = findProblem(newProblemName);
 		} else {
-			for (CommandTerm ct : getFullListing()) {
+			for (CommandTerm ct : currentProblem.fullListing) {
 				ct.reset();
 			}
 		}
@@ -267,10 +267,6 @@ public class ProblemManager {
     }
     
     public ObservableList<Problem> getProblemListing(){ return problemListing;}
-    public ObservableList<CommandTerm> getFullListing(){ return currentProblem.getFullListing();}
-    public ObservableList<CommandTerm> getPreviousListing(){ return currentProblem.getPreviousListing();}
-    public ObservableList<CommandTerm> getSuccessfulListing(){ return currentProblem.getSuccessfulListing();}
-    public Problem getCurrentProblem() {return currentProblem;}
     public String getCurrentProblemName() {
     	return currentProblem.toString();
     }
