@@ -119,14 +119,14 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
             setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
         } else {
             setText(item.toString());
-            if (item.isHover()) {
-            	setStyle("-fx-control-inner-background: " + HOVER_BACKGROUND + ";");
-            } else if (item.isHoverLinked()) {
-            	setStyle("-fx-control-inner-background: " + LINKED_BACKGROUND + ";");
-        	} else if (item.isInError()) {
+        	if (item.isInError()) {
             	setStyle("-fx-control-inner-background: " + ERROR_BACKGROUND + ";");
             } else if (item.isRunning()) {
             	setStyle("-fx-control-inner-background: " + RUNNING_BACKGROUND + ";");
+            } else if (item.isHover()) {
+            	setStyle("-fx-control-inner-background: " + HOVER_BACKGROUND + ";");
+            } else if (item.isHoverLinked()) {
+            	setStyle("-fx-control-inner-background: " + LINKED_BACKGROUND + ";");
             } else {
                 setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
             }

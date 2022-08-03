@@ -301,7 +301,8 @@ public class PuzzleController {
     		}
     		exec = new Execute(code);
     	}
-    	exec.step();    	
+    	exec.step();
+    	lstListing.refresh();
     }
     
     private void codeCompleted() {

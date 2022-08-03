@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import application.PuzzleController;
 import application.keyword.CommandTerm;
+import application.keyword.Variable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -48,7 +49,7 @@ public class ProblemManager {
     	for ( int i = 1; i < list.size(); i++){
     		CommandTerm line = list.get(i);
     		if (prev.getPrimaryChildTerm()!=null)   {indentLevel++;}
-    		if (line.getParentTerm()!=line) {
+    		if (line.getParentTerm()!=line && !(line instanceof Variable)) {
     			indentLevel--;
     		}
     		line.setIndentLevel(indentLevel);
