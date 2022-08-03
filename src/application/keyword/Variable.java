@@ -20,15 +20,15 @@ public abstract class Variable extends CommandTerm {
 		// The variable will be added to pc in addExtraData()
 	}
 
-	public Variable(PuzzleController pc, String term, String name, int value, int id, CommandTerm parent) {
-		super(pc, term, id);
-		FXMLFileName = "NestedTwoArgs.fxml";
-		args.set(0, name);
-		args.set(1, ""+value);
-		initialValue = args.get(1);
-		parentTerm = parent;
-		rootTerm = parent;
-	}
+//	public Variable(PuzzleController pc, String term, String name, int value, int id, CommandTerm parent) {
+//		super(pc, term, id);
+//		FXMLFileName = "NestedTwoArgs.fxml";
+//		args.set(0, name);
+//		args.set(1, ""+value);
+//		initialValue = args.get(1);
+//		parentTerm = parent;
+//		rootTerm = parent;
+//	}
 	
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedTwoArgsController)load.getController();
@@ -70,6 +70,7 @@ public abstract class Variable extends CommandTerm {
 		setValue(initialValue);
 	}
 	@Override public boolean exec() {
+		setValue(initialValue);
 		return true;
 	}
 

@@ -235,7 +235,7 @@ public class PuzzleController {
         KeyTermController ktc = loader.<KeyTermController>getController();
         // Create a dummy object so that the dialog box can be populated
         try {
-        	dummyct = KeyTermController.getNewKeyTerm(keyTerm, this, getNextId());
+        	dummyct = KeyTermController.getNewKeyTerm(keyTerm, this, getNextId(),null);
             // Only display the dialog box if we have some arguments to fill.
             if (ktc.hasArguments(dummyct)) {
             	ktc.displayNestedFXML(dummyct);

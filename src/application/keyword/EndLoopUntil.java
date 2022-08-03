@@ -19,7 +19,7 @@ public class EndLoopUntil extends CommandTerm {
 	@Override protected void populateFXML() { }
 
 	@Override public String toString() {
-		return  indent() + "until counter equals " + parentTerm.args.get(0) ;
+		return  indent() + "until " + ((Variable)(parentTerm.childTerms[1])).getVariableName() + " equals " + parentTerm.args.get(0) ;
 	}
 	
 	@Override public boolean exec() {

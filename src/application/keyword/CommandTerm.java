@@ -187,6 +187,7 @@ public abstract class CommandTerm {
 	public static CommandTerm fromJSON(PuzzleController pc
 			                          ,JSONObject line
 			                          ,HashMap<String, ArrayDeque<CommandTerm>> openCT
+			                          ,ObservableList<CommandTerm> listing
 			                          ) {
 		String term = (String)line.get("keyword");
 		int id = ((Long)line.get("id")).intValue();
@@ -207,7 +208,7 @@ public abstract class CommandTerm {
          }
 		CommandTerm ct;
 		try {
-			ct = KeyTermController.getNewKeyTerm(term, pc, id);
+			ct = KeyTermController.getNewKeyTerm(term, pc, id, listing);
 			// for the child commandTerms they will not have their parent or root details
 			// so add the parent and root ids.
 			// The terms will be added by ProblemHistory::modifyAllChildCommandTerms() after

@@ -50,7 +50,11 @@ public class KeyTermController {
     	Stage stage = (Stage) fxmlEmbed.getScene().getWindow();
         stage.close();    	
     }
-    public static CommandTerm getNewKeyTerm(String term, PuzzleController pc, int id) throws UnknownKeywordException{
+    public static CommandTerm getNewKeyTerm(String term
+    		                               ,PuzzleController pc
+    		                               ,int id
+    		                               ,ObservableList<CommandTerm> listing
+    		                               ) throws UnknownKeywordException{
     	CommandTerm keyword;
     	if (term.equals("put(n)")){
     		keyword = new Put(pc, term, id);
@@ -61,7 +65,7 @@ public class KeyTermController {
     	} else if(term.equals("loop")){
     		keyword = new Loop(pc, term, id);
     	} else if(term.equals("loop until")){
-    		keyword = new LoopUntil(pc, term, id);
+    		keyword = new LoopUntil(pc, term, id, listing);
     	} else if(term.equals("if")){
     		keyword = new If(pc, term, id);
     	} else if(term.equals("replace()")){
@@ -87,7 +91,7 @@ public class KeyTermController {
     }
     
     public void createInstance(PuzzleController pc, String term, ObservableList<CommandTerm>listing) throws UnknownKeywordException {
-    	CommandTerm newTerm = getNewKeyTerm(term, pc, pc.getNextId());
+    	CommandTerm newTerm = getNewKeyTerm(term, pc, pc.getNextId(),listing);
     	newTerm.updateArgs();
     	newTerm.addToListing(listing);
     }

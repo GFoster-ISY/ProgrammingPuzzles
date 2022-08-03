@@ -27,7 +27,8 @@ public class Problem {
 	private String nextProblemName;
     private PuzzleController controller;
     private ProblemManager pm;
-    public ObservableList<CommandTerm> fullListing; // TODO change visibility to private
+    // If these are not public then the ListView in PuzzleController doesn't display the values.
+    public ObservableList<CommandTerm> fullListing;
 	public ObservableList<CommandTerm> previousRunListing;
 	public ObservableList<CommandTerm> previousSuccessfulRunListing;
 	private ProblemHistory stats;
@@ -176,10 +177,11 @@ public class Problem {
 		JSONArray commands = (JSONArray)json.get(type);
 		if (commands != null) {
 			for (Object line : commands) {
-				CommandTerm ct = CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm);
+				CommandTerm ct = CommandTerm.fromJSON(controller, (JSONObject)line, openCommandTerm, listing);
 				commandTermById.put(ct.getId(), ct);
+				listing.add(ct);
 		 	}
-			listing = FXCollections.observableArrayList(commandTermById.values());
+//			listing = FXCollections.observableArrayList(commandTermById.values());
 		 	modifyAllParentCommandTerms(commandTermById, listing);
 			modifyAllChildCommandTerms(commandTermById, listing, openCommandTerm);
 		 	ProblemManager.indentCode(listing);
