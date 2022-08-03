@@ -143,7 +143,7 @@ public abstract class CommandTerm {
 	
 	
 	public int argCount() {return 0;}
-	public final void updateArgs() {
+	public void updateArgs() {
 		for (int i = 0; i < argCount() ; i++) {
 			args.set(i,nestedController.getArgValue(i));
 		}

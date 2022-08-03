@@ -30,12 +30,20 @@ public abstract class Variable extends CommandTerm {
 //		rootTerm = parent;
 //	}
 	
+	@Override public void updateArgs() {
+		super.updateArgs();
+		initialValue = args.get(1);
+	}
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedTwoArgsController)load.getController();
 	}
 
 	@Override public String toString() {
-		return  indent() + args.get(0) + " is set to " + args.get(1);
+		if (args.get(1).equals(initialValue)) {
+			return  indent() + args.get(0) + " is set to " + args.get(1);
+		} else {
+			return  indent() + args.get(0) + " is set to " + args.get(1) + " (" + initialValue +")";
+		}
 	}
 	
 	@Override protected void populateFXML () {
