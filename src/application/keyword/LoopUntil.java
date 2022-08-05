@@ -23,7 +23,7 @@ public class LoopUntil extends LoopWithVariable {
 	}
 	
 	public boolean hasLoopFinished() {
-		int loopLimit = getLoopLimit();
+		int loopLimit = getLoopLimit(0);
 		return (getLoopCounter().getNumber() >= loopLimit);
 	}
 	

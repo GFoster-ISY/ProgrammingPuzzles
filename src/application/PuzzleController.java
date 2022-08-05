@@ -162,6 +162,7 @@ public class PuzzleController {
     public int getCupCount () {return cupCount;}
     public void setCupCount (int number) {cupCount = number;}
     public void setContainer(Container container) {this.container = container;}
+    public ObservableList<CommandTerm> getFullListing(){return pm.currentProblem.fullListing;}
     @SuppressWarnings("unchecked")
 	public void setAllKeyTerms(JSONArray keyTerms) {
     	allKeyTerms = FXCollections.observableArrayList();

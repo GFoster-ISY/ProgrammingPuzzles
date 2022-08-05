@@ -18,15 +18,8 @@ public abstract class LoopWithVariable extends CommandTerm {
 		commandTermName = "loop while";
 		VarInteger counter = new VarInteger(puzzleController, "integer", pc.getNextId());
 		// Use listing to determine if we have multiple loops
-		int varCount = 1;
-		if (listing != null) {
-			for (CommandTerm ct : listing) {
-				if (ct instanceof LoopWhile) {
-					varCount++;
-				}
-			}
-		}
-		counter.setVariableName("counter"+varCount);
+		int existingVars = varCount(listing);
+		counter.setVariableName("counter"+(existingVars+1));
 		counter.initialValue = "0";
 		counter.setValue("0");
 		counter.setParentTerm(this);
@@ -36,6 +29,17 @@ public abstract class LoopWithVariable extends CommandTerm {
 		childTerms[1] = counter;
 	}
 	
+	protected int varCount(ObservableList<CommandTerm> listing) {
+		int varCount = 0;
+		if (listing != null) {
+			for (CommandTerm ct : listing) {
+				if (ct instanceof LoopWithVariable) {
+					varCount++;
+				}
+			}
+		}
+		return varCount;
+	}
 	@Override protected void setController(FXMLLoader load) {
 		nestedController = (NestedOneArgController)load.getController();
 	}
@@ -62,20 +66,20 @@ public abstract class LoopWithVariable extends CommandTerm {
 		((VarInteger)childTerms[1]).reset();
 	}
 	
-	protected int getLoopLimit() {
+	protected int getLoopLimit(int argPosn) {
 		int loopLimit = 0;
 		try {
-			loopLimit = Integer.parseInt(args.get(0));
+			loopLimit = Integer.parseInt(args.get(argPosn));
 		} catch (NumberFormatException e){
-			Variable var = exec.getVariable(args.get(0));
+			Variable var = exec.getVariable(args.get(argPosn));
 			if (var == null) {
-				errorMessage = "There is no variable with the name " + args.get(0);
+				errorMessage = "There is no variable with the name " + args.get(argPosn);
 				return -1;
 			}
 			try {
 				loopLimit = ((VarInteger)var).getNumber();
 			}catch (NumberFormatException ex) {
-				errorMessage = "The variable " + args.get(0) + " doesn't contain a number.";
+				errorMessage = "The variable " + args.get(argPosn) + " doesn't contain a number.";
 				return -1;
 			}
 		}
@@ -97,10 +101,6 @@ public abstract class LoopWithVariable extends CommandTerm {
 	}
 	
 	@Override public boolean exec() {
-		int loopLimit = getLoopLimit();
-		if (loopLimit == -1) {
-			return false;
-		}
 		return true;
 	}
 
