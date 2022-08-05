@@ -62,6 +62,7 @@ public class ProblemManager {
 	}
 	
 	private Problem findProblem(String name) {
+		if (name == null) return null; 
 		for(Problem problem : problemListing) {
 			if (problem.getName().equals(name)) {
 				return problem;

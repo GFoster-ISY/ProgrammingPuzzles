@@ -46,7 +46,7 @@ public class Problem {
     	controller.lstListing.setItems(fullListing);
 		int number = Integer.parseInt(name.substring(7));
 		id = number;
-		nextProblemName = name;
+		nextProblemName = null;
 		loadProblem();
 		loadHistory(json);
 	}
