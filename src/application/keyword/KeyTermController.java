@@ -66,6 +66,8 @@ public class KeyTermController {
     		keyword = new Loop(pc, term, id);
     	} else if(term.equals("loop until")){
     		keyword = new LoopUntil(pc, term, id, listing);
+    	} else if (term.equals("loop while")){
+    		keyword = new LoopWhile(pc, term, id, listing);
     	} else if(term.equals("if")){
     		keyword = new If(pc, term, id);
     	} else if(term.equals("replace()")){
@@ -78,6 +80,8 @@ public class KeyTermController {
     		keyword = new EndLoop(pc, term, id);
     	} else if (term.equals("endloopuntil")){
     		keyword = new EndLoopUntil(pc, term, id);
+    	} else if (term.equals("endloopwhile")){
+    		keyword = new EndLoopWhile(pc, term, id);
     	} else if (term.equals("endif")){
     		keyword = new EndIf(pc, term, id);
     	} else if (term.equals("else")){

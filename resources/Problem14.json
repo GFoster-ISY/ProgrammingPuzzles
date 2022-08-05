@@ -1,0 +1,7 @@
+{"ObjectiveStatement": "Put one ball in pot one, two balls in pot two, three balls in pot three and four balls in pot 4.",
+"PotCount": 4,
+"Container":"Bag",
+"BallColour":{"Red":3,"Blue":3,"Green":3,"Yellow":3},
+"KeyTerms":["pick()","look()","put(n)","loop while","if","replace()","increment(n)"],
+"Solution":{"PotCount":[1,2,3,4]}
+}

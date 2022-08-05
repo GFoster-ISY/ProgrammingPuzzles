@@ -52,6 +52,10 @@ public class If extends CommandTerm {
 			return false;
 		}
 		Colour ballColour = puzzleController.getHand().getBallColour();
+		if (ballColour == Colour.UNKNOWN_COLOUR) {
+			errorMessage = "You need to look at the ball to know its colour";
+			return false;
+		}
 		Colour requiredColour = new Colour(args.get(2));
 		if (args.get(1).equals("Equal To")) {
 			if (requiredColour.equals(ballColour)) {

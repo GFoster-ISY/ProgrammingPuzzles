@@ -271,4 +271,13 @@ public abstract class CommandTerm {
 	protected void populateFXML() {};
 	public abstract boolean exec();
 	public final void abort() { errorMessage = "User aborted execution of the code.";}
+	
+	public void debug() {
+		System.err.println(keyword + " (" + id + ")");
+		System.err.println("   root " + rootTerm.keyword + " (" + rootId + ")");
+		System.err.println("   parent " + parentTerm.keyword + " (" + parentId + ")");
+		for (CommandTerm child : childTerms) {
+			System.err.println("   child " + child.keyword + " (" + child.id + ")");
+		}
+	}
 }
