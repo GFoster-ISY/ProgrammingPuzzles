@@ -15,11 +15,16 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
     private static final String ERROR_BACKGROUND = "derive(OrangeRed, 50%)";
     private static final String RUNNING_BACKGROUND = "derive(DeepSkyBlue, 50%)";
     
+    private boolean dragging;
+    
 	public DragNDropCommandTermCell (PuzzleController pc) {
 		ListCell<CommandTerm> thisCell = this;
+
+		dragging = false;
 		
 		setOnMouseEntered(event -> {
 			if (getItem() == null) { return;}
+			if (dragging) { return;}
 	        ObservableList<CommandTerm> items = getListView().getItems();
 			CommandTerm ct = items.get(thisCell.getIndex());
 			// It is important to return if hover is already true
@@ -35,6 +40,7 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 	    
 		setOnMouseExited(event -> {
 			if (getItem() == null) { return;}
+			if (dragging) { return;}
 	        ObservableList<CommandTerm> items = getListView().getItems();
 			CommandTerm ct = items.get(thisCell.getIndex());
 	        if (!ct.isHover()) {return;}
@@ -47,6 +53,7 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 		setOnDragDetected (event -> {
 			if (getItem() == null) { return;}
 
+			dragging = true;
 			ObservableList<CommandTerm> items = getListView().getItems();
 			ClipboardContent content = new ClipboardContent();
 			int draggedId = items.indexOf(getItem());
@@ -75,6 +82,7 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
 		});
 
 		setOnDragDropped (event ->{
+			dragging = false;
 			if (getItem() == null) {
 				return;
 			}
@@ -119,7 +127,7 @@ public class DragNDropCommandTermCell extends ListCell<CommandTerm> {
             setStyle("-fx-control-inner-background: " + DEFAULT_BACKGROUND + ";");
         } else {
             setText(item.toString());
-        	if (item.isInError()) {
+            if (item.isInError()) {
             	setStyle("-fx-control-inner-background: " + ERROR_BACKGROUND + ";");
             } else if (item.isRunning()) {
             	setStyle("-fx-control-inner-background: " + RUNNING_BACKGROUND + ";");
