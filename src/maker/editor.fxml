@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maker.EditorController">
+   <children>
+      <HBox fx:id="hboxRoot" prefHeight="500.0" prefWidth="800.0">
+         <children>
+            <ListView fx:id="lstProblems" onMouseClicked="#selectProblem" prefHeight="495.0" prefWidth="200.0" />
+            <GridPane hgap="2.0" prefHeight="600.0" prefWidth="450.0" vgap="1.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="10.0" prefWidth="200.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="60.0" prefHeight="90.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="24.0" minHeight="24.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="24.0" minHeight="24.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="24.0" minHeight="24.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints fx:id="rowBallCount" maxHeight="24.0" minHeight="24.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                  <RowConstraints fx:id="rowBallColour" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="126.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="24.0" minHeight="24.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints fx:id="rowSolutionCount" maxHeight="102.0" minHeight="102.0" prefHeight="102.0" vgrow="SOMETIMES" />
+                  <RowConstraints fx:id="rowSolutionColour" maxHeight="102.0" minHeight="102.0" prefHeight="102.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Objective Statement" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets top="2.0" />
+                     </GridPane.margin></Label>
+                  <Label text="Pot Count" GridPane.rowIndex="1" />
+                  <Label text="Container" GridPane.rowIndex="2" />
+                  <Label text="Ball Type" GridPane.rowIndex="3" />
+                  <Label fx:id="lblBallCount" text="Ball Count" GridPane.rowIndex="4" GridPane.valignment="TOP">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <GridPane.margin>
+                        <Insets top="2.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="lblBallColour" text="Ball Colour" GridPane.rowIndex="5" GridPane.valignment="TOP">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <GridPane.margin>
+                        <Insets top="2.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Key Terms" GridPane.rowIndex="6" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets top="2.0" />
+                     </GridPane.margin></Label>
+                  <Label text="Solution Type" GridPane.rowIndex="7" />
+                  <Label fx:id="lblSolutionPotCount" text="Pot Count" GridPane.rowIndex="8" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets left="20.0" top="2.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="lblSolutionPotColour" text="Pot Colour" GridPane.rowIndex="9" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets left="20.0" />
+                     </GridPane.margin>
+                     <padding>
+                        <Insets top="2.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="txtPotCount" editable="false" maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ChoiceBox fx:id="cbContainer" disable="true" onAction="#changeContainer" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ChoiceBox fx:id="cbBallType" disable="true" onAction="#changeBallType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="txtBallCount" editable="false" maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <TableView fx:id="tblBallColour" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="126.0" prefWidth="177.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5">
+                    <columns>
+                      <TableColumn fx:id="tcolColour" editable="false" minWidth="100.0" prefWidth="100.0" resizable="false" text="Colour" />
+                      <TableColumn fx:id="tcolAmount" prefWidth="75.0" resizable="false" text="Count" />
+                    </columns>
+                  </TableView>
+                  <TextArea fx:id="txtStatement" editable="false" minHeight="60.0" prefHeight="90.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS" />
+                  <TableView fx:id="tblKeyTerms" maxWidth="162.0" prefHeight="200.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <columns>
+                      <TableColumn fx:id="tcolKeyTerm" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="Command Term" />
+                      <TableColumn fx:id="tcolRequired" maxWidth="27.0" minWidth="27.0" prefWidth="27.0" text="Req" />
+                    </columns>
+                  </TableView>
+                  <ChoiceBox fx:id="cbSolutionType" disable="true" onAction="#changeSolutionType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <TableView fx:id="tblSolPotCount" maxWidth="154.0" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="tcolSolCntPot" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Pot" />
+                      <TableColumn fx:id="tcolSolCntCount" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Count" />
+                    </columns>
+                  </TableView>
+                  <TableView fx:id="tblSolPotColour" maxWidth="256.0" minWidth="256.0" prefHeight="200.0" prefWidth="256.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                    <columns>
+                      <TableColumn fx:id="tcolSolColPot" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="Pot" />
+                      <TableColumn fx:id="tcolSolRedCount" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Red" />
+                        <TableColumn fx:id="tcolSolBlueCount" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Blue" />
+                        <TableColumn fx:id="tcolSolGreenCount" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Green" />
+                        <TableColumn fx:id="tcolSolYellowCount" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Yellow" />
+                    </columns>
+                  </TableView>
+               </children>
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+            </GridPane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
