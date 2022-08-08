@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -37,6 +38,16 @@ public class EditorController {
 
     @FXML private HBox hboxRoot;
     @FXML private ListView<Problem> lstProblems;
+    
+    @FXML private Button btnEdit;
+    @FXML private Button btnClone;
+    @FXML private Button btnNew;
+    @FXML private Button btnInsert;
+    @FXML private Button btnAppend;
+    @FXML private Button btnSave;
+    @FXML private Button btnCancel;
+    @FXML private Button btnUp;
+    @FXML private Button btnDown;
     
     @FXML private RowConstraints rowBallCount;
     @FXML private RowConstraints rowBallColour;
@@ -67,6 +78,7 @@ public class EditorController {
     @FXML private TableColumn<SolutionPotColour, Integer> tcolSolBlueCount;
     @FXML private TableColumn<SolutionPotColour, Integer> tcolSolGreenCount;
     @FXML private TableColumn<SolutionPotColour, Integer> tcolSolYellowCount;
+    
     private ObservableList<Problem> problemListing;
     private Problem currentProblem = null;
     private ObservableList<String> containers;
@@ -205,6 +217,113 @@ public class EditorController {
     	}
     }
 
+    @FXML private void onEdit(ActionEvent event){
+    	displayButtons(true, true);
+    	System.out.println(event);
+    }
+
+    @FXML private void onClone(ActionEvent event){
+    	displayButtons(true, false);
+    	System.out.println(event);
+    }
+
+    @FXML private void onNew(ActionEvent event){
+    	displayButtons(true, false);
+    	System.out.println(event);
+    }
+
+    @FXML private void onUp(ActionEvent event){
+    	System.out.println(event);
+    }
+
+    @FXML private void onDown(ActionEvent event){
+    	System.out.println(event);
+    }
+
+    @FXML private void onInsert(ActionEvent event){
+    	displayButtons(false, false);
+    	System.out.println(event);
+    }
+
+    @FXML private void onAppend(ActionEvent event){
+    	displayButtons(false, false);
+    	System.out.println(event);
+    }
+
+    @FXML private void onSave(ActionEvent event){
+    	displayButtons(false, false);
+    	System.out.println(event);
+    }
+
+    @FXML private void onCancel(ActionEvent event){
+    	displayButtons(false, false);
+    	System.out.println(event);
+    }
+
+    private void displayButtons(boolean hide, boolean edit) {
+    	btnEdit.setVisible(!hide);
+    	btnClone.setVisible(!hide);
+    	btnNew.setVisible(!hide);
+    	btnUp.setVisible(!hide);
+    	btnDown.setVisible(!hide);
+    	btnCancel.setVisible(hide);
+    	
+    	if (hide) {
+    		btnEdit.setMinWidth(0);
+    		btnEdit.setMaxWidth(0);
+    		btnClone.setMinWidth(0);
+    		btnClone.setMaxWidth(0);
+    		btnNew.setMinWidth(0);
+    		btnNew.setMaxWidth(0);
+    		btnUp.setMinWidth(0);
+    		btnUp.setMaxWidth(0);
+    		btnDown.setMinWidth(0);
+    		btnDown.setMaxWidth(0);
+    		btnCancel.setMinWidth(60);
+    		if (edit) {
+    	    	btnSave.setVisible(hide);
+    	    	btnInsert.setVisible(!hide);
+    	    	btnAppend.setVisible(!hide);
+	    		btnSave.setMinWidth(60);
+	    		btnInsert.setMinWidth(0);
+	    		btnInsert.setMaxWidth(0);
+	    		btnAppend.setMinWidth(0);
+	    		btnAppend.setMaxWidth(0);
+    		} else {
+    	    	btnSave.setVisible(!hide);
+    	    	btnInsert.setVisible(hide);
+    	    	btnAppend.setVisible(hide);
+        		btnSave.setMinWidth(0);
+        		btnSave.setMaxWidth(0);
+	    		btnInsert.setMinWidth(60);
+	    		btnAppend.setMinWidth(60);
+    		}
+    	} else {
+	    	btnSave.setVisible(hide);
+	    	btnCancel.setVisible(hide);
+	    	btnInsert.setVisible(hide);
+	    	btnAppend.setVisible(hide);
+    		btnSave.setMinWidth(0);
+    		btnSave.setMaxWidth(0);
+    		btnCancel.setMinWidth(0);
+    		btnCancel.setMaxWidth(0);    			
+    		btnInsert.setMinWidth(0);
+    		btnInsert.setMaxWidth(0);
+    		btnAppend.setMinWidth(0);
+    		btnAppend.setMaxWidth(0);
+
+    		btnEdit.setMinWidth(45);
+    		btnClone.setMinWidth(50);
+    		btnNew.setMinWidth(45);
+    		btnUp.setMinWidth(30);
+    		btnDown.setMinWidth(30);
+    		btnSave.setMinWidth(0);
+    		btnSave.setMaxWidth(0);
+    		btnCancel.setMinWidth(0);
+    		btnCancel.setMaxWidth(0);
+    	}
+    }
+    
     private void filterKeyTerms(boolean on) {
     	FilteredList<KeyTerms> filteredData = new FilteredList<>(allKeyTerms, t ->  t.isFiltered(on));
     	tblKeyTerms.setItems(filteredData);
@@ -280,6 +399,7 @@ public class EditorController {
     }
     
     public void displayDetails(Problem problem) {
+    	currentProblem = problem;
     	txtStatement.setText(problem.objectiveStatement);
 		txtPotCount.setText(""+problem.potCount);
 		if (problem.container == null) {
@@ -346,17 +466,8 @@ public class EditorController {
 				allSolutionPotColours.add(spc);
 			}
 		}
-		
-		
-// 		tblBallColour.getItems().add(new BallColour("Blue", 4));
-// 		tblBallColour.getItems().add(new BallColour("Green", 3));
-// 		tblBallColour.getItems().add(new BallColour("Yellow", 2));
-//    	 lblBallColour.setText(problem.ballColourMap);
-//    	 lblKeyTerms.setText(problem.keyTerms);
-//    	 lblSolutionType.setText(problem.solution);
-//    	 lblSolutionPotCount.setText(""+problem.objectiveStatement);
-//    	 lblSolutionPotColour.setText(problem.objectiveStatement);
-    }
+		display();
+    } // end of method displayDetails
     
     public void display() {
     	if (currentProblem == null) {
