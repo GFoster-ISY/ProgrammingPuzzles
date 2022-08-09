@@ -3,13 +3,13 @@ package maker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class KeyTerms {
+public class KeyTerm {
 
 	private String term;
 	private boolean required;
-	private BooleanProperty filtered = new SimpleBooleanProperty() ;
+	private BooleanProperty filtered = new SimpleBooleanProperty();
 	
-	public KeyTerms(String keyTerm, boolean req) {
+	public KeyTerm(String keyTerm, boolean req) {
 		setTerm(keyTerm);
 		setRequired(req);
 	}
@@ -47,4 +47,11 @@ public class KeyTerms {
     	}
 	}
 
+    public String toString() {
+    	String line = term;
+    	if (required) {
+    		line +=  " - Required";
+    	}
+    	return line;
+    }
 }

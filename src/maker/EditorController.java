@@ -11,28 +11,37 @@ import org.json.simple.parser.JSONParser;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.converter.IntegerStringConverter;
 
 public class EditorController {
 
@@ -63,9 +72,9 @@ public class EditorController {
     @FXML private Label lblBallColour;
     @FXML private TableColumn<BallColour, String> tcolColour;
     @FXML private TableColumn<BallColour, Integer> tcolAmount;
-    @FXML private TableView<KeyTerms> tblKeyTerms;
-    @FXML private TableColumn<KeyTerms, String> tcolKeyTerm;
-    @FXML private TableColumn<KeyTerms, Boolean> tcolRequired;
+    @FXML private TableView<KeyTerm> tblKeyTerms;
+    @FXML private TableColumn<KeyTerm, String> tcolKeyTerm;
+    @FXML private TableColumn<KeyTerm, Boolean> tcolRequired;
     @FXML private ChoiceBox<String> cbSolutionType;
     @FXML private Label lblSolutionPotCount;
     @FXML private TableView<SolutionPotCount> tblSolPotCount;
@@ -79,16 +88,20 @@ public class EditorController {
     @FXML private TableColumn<SolutionPotColour, Integer> tcolSolGreenCount;
     @FXML private TableColumn<SolutionPotColour, Integer> tcolSolYellowCount;
     
+    private boolean readOnlyMode;
     private ObservableList<Problem> problemListing;
     private Problem currentProblem = null;
     private ObservableList<String> containers;
     private ObservableList<String> ballTypes;
     private ObservableList<String> SolutionTypes;
-    private ObservableList<KeyTerms> allKeyTerms;
+    private ObservableList<BallColour> allBallColours;
+    private ObservableList<KeyTerm> allKeyTerms;
     private ObservableList<SolutionPotCount> allSolutionPotCounts;
     private ObservableList<SolutionPotColour> allSolutionPotColours;
 
     @FXML void initialize() {
+    	readOnlyMode = true;
+    	
 		problemListing = FXCollections.observableArrayList();
 		lstProblems.setItems(problemListing);
 		containers = FXCollections.observableArrayList("Tray", "Bag");
@@ -98,15 +111,29 @@ public class EditorController {
 		ballTypes = FXCollections.observableArrayList("BallCount", "BallColour");
 		cbBallType.setItems(ballTypes);
 		cbBallType.getSelectionModel().selectFirst();
+		allBallColours = FXCollections.observableArrayList(item -> 
+        new Observable[] {item.filteredProperty()});
+		initBallColours();
+		filterBallColours(true);
 		tcolColour.setCellValueFactory(new PropertyValueFactory<>("colour"));
 		tcolAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+		tcolAmount.setCellFactory(TextFieldTableCell.<BallColour, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolAmount.setOnEditCommit(
+			    new EventHandler<CellEditEvent<BallColour, Integer>>() {
+			        @Override
+			        public void handle(CellEditEvent<BallColour, Integer> t) {
+			            ((BallColour) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setAmount(t.getNewValue());
+			        }
+			    }
+			);
 		allKeyTerms = FXCollections.observableArrayList(item -> 
         new Observable[] {item.filteredProperty()});
 		filterKeyTerms(true);
 		tcolKeyTerm.setCellValueFactory(new PropertyValueFactory<>("term"));
-		tcolRequired.setCellValueFactory(new PropertyValueFactory<>("required"));
 		tcolRequired.setCellFactory(col -> {
-		    TableCell<KeyTerms, Boolean> cell = new TableCell<>();
+		    TableCell<KeyTerm, Boolean> cell = new TableCell<>();
 		    cell.itemProperty().addListener((obs, old, newVal) -> {
                 if (newVal != null) {
                     Node centreBox = createBooleanGraphic(newVal);
@@ -115,6 +142,17 @@ public class EditorController {
             });
 		    return cell;
 		});
+		tcolRequired.setCellValueFactory(cellData -> new ReadOnlyBooleanWrapper(cellData.getValue().isRequired()));
+		tcolRequired.setOnEditCommit(
+			    new EventHandler<CellEditEvent<KeyTerm, Boolean>>() {
+			        @Override
+			        public void handle(CellEditEvent<KeyTerm, Boolean> t) {
+			            ((KeyTerm) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setRequired(t.getNewValue());
+			        }
+			    }
+			);
 		initKeyTerms();
 		SolutionTypes = FXCollections.observableArrayList("PotCount", "PotColour");
 		cbSolutionType.setItems(SolutionTypes);
@@ -123,13 +161,69 @@ public class EditorController {
 		tblSolPotCount.setItems(allSolutionPotCounts);
 		tcolSolCntPot.setCellValueFactory(new PropertyValueFactory<>("potId"));
 		tcolSolCntCount.setCellValueFactory(new PropertyValueFactory<>("potCount"));
+		tcolSolCntCount.setCellFactory(TextFieldTableCell.<SolutionPotCount, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolSolCntCount.setOnEditCommit(
+		    new EventHandler<CellEditEvent<SolutionPotCount, Integer>>() {
+		        @Override
+		        public void handle(CellEditEvent<SolutionPotCount, Integer> t) {
+		            ((SolutionPotCount) t.getTableView().getItems().get(
+		                t.getTablePosition().getRow())
+		                ).setPotCount(t.getNewValue());
+		        }
+		    }
+		);
+
 		allSolutionPotColours = FXCollections.observableArrayList();
 		tblSolPotColour.setItems(allSolutionPotColours);
 		tcolSolColPot.setCellValueFactory(new PropertyValueFactory<>("potId"));
 		tcolSolRedCount.setCellValueFactory(new PropertyValueFactory<>("red"));
+		tcolSolRedCount.setCellFactory(TextFieldTableCell.<SolutionPotColour, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolSolRedCount.setOnEditCommit(
+			    new EventHandler<CellEditEvent<SolutionPotColour, Integer>>() {
+			        @Override
+			        public void handle(CellEditEvent<SolutionPotColour, Integer> t) {
+			            ((SolutionPotColour) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setRed(t.getNewValue());
+			        }
+			    }
+			);
 		tcolSolBlueCount.setCellValueFactory(new PropertyValueFactory<>("blue"));
+		tcolSolBlueCount.setCellFactory(TextFieldTableCell.<SolutionPotColour, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolSolBlueCount.setOnEditCommit(
+			    new EventHandler<CellEditEvent<SolutionPotColour, Integer>>() {
+			        @Override
+			        public void handle(CellEditEvent<SolutionPotColour, Integer> t) {
+			            ((SolutionPotColour) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setBlue(t.getNewValue());
+			        }
+			    }
+			);
 		tcolSolGreenCount.setCellValueFactory(new PropertyValueFactory<>("green"));
+		tcolSolGreenCount.setCellFactory(TextFieldTableCell.<SolutionPotColour, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolSolGreenCount.setOnEditCommit(
+			    new EventHandler<CellEditEvent<SolutionPotColour, Integer>>() {
+			        @Override
+			        public void handle(CellEditEvent<SolutionPotColour, Integer> t) {
+			            ((SolutionPotColour) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setGreen(t.getNewValue());
+			        }
+			    }
+			);
 		tcolSolYellowCount.setCellValueFactory(new PropertyValueFactory<>("yellow"));
+		tcolSolYellowCount.setCellFactory(TextFieldTableCell.<SolutionPotColour, Integer>forTableColumn(new IntegerStringConverter()));
+		tcolSolYellowCount.setOnEditCommit(
+			    new EventHandler<CellEditEvent<SolutionPotColour, Integer>>() {
+			        @Override
+			        public void handle(CellEditEvent<SolutionPotColour, Integer> t) {
+			            ((SolutionPotColour) t.getTableView().getItems().get(
+			                t.getTablePosition().getRow())
+			                ).setYellow(t.getNewValue());
+			        }
+			    }
+			);
 
 		getAllProblemFiles();
 		ProblemComparator pc = new ProblemComparator();
@@ -143,9 +237,11 @@ public class EditorController {
 	}
 	
     @FXML private void selectProblem(MouseEvent click) {
-    	if (click.getClickCount() == 2) {
-            Problem problem = lstProblems.getSelectionModel().getSelectedItem();
-            displayDetails(problem);
+    	if (click.getClickCount() >= 1) {
+    		if (readOnlyMode) {
+	            Problem problem = lstProblems.getSelectionModel().getSelectedItem();
+	            displayDetails(problem);
+    		}
          }
     }
     
@@ -219,16 +315,19 @@ public class EditorController {
 
     @FXML private void onEdit(ActionEvent event){
     	displayButtons(true, true);
-    	System.out.println(event);
+    	readOnlyMode = false;
+    	displayEditControls();
     }
 
     @FXML private void onClone(ActionEvent event){
     	displayButtons(true, false);
+    	readOnlyMode = false;
     	System.out.println(event);
     }
 
     @FXML private void onNew(ActionEvent event){
     	displayButtons(true, false);
+    	readOnlyMode = false;
     	System.out.println(event);
     }
 
@@ -242,22 +341,26 @@ public class EditorController {
 
     @FXML private void onInsert(ActionEvent event){
     	displayButtons(false, false);
+    	readOnlyMode = true;
     	System.out.println(event);
     }
 
     @FXML private void onAppend(ActionEvent event){
     	displayButtons(false, false);
+    	readOnlyMode = true;
     	System.out.println(event);
     }
 
     @FXML private void onSave(ActionEvent event){
     	displayButtons(false, false);
+    	readOnlyMode = true;
     	System.out.println(event);
     }
 
     @FXML private void onCancel(ActionEvent event){
     	displayButtons(false, false);
-    	System.out.println(event);
+    	readOnlyMode = true;
+    	displayEditControls();
     }
 
     private void displayButtons(boolean hide, boolean edit) {
@@ -324,27 +427,45 @@ public class EditorController {
     	}
     }
     
+    private void filterBallColours(boolean on) {
+    	FilteredList<BallColour> filteredData = new FilteredList<>(allBallColours, t ->  t.isFiltered(on));
+    	tblBallColour.setItems(filteredData);    	
+    }
+    
     private void filterKeyTerms(boolean on) {
-    	FilteredList<KeyTerms> filteredData = new FilteredList<>(allKeyTerms, t ->  t.isFiltered(on));
+    	FilteredList<KeyTerm> filteredData = new FilteredList<>(allKeyTerms, t ->  t.isFiltered(on));
     	tblKeyTerms.setItems(filteredData);
+    }
+    
+    private void initBallColours() {
+    	allBallColours.clear();
+    	allBallColours.add(new BallColour("Red", 0));
+    	allBallColours.add(new BallColour("Blue", 0));
+    	allBallColours.add(new BallColour("Green", 0));
+    	allBallColours.add(new BallColour("Yellow", 0));
     }
     
     private void initKeyTerms() {
 		allKeyTerms.clear();
-		allKeyTerms.add(new KeyTerms("pick()",false));
-		allKeyTerms.add(new KeyTerms("pick(colour)",false));
-		allKeyTerms.add(new KeyTerms("put(n)",false));
-		allKeyTerms.add(new KeyTerms("look()",false));
-		allKeyTerms.add(new KeyTerms("replace()",false));
-		allKeyTerms.add(new KeyTerms("if",false));
-		allKeyTerms.add(new KeyTerms("increment(n)",false));
-		allKeyTerms.add(new KeyTerms("loop",false));
-		allKeyTerms.add(new KeyTerms("loop until",false));
-		allKeyTerms.add(new KeyTerms("loop while",false));
+		allKeyTerms.add(new KeyTerm("pick()",false));
+		allKeyTerms.add(new KeyTerm("pick(colour)",false));
+		allKeyTerms.add(new KeyTerm("put(n)",false));
+		allKeyTerms.add(new KeyTerm("look()",false));
+		allKeyTerms.add(new KeyTerm("replace()",false));
+		allKeyTerms.add(new KeyTerm("if",false));
+		allKeyTerms.add(new KeyTerm("increment(n)",false));
+		allKeyTerms.add(new KeyTerm("loop",false));
+		allKeyTerms.add(new KeyTerm("loop until",false));
+		allKeyTerms.add(new KeyTerm("loop while",false));
     }
     
+    private void setAllBallColoursOff() {
+    	for (BallColour bc: allBallColours) {
+    		bc.setAmount(0);
+    	}
+    }
     private void setAllKeyTermsOff() {
-    	for (KeyTerms term: allKeyTerms) {
+    	for (KeyTerm term: allKeyTerms) {
     		term.setRequired(false);
     	}
     }
@@ -413,14 +534,20 @@ public class EditorController {
 			cbBallType.getSelectionModel().select(problem.ballDetails);
 		}
 		txtBallCount.setText(""+problem.ballCount);
+		setAllBallColoursOff();
 		if (problem.ballColours != null) {
-			tblBallColour.getItems().clear();
-			for (BallColour bc : problem.ballColours) {
-		 		tblBallColour.getItems().add(bc);			
-			}
+			for (BallColour bc: allBallColours) {
+				for (BallColour co: problem.ballColours) {
+					if (bc.getColour().equals(co.getColour())) {
+						bc.setAmount(co.getAmount());
+						break;
+					}
+				}
+	    	}
 		}
+		filterBallColours(true);
 		setAllKeyTermsOff();
-		for (KeyTerms term: allKeyTerms) {
+		for (KeyTerm term: allKeyTerms) {
 			if (problem.keyTerms.contains(term.getTerm())) {
 				term.setRequired(true);
 			}
@@ -468,6 +595,79 @@ public class EditorController {
 		}
 		display();
     } // end of method displayDetails
+    
+    private void displayEditControls() {
+    	txtStatement.setEditable(!readOnlyMode);
+		txtPotCount.setEditable(!readOnlyMode);
+		cbContainer.setDisable(readOnlyMode);
+		cbBallType.setDisable(readOnlyMode);
+		txtBallCount.setEditable(!readOnlyMode);
+		tblBallColour.setEditable(!readOnlyMode);
+		tcolAmount.setEditable(!readOnlyMode);
+		tblKeyTerms.setEditable(!readOnlyMode);
+		tblKeyTerms.refresh();
+		tcolRequired.setEditable(!readOnlyMode);
+		tblSolPotCount.setEditable(!readOnlyMode);
+		tblSolPotColour.setEditable(!readOnlyMode);
+		filterBallColours(readOnlyMode);
+		filterKeyTerms(readOnlyMode);
+		if (readOnlyMode) {
+			tcolRequired.setCellFactory(col -> {
+			    TableCell<KeyTerm, Boolean> cell = new TableCell<>();
+			    cell.itemProperty().addListener((obs, old, newVal) -> {
+	                if (newVal != null) {
+	                    Node centreBox = createBooleanGraphic(newVal);
+	                    cell.graphicProperty().bind(Bindings.when(cell.emptyProperty()).then((Node) null).otherwise(centreBox));
+	                }
+	            });
+			    return cell;
+			});
+		} else {
+			tcolRequired.setCellFactory( col -> {
+			    CheckBox checkBox = new CheckBox();
+			    TableCell<KeyTerm, Boolean> cell = new TableCell<KeyTerm, Boolean>() {
+
+			        @Override
+			        protected void updateItem(Boolean item, boolean empty) {
+
+			            super.updateItem(item, empty);
+			            if (empty || item == null) 
+			                setGraphic(null);
+			            else {
+			                setGraphic(checkBox);
+			                checkBox.setSelected(item);
+			            }
+			        }
+			    };
+
+			    checkBox.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+			    	((KeyTerm) cell.getTableRow().getItem()).setRequired(!checkBox.isSelected());
+			    });
+
+			    checkBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+			        if(event.getCode() == KeyCode.SPACE) {
+			        	((KeyTerm) cell.getTableRow().getItem()).setRequired(!checkBox.isSelected());
+			        }
+			    });
+
+			    cell.setAlignment(Pos.CENTER);
+			    cell.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+			    return cell;
+			});
+		}
+    } // end method displayEditControls
+    
+//    private void displayBallColour() {
+//    	tblBallColour.getItems().clear();
+//    	filter(readOnlyMode);
+//		if (currentProblem.ballColours != null) {
+//			tblBallColour.getItems().clear();
+//			for (BallColour bc : currentProblem.ballColours) {
+//		 		tblBallColour.getItems().add(bc);			
+//			}
+//		}
+//    } // end of displayBallColour
     
     public void display() {
     	if (currentProblem == null) {
